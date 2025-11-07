@@ -1,28 +1,27 @@
 import random
 
-ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
 NUMBERS = '0123456789'
 
 class RoomCodeStore:
     def __init__(self):
-        self.codes = set()
+        self.codes_in_use: set[str] = set()
 
-    def get_code(self):
+    def get_unique_code(self):
         for _ in range(100):
             code = ''.join([
                 random.choice(ALPHABET),
                 random.choice(ALPHABET),
                 random.choice(NUMBERS),
-                ' ',
                 random.choice(NUMBERS),
                 random.choice(ALPHABET),
                 random.choice(NUMBERS),
             ])
-            if code in self.codes:
+            if code in self.codes_in_use:
                 continue
-            self.codes.add(code)
+            self.codes_in_use.add(code)
             return code
         raise RuntimeError("Failed to obtain a unique room code")
 
-    def free_code(self, code: str):
-        self.codes.discard(code)
+    def release_code(self, code: str):
+        self.codes_in_use.discard(code)

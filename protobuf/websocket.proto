@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package websocket;
+
+message ClientToServerMessage {
+  oneof payload {
+    PlayerUpdatedMessage player_updated = 1;
+  }
+}
+
+message PlayerUpdatedMessage {
+  string username = 1;
+}
+
+message ServerToClientMessage {
+  oneof payload {
+    LobbyUpdatedMessage lobby_updated = 1;
+  }
+}
+
+message LobbyUpdatedMessage {
+  string room_code = 1;
+  repeated string usernames = 2;
+}
