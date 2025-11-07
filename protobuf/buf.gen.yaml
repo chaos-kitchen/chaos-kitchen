@@ -1,0 +1,12 @@
+version: v2
+managed:
+  enabled: true
+plugins:
+  - remote: buf.build/protocolbuffers/dart
+    out: ../frontend/lib/protobuf
+  - remote: buf.build/protocolbuffers/pyi
+    out: ../backend/src/protobuf
+  - remote: buf.build/protocolbuffers/python
+    out: ../backend/src/protobuf
+inputs:
+  - directory: .
