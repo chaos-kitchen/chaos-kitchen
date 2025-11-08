@@ -39,7 +39,7 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
   TextEditingController codeController = TextEditingController();
 
   Future<void> joinRoom(BuildContext context) async {
-    final code = codeController.text.trim().replaceAll(' ', '').toLowerCase();
+    final code = codeController.text.trim().replaceAll(' ', '').toUpperCase();
     final response = await http.get(
       Uri.parse('${AppConfig.apiBaseUri}/room/code/$code'),
     );
