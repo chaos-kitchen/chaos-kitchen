@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fwebsocket.proto\x12\twebsocket\"l\n\x15\x43lientToServerMessage\x12H\n\x0eplayer_updated\x18\x01 \x01(\x0b\x32\x1f.websocket.PlayerUpdatedMessageH\x00R\rplayerUpdatedB\t\n\x07payload\"2\n\x14PlayerUpdatedMessage\x12\x1a\n\x08username\x18\x01 \x01(\tR\x08username\"i\n\x15ServerToClientMessage\x12\x45\n\rlobby_updated\x18\x01 \x01(\x0b\x32\x1e.websocket.LobbyUpdatedMessageH\x00R\x0clobbyUpdatedB\t\n\x07payload\"P\n\x13LobbyUpdatedMessage\x12\x1b\n\troom_code\x18\x01 \x01(\tR\x08roomCode\x12\x1c\n\tusernames\x18\x02 \x03(\tR\tusernamesBc\n\rcom.websocketB\x0eWebsocketProtoP\x01\xa2\x02\x03WXX\xaa\x02\tWebsocket\xca\x02\tWebsocket\xe2\x02\x15Websocket\\GPBMetadata\xea\x02\tWebsocketb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fwebsocket.proto\x12\twebsocket\"`\n\x15\x43lientToServerMessage\x12<\n\nstart_game\x18\x01 \x01(\x0b\x32\x1b.websocket.StartGameMessageH\x00R\tstartGameB\t\n\x07payload\"\x12\n\x10StartGameMessage\"\xad\x01\n\x15ServerToClientMessage\x12\x45\n\rlobby_updated\x18\x01 \x01(\x0b\x32\x1e.websocket.LobbyUpdatedMessageH\x00R\x0clobbyUpdated\x12\x42\n\x0cgame_started\x18\x02 \x01(\x0b\x32\x1d.websocket.GameStartedMessageH\x00R\x0bgameStartedB\t\n\x07payload\"n\n\x13LobbyUpdatedMessage\x12\x1b\n\troom_code\x18\x01 \x01(\tR\x08roomCode\x12!\n\x0cplayer_names\x18\x02 \x03(\tR\x0bplayerNames\x12\x17\n\x07is_host\x18\x03 \x01(\x08R\x06isHost\"6\n\x12GameStartedMessage\x12 \n\x0cgame_room_id\x18\x01 \x01(\tR\ngameRoomIdBc\n\rcom.websocketB\x0eWebsocketProtoP\x01\xa2\x02\x03WXX\xaa\x02\tWebsocket\xca\x02\tWebsocket\xe2\x02\x15Websocket\\GPBMetadata\xea\x02\tWebsocketb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -33,11 +33,13 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\rcom.websocketB\016WebsocketProtoP\001\242\002\003WXX\252\002\tWebsocket\312\002\tWebsocket\342\002\025Websocket\\GPBMetadata\352\002\tWebsocket'
   _globals['_CLIENTTOSERVERMESSAGE']._serialized_start=30
-  _globals['_CLIENTTOSERVERMESSAGE']._serialized_end=138
-  _globals['_PLAYERUPDATEDMESSAGE']._serialized_start=140
-  _globals['_PLAYERUPDATEDMESSAGE']._serialized_end=190
-  _globals['_SERVERTOCLIENTMESSAGE']._serialized_start=192
-  _globals['_SERVERTOCLIENTMESSAGE']._serialized_end=297
-  _globals['_LOBBYUPDATEDMESSAGE']._serialized_start=299
-  _globals['_LOBBYUPDATEDMESSAGE']._serialized_end=379
+  _globals['_CLIENTTOSERVERMESSAGE']._serialized_end=126
+  _globals['_STARTGAMEMESSAGE']._serialized_start=128
+  _globals['_STARTGAMEMESSAGE']._serialized_end=146
+  _globals['_SERVERTOCLIENTMESSAGE']._serialized_start=149
+  _globals['_SERVERTOCLIENTMESSAGE']._serialized_end=322
+  _globals['_LOBBYUPDATEDMESSAGE']._serialized_start=324
+  _globals['_LOBBYUPDATEDMESSAGE']._serialized_end=434
+  _globals['_GAMESTARTEDMESSAGE']._serialized_start=436
+  _globals['_GAMESTARTEDMESSAGE']._serialized_end=490
 # @@protoc_insertion_point(module_scope)

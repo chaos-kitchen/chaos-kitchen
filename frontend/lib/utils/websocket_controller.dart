@@ -1,22 +1,18 @@
 import 'dart:async';
 
 import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
-import 'package:chaos_kitchen/utils/config.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketController {
-  final String roomId;
+  final Uri url;
 
   late final WebSocketSink _sink;
   late final Stream<ServerToClientMessage> stream;
 
-  WebSocketController({required this.roomId});
+  WebSocketController(this.url);
 
   Future<void> initialize() async {
-    final clientId = await AppConfig.getClientUuidFromStorage();
-    final wsUrl = AppConfig.getWebSocketUri(roomId: roomId, clientId: clientId);
-
-    final channel = WebSocketChannel.connect(wsUrl);
+    final channel = WebSocketChannel.connect(url);
 
     _sink = channel.sink;
     stream = channel.stream

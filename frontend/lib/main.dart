@@ -22,7 +22,7 @@ class MainApp extends StatelessWidget {
           GoRoute(
             path: '/room/:roomId',
             builder: (context, state) =>
-                RoomScreen(roomId: state.pathParameters['roomId'] ?? ''),
+                RoomScreen(initialRoomId: state.pathParameters['roomId'] ?? ''),
           ),
           GoRoute(
             path: '/join-room',

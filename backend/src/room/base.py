@@ -1,3 +1,5 @@
+from collections import OrderedDict
+from dataclasses import dataclass
 import logging
 from uuid import UUID
 
@@ -7,9 +9,13 @@ from protobuf.websocket_pb2 import ClientToServerMessage, ServerToClientMessage
 
 logger = logging.getLogger(__name__)
 
+@dataclass
+class PlayerInfo:
+    player_name: str
+
 class BaseRoom:
     def __init__(self):
-        self.active_connections: dict[UUID, WebSocket] = {}
+        self.active_connections: OrderedDict[UUID, WebSocket] = OrderedDict()
 
     async def connect(self, client_id: UUID, websocket: WebSocket):
         if client_id in self.active_connections:

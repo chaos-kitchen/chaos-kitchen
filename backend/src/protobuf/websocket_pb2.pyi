@@ -8,26 +8,34 @@ DESCRIPTOR: _descriptor.FileDescriptor
 
 class ClientToServerMessage(_message.Message):
     __slots__ = ()
-    PLAYER_UPDATED_FIELD_NUMBER: _ClassVar[int]
-    player_updated: PlayerUpdatedMessage
-    def __init__(self, player_updated: _Optional[_Union[PlayerUpdatedMessage, _Mapping]] = ...) -> None: ...
+    START_GAME_FIELD_NUMBER: _ClassVar[int]
+    start_game: StartGameMessage
+    def __init__(self, start_game: _Optional[_Union[StartGameMessage, _Mapping]] = ...) -> None: ...
 
-class PlayerUpdatedMessage(_message.Message):
+class StartGameMessage(_message.Message):
     __slots__ = ()
-    USERNAME_FIELD_NUMBER: _ClassVar[int]
-    username: str
-    def __init__(self, username: _Optional[str] = ...) -> None: ...
+    def __init__(self) -> None: ...
 
 class ServerToClientMessage(_message.Message):
     __slots__ = ()
     LOBBY_UPDATED_FIELD_NUMBER: _ClassVar[int]
+    GAME_STARTED_FIELD_NUMBER: _ClassVar[int]
     lobby_updated: LobbyUpdatedMessage
-    def __init__(self, lobby_updated: _Optional[_Union[LobbyUpdatedMessage, _Mapping]] = ...) -> None: ...
+    game_started: GameStartedMessage
+    def __init__(self, lobby_updated: _Optional[_Union[LobbyUpdatedMessage, _Mapping]] = ..., game_started: _Optional[_Union[GameStartedMessage, _Mapping]] = ...) -> None: ...
 
 class LobbyUpdatedMessage(_message.Message):
     __slots__ = ()
     ROOM_CODE_FIELD_NUMBER: _ClassVar[int]
-    USERNAMES_FIELD_NUMBER: _ClassVar[int]
+    PLAYER_NAMES_FIELD_NUMBER: _ClassVar[int]
+    IS_HOST_FIELD_NUMBER: _ClassVar[int]
     room_code: str
-    usernames: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, room_code: _Optional[str] = ..., usernames: _Optional[_Iterable[str]] = ...) -> None: ...
+    player_names: _containers.RepeatedScalarFieldContainer[str]
+    is_host: bool
+    def __init__(self, room_code: _Optional[str] = ..., player_names: _Optional[_Iterable[str]] = ..., is_host: _Optional[bool] = ...) -> None: ...
+
+class GameStartedMessage(_message.Message):
+    __slots__ = ()
+    GAME_ROOM_ID_FIELD_NUMBER: _ClassVar[int]
+    game_room_id: str
+    def __init__(self, game_room_id: _Optional[str] = ...) -> None: ...
