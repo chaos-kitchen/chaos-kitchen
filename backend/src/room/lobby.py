@@ -1,63 +1,70 @@
 import logging
-from typing import Callable, OrderedDict
-from uuid import UUID
+from typing import Callable
+from uuid import UUID, uuid4
+
+from fastapi import WebSocket
 
 from code_store import RoomCodeStore
-from protobuf.websocket_pb2 import ClientToServerMessage, LobbyUpdatedMessage, PlayerUpdatedMessage, ServerToClientMessage
-from room.base import BaseRoom
+from protobuf.websocket_pb2 import ClientToServerMessage, GameStartedMessage, LobbyUpdatedMessage, ServerToClientMessage
+from room.base import BaseRoom, PlayerInfo
 
 logger = logging.getLogger(__name__)
 
-class Player:
-    def __init__(self, client_id: UUID, username: str):
-        self.client_id = client_id
-        self.username = username
 
 class LobbyRoom(BaseRoom):
     def __init__(
-            self,
-            room_id: UUID,
-            code_store: RoomCodeStore,
-            *,
-            replace_room: Callable[[BaseRoom], None],
+        self,
+        code_store: RoomCodeStore,
+        *,
+        on_start_game: Callable[[dict[UUID, PlayerInfo], UUID], None],
     ):
         super().__init__()
-        print("Creating LobbyRoom with id:", room_id)
         self.room_code = code_store.get_unique_code()
-        self._room_id = room_id
+        self.player_info: dict[UUID, PlayerInfo] = {}
         self._code_store = code_store
-        self._replace_room = replace_room
-
-        self.players: OrderedDict[UUID, Player] = OrderedDict()
+        self._on_start_game = on_start_game
 
     def __del__(self):
         self._code_store.release_code(self.room_code)
 
+    async def connect(self, client_id: UUID, player_name: str, websocket: WebSocket):
+        await super().connect(client_id, websocket)
+        self.player_info[client_id] = PlayerInfo(player_name=player_name)
+        await self._broadcast_lobby_update()
+
     async def disconnect(self, client_id: UUID):
         await super().disconnect(client_id)
-        self.players.pop(client_id, None) # Remove player on disconnect
+        self.player_info.pop(client_id, None) # Remove player on disconnect
         await self._broadcast_lobby_update()
 
     async def process_message(self, client_id: UUID, message: ClientToServerMessage):
         match message.WhichOneof("payload"):
-            case "player_updated":
-                await self._handle_player_update(client_id, message.player_updated)
+            case "start_game":
+                await self._handle_game_start(client_id)
 
-    async def _handle_player_update(self, client_id: UUID, message: PlayerUpdatedMessage):
-        player = self.players.get(client_id)
-        if player is None:
-            player = Player(client_id, message.username)
-            self.players[client_id] = player
-        else:
-            player.username = message.username
-        await self._broadcast_lobby_update()
-
-    async def _broadcast_lobby_update(self):
+    async def _handle_game_start(self, client_id: UUID):
+        if list(self.active_connections.keys())[0] != client_id:
+            logger.warning(f"Client {client_id} attempted to start game but is not host")
+            return
+        game_room_id = uuid4()
+        self._on_start_game(dict(self.player_info), game_room_id)
         await self.broadcast_message(
             ServerToClientMessage(
-                lobby_updated=LobbyUpdatedMessage(
-                    room_code=self.room_code,
-                    usernames=[p.username for p in self.players.values()],
+                game_started=GameStartedMessage(
+                    game_room_id=str(game_room_id)
                 )
             )
         )
+
+    async def _broadcast_lobby_update(self):
+        for i, client_id in enumerate(self.active_connections.keys()):
+            await self.send_message(
+                client_id,
+                ServerToClientMessage(
+                    lobby_updated=LobbyUpdatedMessage(
+                        room_code=self.room_code,
+                        player_names=[p.player_name for p in self.player_info.values()],
+                        is_host=(i == 0), # First player is host
+                    )
+                )
+            )

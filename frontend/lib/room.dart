@@ -1,88 +1,65 @@
-import 'package:chaos_kitchen/components/snackbar.dart';
-import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
-import 'package:chaos_kitchen/utils/websocket_controller.dart';
+import 'package:chaos_kitchen/change_name.dart';
+import 'package:chaos_kitchen/room/game.dart';
+import 'package:chaos_kitchen/room/lobby.dart';
 import 'package:flutter/material.dart';
 
 class RoomScreen extends StatefulWidget {
-  final String roomId;
+  final String initialRoomId;
 
-  const RoomScreen({super.key, required this.roomId});
+  const RoomScreen({super.key, required this.initialRoomId});
 
   @override
   State<RoomScreen> createState() => _RoomScreenState();
 }
 
 class _RoomScreenState extends State<RoomScreen> {
-  late WebSocketController _wsController;
-
-  bool isLoadingRoom = true;
-  String roomCode = "";
-  List<String> players = [];
-
-  Future<void> createWebSocketConnection() async {
-    final controller = WebSocketController(roomId: widget.roomId);
-    await controller.initialize();
-    if (!mounted) return;
-    _wsController = controller;
-
-    controller.stream.listen(handleMessage);
-
-    // Join room
-    final message = ClientToServerMessage()
-      ..playerUpdated = PlayerUpdatedMessage(username: "player");
-    _wsController.sendMessage(message);
-  }
+  String? _playerName;
+  String? _roomId;
+  bool _gameStarted = false;
 
   @override
   void initState() {
     super.initState();
-
-    createWebSocketConnection();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _wsController.dispose();
+  void onNameChanged(String playerName) async {
+    setState(() {
+      _playerName = playerName;
+    });
   }
 
-  void handleMessage(ServerToClientMessage message) {
-    switch (message.whichPayload()) {
-      case ServerToClientMessage_Payload.lobbyUpdated:
-        final lobbyUpdatedMessage = message.lobbyUpdated;
-        final capitalizedRoomCode = lobbyUpdatedMessage.roomCode.toUpperCase();
-        final formattedRoomCode =
-            '${capitalizedRoomCode.substring(0, 3)} ${capitalizedRoomCode.substring(3)}';
-        setState(() {
-          isLoadingRoom = false;
-          roomCode = formattedRoomCode;
-          players = lobbyUpdatedMessage.usernames;
-        });
-        break;
-      default:
-        showErrorSnackbar(context, 'Received unknown message from server');
-        break;
-    }
+  void onGameStarted(String gameRoomId) {
+    setState(() {
+      _gameStarted = true;
+      _roomId = gameRoomId;
+    });
+  }
+
+  void onGameFinished(String lobbyRoomId) {
+    setState(() {
+      _gameStarted = false;
+      _roomId = lobbyRoomId;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Room: ${widget.roomId}')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isLoadingRoom) CircularProgressIndicator(),
-            if (!isLoadingRoom) ...[
-              Text('Room Code: $roomCode'),
-              SizedBox(height: 16),
-              Text('Players:'),
-              for (var player in players) Text(player),
-            ],
-          ],
-        ),
-      ),
+    if (_playerName == null) {
+      return ChangePlayerNameScreen(onNameChanged: onNameChanged);
+    }
+
+    if (!_gameStarted) {
+      return LobbyRoomScreen(
+        roomId: _roomId ?? widget.initialRoomId,
+        playerName: _playerName!,
+        onGameStarted: onGameStarted,
+      );
+    }
+
+    return GameScreen(
+      roomId: _roomId ?? widget.initialRoomId,
+      playerName: _playerName!,
+      onGameFinished: onGameFinished,
     );
   }
 }

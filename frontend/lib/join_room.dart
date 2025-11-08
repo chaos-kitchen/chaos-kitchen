@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:chaos_kitchen/components/button.dart';
 import 'package:chaos_kitchen/components/snackbar.dart';
 import 'package:chaos_kitchen/utils/config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,6 +14,25 @@ class JoinRoomScreen extends StatefulWidget {
 
   @override
   State<JoinRoomScreen> createState() => _JoinRoomScreenState();
+}
+
+class RoomCodeInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final formatted = newValue.text
+        // remove non-alphanumeric characters
+        .replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')
+        // limit to 6 characters
+        .substring(0, min(6, newValue.text.length))
+        .toUpperCase();
+    final selection = TextSelection.collapsed(
+      offset: min(6, newValue.selection.baseOffset),
+    );
+    return TextEditingValue(text: formatted, selection: selection);
+  }
 }
 
 class _JoinRoomScreenState extends State<JoinRoomScreen> {
@@ -57,7 +78,12 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
                   border: OutlineInputBorder(),
                   labelText: 'Enter Room Code',
                 ),
-                maxLength: 6,
+                inputFormatters: [RoomCodeInputFormatter()],
+                textCapitalization: TextCapitalization.characters,
+                autocorrect: false,
+                enableSuggestions: false,
+                autofocus: true,
+                onSubmitted: (_) => joinRoom(context),
               ),
             ),
             UIButton(

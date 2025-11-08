@@ -1,7 +1,6 @@
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
-
 class AppConfig {
+  static String clientIdPrefKey = 'clientId';
+
   static Uri get apiBaseUri {
     final urlStr = String.fromEnvironment(
       'API_BASE_URL',
@@ -10,29 +9,32 @@ class AppConfig {
     return Uri.parse(urlStr);
   }
 
-  static Uri getWebSocketUri({
-    required String roomId,
+  static Uri getLobbyWebSocketUri({
+    required String lobbyRoomId,
     required String clientId,
+    required String playerName,
   }) {
     final wsUrl = Uri(
       scheme: apiBaseUri.scheme == 'https' ? 'wss' : 'ws',
       host: apiBaseUri.host,
       port: apiBaseUri.port,
-      path: '/ws/$roomId/$clientId',
+      path: '/ws/lobby/$lobbyRoomId/$clientId',
+      queryParameters: {"player_name": playerName},
     );
     return wsUrl;
   }
 
-  static Future<String> getClientUuidFromStorage() async {
-    final asyncPrefs = SharedPreferencesAsync();
-    final String? clientUuid = await asyncPrefs.getString('clientUuid');
-
-    if (clientUuid != null) {
-      return clientUuid;
-    }
-
-    final newClientUuid = const Uuid().v4();
-    await asyncPrefs.setString('clientUuid', newClientUuid);
-    return newClientUuid;
+  static Uri getGameWebSocketUri({
+    required String gameRoomId,
+    required String clientId,
+    required String playerName,
+  }) {
+    final wsUrl = Uri(
+      scheme: apiBaseUri.scheme == 'https' ? 'wss' : 'ws',
+      host: apiBaseUri.host,
+      port: apiBaseUri.port,
+      path: '/ws/game/$gameRoomId/$clientId',
+    );
+    return wsUrl;
   }
 }

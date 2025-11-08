@@ -16,14 +16,14 @@ import 'package:protobuf/protobuf.dart' as $pb;
 
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
-enum ClientToServerMessage_Payload { playerUpdated, notSet }
+enum ClientToServerMessage_Payload { startGame, notSet }
 
 class ClientToServerMessage extends $pb.GeneratedMessage {
   factory ClientToServerMessage({
-    PlayerUpdatedMessage? playerUpdated,
+    StartGameMessage? startGame,
   }) {
     final result = create();
-    if (playerUpdated != null) result.playerUpdated = playerUpdated;
+    if (startGame != null) result.startGame = startGame;
     return result;
   }
 
@@ -38,7 +38,7 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
 
   static const $core.Map<$core.int, ClientToServerMessage_Payload>
       _ClientToServerMessage_PayloadByTag = {
-    1: ClientToServerMessage_Payload.playerUpdated,
+    1: ClientToServerMessage_Payload.startGame,
     0: ClientToServerMessage_Payload.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
@@ -46,8 +46,8 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
       package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
       createEmptyInstance: create)
     ..oo(0, [1])
-    ..aOM<PlayerUpdatedMessage>(1, _omitFieldNames ? '' : 'playerUpdated',
-        subBuilder: PlayerUpdatedMessage.create)
+    ..aOM<StartGameMessage>(1, _omitFieldNames ? '' : 'startGame',
+        subBuilder: StartGameMessage.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -77,79 +77,65 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
   void clearPayload() => $_clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
-  PlayerUpdatedMessage get playerUpdated => $_getN(0);
+  StartGameMessage get startGame => $_getN(0);
   @$pb.TagNumber(1)
-  set playerUpdated(PlayerUpdatedMessage value) => $_setField(1, value);
+  set startGame(StartGameMessage value) => $_setField(1, value);
   @$pb.TagNumber(1)
-  $core.bool hasPlayerUpdated() => $_has(0);
+  $core.bool hasStartGame() => $_has(0);
   @$pb.TagNumber(1)
-  void clearPlayerUpdated() => $_clearField(1);
+  void clearStartGame() => $_clearField(1);
   @$pb.TagNumber(1)
-  PlayerUpdatedMessage ensurePlayerUpdated() => $_ensure(0);
+  StartGameMessage ensureStartGame() => $_ensure(0);
 }
 
-class PlayerUpdatedMessage extends $pb.GeneratedMessage {
-  factory PlayerUpdatedMessage({
-    $core.String? username,
-  }) {
-    final result = create();
-    if (username != null) result.username = username;
-    return result;
-  }
+class StartGameMessage extends $pb.GeneratedMessage {
+  factory StartGameMessage() => create();
 
-  PlayerUpdatedMessage._();
+  StartGameMessage._();
 
-  factory PlayerUpdatedMessage.fromBuffer($core.List<$core.int> data,
+  factory StartGameMessage.fromBuffer($core.List<$core.int> data,
           [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(data, registry);
-  factory PlayerUpdatedMessage.fromJson($core.String json,
+  factory StartGameMessage.fromJson($core.String json,
           [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      _omitMessageNames ? '' : 'PlayerUpdatedMessage',
+      _omitMessageNames ? '' : 'StartGameMessage',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'username')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  PlayerUpdatedMessage clone() => deepCopy();
+  StartGameMessage clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  PlayerUpdatedMessage copyWith(void Function(PlayerUpdatedMessage) updates) =>
-      super.copyWith((message) => updates(message as PlayerUpdatedMessage))
-          as PlayerUpdatedMessage;
+  StartGameMessage copyWith(void Function(StartGameMessage) updates) =>
+      super.copyWith((message) => updates(message as StartGameMessage))
+          as StartGameMessage;
 
   @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static PlayerUpdatedMessage create() => PlayerUpdatedMessage._();
+  static StartGameMessage create() => StartGameMessage._();
   @$core.override
-  PlayerUpdatedMessage createEmptyInstance() => create();
+  StartGameMessage createEmptyInstance() => create();
   @$core.pragma('dart2js:noInline')
-  static PlayerUpdatedMessage getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<PlayerUpdatedMessage>(create);
-  static PlayerUpdatedMessage? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get username => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set username($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasUsername() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUsername() => $_clearField(1);
+  static StartGameMessage getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<StartGameMessage>(create);
+  static StartGameMessage? _defaultInstance;
 }
 
-enum ServerToClientMessage_Payload { lobbyUpdated, notSet }
+enum ServerToClientMessage_Payload { lobbyUpdated, gameStarted, notSet }
 
 class ServerToClientMessage extends $pb.GeneratedMessage {
   factory ServerToClientMessage({
     LobbyUpdatedMessage? lobbyUpdated,
+    GameStartedMessage? gameStarted,
   }) {
     final result = create();
     if (lobbyUpdated != null) result.lobbyUpdated = lobbyUpdated;
+    if (gameStarted != null) result.gameStarted = gameStarted;
     return result;
   }
 
@@ -165,15 +151,18 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
   static const $core.Map<$core.int, ServerToClientMessage_Payload>
       _ServerToClientMessage_PayloadByTag = {
     1: ServerToClientMessage_Payload.lobbyUpdated,
+    2: ServerToClientMessage_Payload.gameStarted,
     0: ServerToClientMessage_Payload.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'ServerToClientMessage',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
       createEmptyInstance: create)
-    ..oo(0, [1])
+    ..oo(0, [1, 2])
     ..aOM<LobbyUpdatedMessage>(1, _omitFieldNames ? '' : 'lobbyUpdated',
         subBuilder: LobbyUpdatedMessage.create)
+    ..aOM<GameStartedMessage>(2, _omitFieldNames ? '' : 'gameStarted',
+        subBuilder: GameStartedMessage.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -197,9 +186,11 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
   static ServerToClientMessage? _defaultInstance;
 
   @$pb.TagNumber(1)
+  @$pb.TagNumber(2)
   ServerToClientMessage_Payload whichPayload() =>
       _ServerToClientMessage_PayloadByTag[$_whichOneof(0)]!;
   @$pb.TagNumber(1)
+  @$pb.TagNumber(2)
   void clearPayload() => $_clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
@@ -212,16 +203,29 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
   void clearLobbyUpdated() => $_clearField(1);
   @$pb.TagNumber(1)
   LobbyUpdatedMessage ensureLobbyUpdated() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  GameStartedMessage get gameStarted => $_getN(1);
+  @$pb.TagNumber(2)
+  set gameStarted(GameStartedMessage value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasGameStarted() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearGameStarted() => $_clearField(2);
+  @$pb.TagNumber(2)
+  GameStartedMessage ensureGameStarted() => $_ensure(1);
 }
 
 class LobbyUpdatedMessage extends $pb.GeneratedMessage {
   factory LobbyUpdatedMessage({
     $core.String? roomCode,
-    $core.Iterable<$core.String>? usernames,
+    $core.Iterable<$core.String>? playerNames,
+    $core.bool? isHost,
   }) {
     final result = create();
     if (roomCode != null) result.roomCode = roomCode;
-    if (usernames != null) result.usernames.addAll(usernames);
+    if (playerNames != null) result.playerNames.addAll(playerNames);
+    if (isHost != null) result.isHost = isHost;
     return result;
   }
 
@@ -239,7 +243,8 @@ class LobbyUpdatedMessage extends $pb.GeneratedMessage {
       package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'roomCode')
-    ..pPS(2, _omitFieldNames ? '' : 'usernames')
+    ..pPS(2, _omitFieldNames ? '' : 'playerNames')
+    ..aOB(3, _omitFieldNames ? '' : 'isHost')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -271,7 +276,70 @@ class LobbyUpdatedMessage extends $pb.GeneratedMessage {
   void clearRoomCode() => $_clearField(1);
 
   @$pb.TagNumber(2)
-  $pb.PbList<$core.String> get usernames => $_getList(1);
+  $pb.PbList<$core.String> get playerNames => $_getList(1);
+
+  @$pb.TagNumber(3)
+  $core.bool get isHost => $_getBF(2);
+  @$pb.TagNumber(3)
+  set isHost($core.bool value) => $_setBool(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasIsHost() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearIsHost() => $_clearField(3);
+}
+
+class GameStartedMessage extends $pb.GeneratedMessage {
+  factory GameStartedMessage({
+    $core.String? gameRoomId,
+  }) {
+    final result = create();
+    if (gameRoomId != null) result.gameRoomId = gameRoomId;
+    return result;
+  }
+
+  GameStartedMessage._();
+
+  factory GameStartedMessage.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory GameStartedMessage.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'GameStartedMessage',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'gameRoomId')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GameStartedMessage clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GameStartedMessage copyWith(void Function(GameStartedMessage) updates) =>
+      super.copyWith((message) => updates(message as GameStartedMessage))
+          as GameStartedMessage;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static GameStartedMessage create() => GameStartedMessage._();
+  @$core.override
+  GameStartedMessage createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static GameStartedMessage getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<GameStartedMessage>(create);
+  static GameStartedMessage? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get gameRoomId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set gameRoomId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasGameRoomId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearGameRoomId() => $_clearField(1);
 }
 
 const $core.bool _omitFieldNames =
