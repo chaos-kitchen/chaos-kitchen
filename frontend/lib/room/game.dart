@@ -3,6 +3,7 @@ import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
 import 'package:chaos_kitchen/utils/config.dart';
 import 'package:chaos_kitchen/utils/prefs.dart';
 import 'package:chaos_kitchen/utils/websocket_controller.dart';
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 class GameScreen extends StatefulWidget {
@@ -66,20 +67,6 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Room')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isLoadingRoom)
-              CircularProgressIndicator()
-            else ...[
-              Text('In-Game Screen (not implemented yet)'),
-            ],
-          ],
-        ),
-      ),
-    );
+    return GameWidget(game: FlameGame());
   }
 }

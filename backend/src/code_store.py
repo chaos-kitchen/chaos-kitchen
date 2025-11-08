@@ -1,6 +1,6 @@
 import random
 
-ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
+ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ' # removed 'i' and 'o' to avoid confusion with 1 and 0
 NUMBERS = '0123456789'
 
 class RoomCodeStore:
@@ -11,8 +11,8 @@ class RoomCodeStore:
         for _ in range(100):
             code = ''.join([
                 random.choice(ALPHABET),
-                random.choice(ALPHABET),
                 random.choice(NUMBERS),
+                random.choice(ALPHABET),
                 random.choice(NUMBERS),
                 random.choice(ALPHABET),
                 random.choice(NUMBERS),
