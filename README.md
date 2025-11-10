@@ -25,7 +25,7 @@ To start the backend:
 ```bash
 cd backend
 uv sync
-fastapi dev src/main.py
+uv run fastapi dev src/main.py
 ```
 
 ### Frontend
