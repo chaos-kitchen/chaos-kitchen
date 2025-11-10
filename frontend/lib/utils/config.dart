@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class AppConfig {
   static String clientIdPrefKey = 'clientId';
 
@@ -6,7 +8,14 @@ class AppConfig {
       'API_BASE_URL',
       defaultValue: 'http://localhost:8000',
     );
-    return Uri.parse(urlStr);
+    final uri = Uri.parse(urlStr);
+
+    // On Android emulators, localhost refers to the emulator, not the host
+    if (uri.host == 'localhost' && Platform.isAndroid) {
+      return uri.replace(host: '10.0.2.2');
+    }
+
+    return uri;
   }
 
   static Uri getLobbyWebSocketUri({
