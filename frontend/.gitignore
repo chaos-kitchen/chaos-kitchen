@@ -46,3 +46,6 @@ app.*.map.json
 
 # protobuf generated files
 lib/protobuf/*.dart
+
+# Joel's start emulators script
+startem.sh
