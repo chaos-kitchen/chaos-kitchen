@@ -1,0 +1,42 @@
+import 'package:flutter/material.dart';
+import 'package:chaos_kitchen/game/actors/player.dart';
+import 'package:flame/camera.dart';
+import 'package:flame/components.dart';
+
+class PlayerViewport extends MaxViewport {
+  final Player player;
+
+  PlayerViewport(this.player);
+
+  @override
+  void onLoad() async {
+    super.onLoad();
+    add(PlayerJoystick(player));
+  }
+}
+
+class PlayerJoystick extends JoystickComponent {
+  final Player player;
+  final double maxSpeed = 200.0;
+
+  PlayerJoystick(this.player)
+    : super(
+        knob: CircleComponent(
+          radius: 30,
+          paint: Paint()..color = const Color(0xFF888888),
+        ),
+        background: CircleComponent(
+          radius: 60,
+          paint: Paint()..color = const Color(0x55000000),
+        ),
+        margin: const EdgeInsets.only(left: 40, bottom: 40),
+      );
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (direction != JoystickDirection.idle) {
+      player.position.add(relativeDelta * maxSpeed * dt);
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import 'package:chaos_kitchen/components/snackbar.dart';
+import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
 import 'package:chaos_kitchen/utils/config.dart';
 import 'package:chaos_kitchen/utils/prefs.dart';
@@ -67,6 +68,6 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GameWidget(game: FlameGame());
+    return GameWidget(game: ChaosKitchenGame());
   }
 }
