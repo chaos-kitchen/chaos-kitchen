@@ -28,3 +28,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/backgrounds/
+    - assets/images/food/
+    - assets/images/players/

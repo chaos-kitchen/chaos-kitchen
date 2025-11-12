@@ -9,10 +9,10 @@ class Player extends SpriteAnimationComponent
   @override
   Future<void> onLoad() async {
     animation = SpriteAnimation.fromFrameData(
-      await game.images.load('ember.png'),
+      await game.images.load('cook.png'),
       SpriteAnimationData.sequenced(
-        amount: 4,
-        textureSize: Vector2.all(16),
+        amount: 3,
+        textureSize: Vector2.all(400),
         stepTime: 0.12,
       ),
     );

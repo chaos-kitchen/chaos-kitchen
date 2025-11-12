@@ -1,4 +1,3 @@
-import 'package:chaos_kitchen/components/snackbar.dart';
 import 'package:chaos_kitchen/components/instructor_timer.dart';
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
