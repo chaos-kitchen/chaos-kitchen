@@ -126,16 +126,23 @@ class StartGameMessage extends $pb.GeneratedMessage {
   static StartGameMessage? _defaultInstance;
 }
 
-enum ServerToClientMessage_Payload { lobbyUpdated, gameStarted, notSet }
+enum ServerToClientMessage_Payload {
+  lobbyUpdated,
+  gameStarted,
+  timerUpdate,
+  notSet
+}
 
 class ServerToClientMessage extends $pb.GeneratedMessage {
   factory ServerToClientMessage({
     LobbyUpdatedMessage? lobbyUpdated,
     GameStartedMessage? gameStarted,
+    TimerUpdateMessage? timerUpdate,
   }) {
     final result = create();
     if (lobbyUpdated != null) result.lobbyUpdated = lobbyUpdated;
     if (gameStarted != null) result.gameStarted = gameStarted;
+    if (timerUpdate != null) result.timerUpdate = timerUpdate;
     return result;
   }
 
@@ -152,17 +159,20 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
       _ServerToClientMessage_PayloadByTag = {
     1: ServerToClientMessage_Payload.lobbyUpdated,
     2: ServerToClientMessage_Payload.gameStarted,
+    3: ServerToClientMessage_Payload.timerUpdate,
     0: ServerToClientMessage_Payload.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'ServerToClientMessage',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
       createEmptyInstance: create)
-    ..oo(0, [1, 2])
+    ..oo(0, [1, 2, 3])
     ..aOM<LobbyUpdatedMessage>(1, _omitFieldNames ? '' : 'lobbyUpdated',
         subBuilder: LobbyUpdatedMessage.create)
     ..aOM<GameStartedMessage>(2, _omitFieldNames ? '' : 'gameStarted',
         subBuilder: GameStartedMessage.create)
+    ..aOM<TimerUpdateMessage>(3, _omitFieldNames ? '' : 'timerUpdate',
+        subBuilder: TimerUpdateMessage.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -187,10 +197,12 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   @$pb.TagNumber(2)
+  @$pb.TagNumber(3)
   ServerToClientMessage_Payload whichPayload() =>
       _ServerToClientMessage_PayloadByTag[$_whichOneof(0)]!;
   @$pb.TagNumber(1)
   @$pb.TagNumber(2)
+  @$pb.TagNumber(3)
   void clearPayload() => $_clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
@@ -214,6 +226,17 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
   void clearGameStarted() => $_clearField(2);
   @$pb.TagNumber(2)
   GameStartedMessage ensureGameStarted() => $_ensure(1);
+
+  @$pb.TagNumber(3)
+  TimerUpdateMessage get timerUpdate => $_getN(2);
+  @$pb.TagNumber(3)
+  set timerUpdate(TimerUpdateMessage value) => $_setField(3, value);
+  @$pb.TagNumber(3)
+  $core.bool hasTimerUpdate() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearTimerUpdate() => $_clearField(3);
+  @$pb.TagNumber(3)
+  TimerUpdateMessage ensureTimerUpdate() => $_ensure(2);
 }
 
 class LobbyUpdatedMessage extends $pb.GeneratedMessage {
@@ -340,6 +363,60 @@ class GameStartedMessage extends $pb.GeneratedMessage {
   $core.bool hasGameRoomId() => $_has(0);
   @$pb.TagNumber(1)
   void clearGameRoomId() => $_clearField(1);
+}
+
+class TimerUpdateMessage extends $pb.GeneratedMessage {
+  factory TimerUpdateMessage({
+    $core.int? remainingSeconds,
+  }) {
+    final result = create();
+    if (remainingSeconds != null) result.remainingSeconds = remainingSeconds;
+    return result;
+  }
+
+  TimerUpdateMessage._();
+
+  factory TimerUpdateMessage.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory TimerUpdateMessage.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'TimerUpdateMessage',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
+      createEmptyInstance: create)
+    ..aI(1, _omitFieldNames ? '' : 'remainingSeconds')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  TimerUpdateMessage clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  TimerUpdateMessage copyWith(void Function(TimerUpdateMessage) updates) =>
+      super.copyWith((message) => updates(message as TimerUpdateMessage))
+          as TimerUpdateMessage;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static TimerUpdateMessage create() => TimerUpdateMessage._();
+  @$core.override
+  TimerUpdateMessage createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static TimerUpdateMessage getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<TimerUpdateMessage>(create);
+  static TimerUpdateMessage? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.int get remainingSeconds => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set remainingSeconds($core.int value) => $_setSignedInt32(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasRemainingSeconds() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearRemainingSeconds() => $_clearField(1);
 }
 
 const $core.bool _omitFieldNames =

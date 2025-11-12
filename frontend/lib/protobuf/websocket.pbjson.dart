@@ -69,6 +69,15 @@ const ServerToClientMessage$json = {
       '9': 0,
       '10': 'gameStarted'
     },
+    {
+      '1': 'timer_update',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.websocket.TimerUpdateMessage',
+      '9': 0,
+      '10': 'timerUpdate'
+    },
   ],
   '8': [
     {'1': 'payload'},
@@ -79,8 +88,9 @@ const ServerToClientMessage$json = {
 final $typed_data.Uint8List serverToClientMessageDescriptor = $convert.base64Decode(
     'ChVTZXJ2ZXJUb0NsaWVudE1lc3NhZ2USRQoNbG9iYnlfdXBkYXRlZBgBIAEoCzIeLndlYnNvY2'
     'tldC5Mb2JieVVwZGF0ZWRNZXNzYWdlSABSDGxvYmJ5VXBkYXRlZBJCCgxnYW1lX3N0YXJ0ZWQY'
-    'AiABKAsyHS53ZWJzb2NrZXQuR2FtZVN0YXJ0ZWRNZXNzYWdlSABSC2dhbWVTdGFydGVkQgkKB3'
-    'BheWxvYWQ=');
+    'AiABKAsyHS53ZWJzb2NrZXQuR2FtZVN0YXJ0ZWRNZXNzYWdlSABSC2dhbWVTdGFydGVkEkIKDH'
+    'RpbWVyX3VwZGF0ZRgDIAEoCzIdLndlYnNvY2tldC5UaW1lclVwZGF0ZU1lc3NhZ2VIAFILdGlt'
+    'ZXJVcGRhdGVCCQoHcGF5bG9hZA==');
 
 @$core.Deprecated('Use lobbyUpdatedMessageDescriptor instead')
 const LobbyUpdatedMessage$json = {
@@ -108,3 +118,22 @@ const GameStartedMessage$json = {
 /// Descriptor for `GameStartedMessage`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List gameStartedMessageDescriptor = $convert.base64Decode(
     'ChJHYW1lU3RhcnRlZE1lc3NhZ2USIAoMZ2FtZV9yb29tX2lkGAEgASgJUgpnYW1lUm9vbUlk');
+
+@$core.Deprecated('Use timerUpdateMessageDescriptor instead')
+const TimerUpdateMessage$json = {
+  '1': 'TimerUpdateMessage',
+  '2': [
+    {
+      '1': 'remaining_seconds',
+      '3': 1,
+      '4': 1,
+      '5': 5,
+      '10': 'remainingSeconds'
+    },
+  ],
+};
+
+/// Descriptor for `TimerUpdateMessage`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List timerUpdateMessageDescriptor = $convert.base64Decode(
+    'ChJUaW1lclVwZGF0ZU1lc3NhZ2USKwoRcmVtYWluaW5nX3NlY29uZHMYASABKAVSEHJlbWFpbm'
+    'luZ1NlY29uZHM=');

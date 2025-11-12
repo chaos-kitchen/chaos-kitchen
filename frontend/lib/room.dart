@@ -17,6 +17,8 @@ class _RoomScreenState extends State<RoomScreen> {
   String? _roomId;
   bool _gameStarted = false;
 
+  bool _isHost = false;
+
   @override
   void initState() {
     super.initState();
@@ -28,10 +30,11 @@ class _RoomScreenState extends State<RoomScreen> {
     });
   }
 
-  void onGameStarted(String gameRoomId) {
+  void onGameStarted(String gameRoomId, bool isHost) {
     setState(() {
       _gameStarted = true;
       _roomId = gameRoomId;
+      _isHost = isHost;
     });
   }
 
@@ -59,6 +62,7 @@ class _RoomScreenState extends State<RoomScreen> {
     return GameScreen(
       roomId: _roomId ?? widget.initialRoomId,
       playerName: _playerName!,
+      isHost: _isHost,
       onGameFinished: onGameFinished,
     );
   }

@@ -20,9 +20,11 @@ class ServerToClientMessage(_message.Message):
     __slots__ = ()
     LOBBY_UPDATED_FIELD_NUMBER: _ClassVar[int]
     GAME_STARTED_FIELD_NUMBER: _ClassVar[int]
+    TIMER_UPDATE_FIELD_NUMBER: _ClassVar[int]
     lobby_updated: LobbyUpdatedMessage
     game_started: GameStartedMessage
-    def __init__(self, lobby_updated: _Optional[_Union[LobbyUpdatedMessage, _Mapping]] = ..., game_started: _Optional[_Union[GameStartedMessage, _Mapping]] = ...) -> None: ...
+    timer_update: TimerUpdateMessage
+    def __init__(self, lobby_updated: _Optional[_Union[LobbyUpdatedMessage, _Mapping]] = ..., game_started: _Optional[_Union[GameStartedMessage, _Mapping]] = ..., timer_update: _Optional[_Union[TimerUpdateMessage, _Mapping]] = ...) -> None: ...
 
 class LobbyUpdatedMessage(_message.Message):
     __slots__ = ()
@@ -39,3 +41,9 @@ class GameStartedMessage(_message.Message):
     GAME_ROOM_ID_FIELD_NUMBER: _ClassVar[int]
     game_room_id: str
     def __init__(self, game_room_id: _Optional[str] = ...) -> None: ...
+
+class TimerUpdateMessage(_message.Message):
+    __slots__ = ()
+    REMAINING_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    remaining_seconds: int
+    def __init__(self, remaining_seconds: _Optional[int] = ...) -> None: ...

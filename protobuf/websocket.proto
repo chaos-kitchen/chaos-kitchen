@@ -15,6 +15,7 @@ message ServerToClientMessage {
   oneof payload {
     LobbyUpdatedMessage lobby_updated = 1;
     GameStartedMessage game_started = 2;
+    TimerUpdateMessage timer_update = 3;
   }
 }
 
@@ -26,4 +27,8 @@ message LobbyUpdatedMessage {
 
 message GameStartedMessage {
   string game_room_id = 1;
+}
+
+message TimerUpdateMessage {
+  int32 remaining_seconds = 1;
 }

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class LobbyRoomScreen extends StatefulWidget {
   final String roomId;
   final String playerName;
-  final void Function(String gameRoomId) onGameStarted;
+  final void Function(String gameRoomId, bool isHost) onGameStarted;
 
   const LobbyRoomScreen({
     super.key,
@@ -74,7 +74,7 @@ class _LobbyRoomScreenState extends State<LobbyRoomScreen> {
 
       case ServerToClientMessage_Payload.gameStarted:
         final gameStartedMessage = message.gameStarted;
-        widget.onGameStarted(gameStartedMessage.gameRoomId);
+        widget.onGameStarted(gameStartedMessage.gameRoomId, isHost);
         break;
 
       default:
