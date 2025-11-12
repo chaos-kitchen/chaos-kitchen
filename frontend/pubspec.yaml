@@ -26,3 +26,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/images/food_fridge/
+    - assets/images/food_pantry/
+    - assets/images/players/
+    - assets/images/backgrounds/
