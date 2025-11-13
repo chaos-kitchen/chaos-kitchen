@@ -14,6 +14,21 @@ import 'dart:convert' as $convert;
 import 'dart:core' as $core;
 import 'dart:typed_data' as $typed_data;
 
+@$core.Deprecated('Use playerRoleDescriptor instead')
+const PlayerRole$json = {
+  '1': 'PlayerRole',
+  '2': [
+    {'1': 'PLAYER_ROLE_UNSPECIFIED', '2': 0},
+    {'1': 'PLAYER_ROLE_COOK', '2': 1},
+    {'1': 'PLAYER_ROLE_INSTRUCTOR', '2': 2},
+  ],
+};
+
+/// Descriptor for `PlayerRole`. Decode as a `google.protobuf.EnumDescriptorProto`.
+final $typed_data.Uint8List playerRoleDescriptor = $convert.base64Decode(
+    'CgpQbGF5ZXJSb2xlEhsKF1BMQVlFUl9ST0xFX1VOU1BFQ0lGSUVEEAASFAoQUExBWUVSX1JPTE'
+    'VfQ09PSxABEhoKFlBMQVlFUl9ST0xFX0lOU1RSVUNUT1IQAg==');
+
 @$core.Deprecated('Use clientToServerMessageDescriptor instead')
 const ClientToServerMessage$json = {
   '1': 'ClientToServerMessage',
@@ -78,6 +93,15 @@ const ServerToClientMessage$json = {
       '9': 0,
       '10': 'timerUpdate'
     },
+    {
+      '1': 'role_updated',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.websocket.RoleUpdatedMessage',
+      '9': 0,
+      '10': 'roleUpdated'
+    },
   ],
   '8': [
     {'1': 'payload'},
@@ -90,7 +114,8 @@ final $typed_data.Uint8List serverToClientMessageDescriptor = $convert.base64Dec
     'tldC5Mb2JieVVwZGF0ZWRNZXNzYWdlSABSDGxvYmJ5VXBkYXRlZBJCCgxnYW1lX3N0YXJ0ZWQY'
     'AiABKAsyHS53ZWJzb2NrZXQuR2FtZVN0YXJ0ZWRNZXNzYWdlSABSC2dhbWVTdGFydGVkEkIKDH'
     'RpbWVyX3VwZGF0ZRgDIAEoCzIdLndlYnNvY2tldC5UaW1lclVwZGF0ZU1lc3NhZ2VIAFILdGlt'
-    'ZXJVcGRhdGVCCQoHcGF5bG9hZA==');
+    'ZXJVcGRhdGUSQgoMcm9sZV91cGRhdGVkGAQgASgLMh0ud2Vic29ja2V0LlJvbGVVcGRhdGVkTW'
+    'Vzc2FnZUgAUgtyb2xlVXBkYXRlZEIJCgdwYXlsb2Fk');
 
 @$core.Deprecated('Use lobbyUpdatedMessageDescriptor instead')
 const LobbyUpdatedMessage$json = {
@@ -137,3 +162,23 @@ const TimerUpdateMessage$json = {
 final $typed_data.Uint8List timerUpdateMessageDescriptor = $convert.base64Decode(
     'ChJUaW1lclVwZGF0ZU1lc3NhZ2USKwoRcmVtYWluaW5nX3NlY29uZHMYASABKAVSEHJlbWFpbm'
     'luZ1NlY29uZHM=');
+
+@$core.Deprecated('Use roleUpdatedMessageDescriptor instead')
+const RoleUpdatedMessage$json = {
+  '1': 'RoleUpdatedMessage',
+  '2': [
+    {
+      '1': 'new_role',
+      '3': 1,
+      '4': 1,
+      '5': 14,
+      '6': '.websocket.PlayerRole',
+      '10': 'newRole'
+    },
+  ],
+};
+
+/// Descriptor for `RoleUpdatedMessage`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List roleUpdatedMessageDescriptor = $convert.base64Decode(
+    'ChJSb2xlVXBkYXRlZE1lc3NhZ2USMAoIbmV3X3JvbGUYASABKA4yFS53ZWJzb2NrZXQuUGxheW'
+    'VyUm9sZVIHbmV3Um9sZQ==');

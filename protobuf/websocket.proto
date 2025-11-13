@@ -4,6 +4,7 @@ package websocket;
 
 message ClientToServerMessage {
   oneof payload {
+    // Lobby messages
     StartGameMessage start_game = 1;
   }
 }
@@ -13,9 +14,13 @@ message StartGameMessage {
 
 message ServerToClientMessage {
   oneof payload {
+    // Lobby messages
     LobbyUpdatedMessage lobby_updated = 1;
     GameStartedMessage game_started = 2;
+
+    // Game messages
     TimerUpdateMessage timer_update = 3;
+    RoleUpdatedMessage role_updated = 4;
   }
 }
 
@@ -31,4 +36,15 @@ message GameStartedMessage {
 
 message TimerUpdateMessage {
   int32 remaining_seconds = 1;
+}
+
+// Represents an update to the game state
+message RoleUpdatedMessage {
+  PlayerRole new_role = 1;
+}
+
+enum PlayerRole {
+  PLAYER_ROLE_UNSPECIFIED = 0;
+  PLAYER_ROLE_COOK = 1;
+  PLAYER_ROLE_INSTRUCTOR = 2;
 }

@@ -1,22 +1,21 @@
 import 'package:chaos_kitchen/game/cook_world.dart';
+import 'package:chaos_kitchen/protobuf/websocket.pbenum.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 
-class ChaosKitchenGame extends FlameGame {
-  ChaosKitchenGame() : super(world: CookWorld());
+class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
+  final Future<PlayerRole> _roleFuture;
+
+  ChaosKitchenGame(this._roleFuture) : super(world: CookWorld());
+
+  late final PlayerRole playerRole;
 
   @override
   Future<void> onLoad() async {
-    camera.viewfinder.anchor = Anchor.topLeft;
+    playerRole = await _roleFuture;
 
-    const scaleFactor = 1.5; // larger value = more zoomed in
-    final background = SpriteComponent()
-      ..sprite = await loadSprite('backgrounds/kitchen.png')
-      ..size = size * scaleFactor
-      ..anchor = Anchor.topLeft
-      ..position = -((size * scaleFactor - size) / 2);
-    add(background);
+    camera.viewfinder.anchor = Anchor.topLeft;
   }
 
   @override

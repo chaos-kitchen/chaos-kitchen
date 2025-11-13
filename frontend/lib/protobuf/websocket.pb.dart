@@ -14,7 +14,11 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
+import 'websocket.pbenum.dart';
+
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
+
+export 'websocket.pbenum.dart';
 
 enum ClientToServerMessage_Payload { startGame, notSet }
 
@@ -76,6 +80,7 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearPayload() => $_clearField($_whichOneof(0));
 
+  /// Lobby messages
   @$pb.TagNumber(1)
   StartGameMessage get startGame => $_getN(0);
   @$pb.TagNumber(1)
@@ -130,6 +135,7 @@ enum ServerToClientMessage_Payload {
   lobbyUpdated,
   gameStarted,
   timerUpdate,
+  roleUpdated,
   notSet
 }
 
@@ -138,11 +144,13 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
     LobbyUpdatedMessage? lobbyUpdated,
     GameStartedMessage? gameStarted,
     TimerUpdateMessage? timerUpdate,
+    RoleUpdatedMessage? roleUpdated,
   }) {
     final result = create();
     if (lobbyUpdated != null) result.lobbyUpdated = lobbyUpdated;
     if (gameStarted != null) result.gameStarted = gameStarted;
     if (timerUpdate != null) result.timerUpdate = timerUpdate;
+    if (roleUpdated != null) result.roleUpdated = roleUpdated;
     return result;
   }
 
@@ -160,19 +168,22 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
     1: ServerToClientMessage_Payload.lobbyUpdated,
     2: ServerToClientMessage_Payload.gameStarted,
     3: ServerToClientMessage_Payload.timerUpdate,
+    4: ServerToClientMessage_Payload.roleUpdated,
     0: ServerToClientMessage_Payload.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'ServerToClientMessage',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
       createEmptyInstance: create)
-    ..oo(0, [1, 2, 3])
+    ..oo(0, [1, 2, 3, 4])
     ..aOM<LobbyUpdatedMessage>(1, _omitFieldNames ? '' : 'lobbyUpdated',
         subBuilder: LobbyUpdatedMessage.create)
     ..aOM<GameStartedMessage>(2, _omitFieldNames ? '' : 'gameStarted',
         subBuilder: GameStartedMessage.create)
     ..aOM<TimerUpdateMessage>(3, _omitFieldNames ? '' : 'timerUpdate',
         subBuilder: TimerUpdateMessage.create)
+    ..aOM<RoleUpdatedMessage>(4, _omitFieldNames ? '' : 'roleUpdated',
+        subBuilder: RoleUpdatedMessage.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -198,13 +209,16 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   @$pb.TagNumber(2)
   @$pb.TagNumber(3)
+  @$pb.TagNumber(4)
   ServerToClientMessage_Payload whichPayload() =>
       _ServerToClientMessage_PayloadByTag[$_whichOneof(0)]!;
   @$pb.TagNumber(1)
   @$pb.TagNumber(2)
   @$pb.TagNumber(3)
+  @$pb.TagNumber(4)
   void clearPayload() => $_clearField($_whichOneof(0));
 
+  /// Lobby messages
   @$pb.TagNumber(1)
   LobbyUpdatedMessage get lobbyUpdated => $_getN(0);
   @$pb.TagNumber(1)
@@ -227,6 +241,7 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   GameStartedMessage ensureGameStarted() => $_ensure(1);
 
+  /// Game messages
   @$pb.TagNumber(3)
   TimerUpdateMessage get timerUpdate => $_getN(2);
   @$pb.TagNumber(3)
@@ -237,6 +252,17 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
   void clearTimerUpdate() => $_clearField(3);
   @$pb.TagNumber(3)
   TimerUpdateMessage ensureTimerUpdate() => $_ensure(2);
+
+  @$pb.TagNumber(4)
+  RoleUpdatedMessage get roleUpdated => $_getN(3);
+  @$pb.TagNumber(4)
+  set roleUpdated(RoleUpdatedMessage value) => $_setField(4, value);
+  @$pb.TagNumber(4)
+  $core.bool hasRoleUpdated() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearRoleUpdated() => $_clearField(4);
+  @$pb.TagNumber(4)
+  RoleUpdatedMessage ensureRoleUpdated() => $_ensure(3);
 }
 
 class LobbyUpdatedMessage extends $pb.GeneratedMessage {
@@ -417,6 +443,62 @@ class TimerUpdateMessage extends $pb.GeneratedMessage {
   $core.bool hasRemainingSeconds() => $_has(0);
   @$pb.TagNumber(1)
   void clearRemainingSeconds() => $_clearField(1);
+}
+
+/// Represents an update to the game state
+class RoleUpdatedMessage extends $pb.GeneratedMessage {
+  factory RoleUpdatedMessage({
+    PlayerRole? newRole,
+  }) {
+    final result = create();
+    if (newRole != null) result.newRole = newRole;
+    return result;
+  }
+
+  RoleUpdatedMessage._();
+
+  factory RoleUpdatedMessage.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory RoleUpdatedMessage.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'RoleUpdatedMessage',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
+      createEmptyInstance: create)
+    ..aE<PlayerRole>(1, _omitFieldNames ? '' : 'newRole',
+        enumValues: PlayerRole.values)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RoleUpdatedMessage clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RoleUpdatedMessage copyWith(void Function(RoleUpdatedMessage) updates) =>
+      super.copyWith((message) => updates(message as RoleUpdatedMessage))
+          as RoleUpdatedMessage;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static RoleUpdatedMessage create() => RoleUpdatedMessage._();
+  @$core.override
+  RoleUpdatedMessage createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static RoleUpdatedMessage getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<RoleUpdatedMessage>(create);
+  static RoleUpdatedMessage? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  PlayerRole get newRole => $_getN(0);
+  @$pb.TagNumber(1)
+  set newRole(PlayerRole value) => $_setField(1, value);
+  @$pb.TagNumber(1)
+  $core.bool hasNewRole() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearNewRole() => $_clearField(1);
 }
 
 const $core.bool _omitFieldNames =

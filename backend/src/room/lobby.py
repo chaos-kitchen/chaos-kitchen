@@ -2,11 +2,11 @@ import logging
 from typing import Callable
 from uuid import UUID, uuid4
 
-from fastapi import WebSocket
+from fastapi import HTTPException, WebSocket
 
 from code_store import RoomCodeStore
 from protobuf.websocket_pb2 import ClientToServerMessage, GameStartedMessage, LobbyUpdatedMessage, ServerToClientMessage
-from room.base import BaseRoom, PlayerInfo
+from room.base import BaseRoom, PlayerInfo, PlayerRole
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +28,10 @@ class LobbyRoom(BaseRoom):
         self._code_store.release_code(self.room_code)
 
     async def connect(self, client_id: UUID, player_name: str, websocket: WebSocket):
+        if len(self.player_info) >= 2:
+            raise HTTPException(status_code=403, detail="Lobby is full")
         await super().connect(client_id, websocket)
-        self.player_info[client_id] = PlayerInfo(player_name=player_name)
+        self.player_info[client_id] = PlayerInfo(player_name=player_name, role=PlayerRole.PLAYER_ROLE_UNSPECIFIED)
         await self._broadcast_lobby_update()
 
     async def disconnect(self, client_id: UUID):
@@ -46,6 +48,16 @@ class LobbyRoom(BaseRoom):
         if list(self.active_connections.keys())[0] != client_id:
             logger.warning(f"Client {client_id} attempted to start game but is not host")
             return
+        # FIXME: ensure exactly 2 players are connected
+        # FIXME: Randomize roles later
+        assert len(self.active_connections) >= 1
+        first_client_id = list(self.active_connections.keys())[0]
+        self.player_info[first_client_id].role = (
+            PlayerRole.PLAYER_ROLE_COOK
+            if self.player_info[first_client_id].player_name.lower() == "cook"
+            else PlayerRole.PLAYER_ROLE_INSTRUCTOR
+        )
+
         game_room_id = uuid4()
         self._on_start_game(dict(self.player_info), game_room_id)
         await self.broadcast_message(

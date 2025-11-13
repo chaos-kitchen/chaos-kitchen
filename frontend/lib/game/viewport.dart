@@ -30,6 +30,7 @@ class PlayerJoystick extends JoystickComponent {
 
   PlayerJoystick({required this.player, required super.margin})
     : super(
+        knobRadius: 30,
         knob: CircleComponent(
           radius: 30,
           paintLayers: [
@@ -40,7 +41,6 @@ class PlayerJoystick extends JoystickComponent {
               ..strokeWidth = 4,
           ],
         ),
-        knobRadius: 30,
         background: CircleComponent(
           radius: 60,
           paintLayers: [

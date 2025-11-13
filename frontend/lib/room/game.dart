@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chaos_kitchen/components/instructor_timer.dart';
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
@@ -11,15 +13,12 @@ class GameScreen extends StatefulWidget {
   final String roomId;
   final String playerName;
 
-  final bool isHost;
-
   final void Function(String lobbyRoomId) onGameFinished;
 
   const GameScreen({
     super.key,
     required this.roomId,
     required this.playerName,
-    required this.isHost,
     required this.onGameFinished,
   });
 
@@ -31,14 +30,18 @@ class _GameScreenState extends State<GameScreen> {
   late WebSocketController _wsController;
 
   // 1) keep game instance stable so it doesn't rebuild
-  final ChaosKitchenGame _game = ChaosKitchenGame();
+  late final ChaosKitchenGame _game;
 
   // 2) use a notifier for the timer
   final ValueNotifier<int?> _remainingSeconds = ValueNotifier<int?>(null);
 
+  PlayerRole? _role;
+  final Completer<PlayerRole> roleCompleter = Completer<PlayerRole>();
+
   @override
   void initState() {
     super.initState();
+    _game = ChaosKitchenGame(roleCompleter.future);
     _createWs();
   }
 
@@ -73,6 +76,14 @@ class _GameScreenState extends State<GameScreen> {
         _remainingSeconds.value = message.timerUpdate.remainingSeconds;
         break;
 
+      case ServerToClientMessage_Payload.roleUpdated:
+        final roleMessage = message.roleUpdated;
+        roleCompleter.complete(roleMessage.newRole);
+        setState(() {
+          _role = roleMessage.newRole;
+        });
+        break;
+
       default:
         // optional
         // showErrorSnackbar(context, 'Received unknown message from server');
@@ -88,7 +99,7 @@ class _GameScreenState extends State<GameScreen> {
         GameWidget(game: _game),
 
         // 5) only this part rebuilds every second
-        if (widget.isHost)
+        if (_role == PlayerRole.PLAYER_ROLE_INSTRUCTOR)
           Positioned(
             top: 16,
             right: 16,

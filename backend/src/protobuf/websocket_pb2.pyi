@@ -1,10 +1,20 @@
 from google.protobuf.internal import containers as _containers
+from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from collections.abc import Iterable as _Iterable, Mapping as _Mapping
 from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
+
+class PlayerRole(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    PLAYER_ROLE_UNSPECIFIED: _ClassVar[PlayerRole]
+    PLAYER_ROLE_COOK: _ClassVar[PlayerRole]
+    PLAYER_ROLE_INSTRUCTOR: _ClassVar[PlayerRole]
+PLAYER_ROLE_UNSPECIFIED: PlayerRole
+PLAYER_ROLE_COOK: PlayerRole
+PLAYER_ROLE_INSTRUCTOR: PlayerRole
 
 class ClientToServerMessage(_message.Message):
     __slots__ = ()
@@ -21,10 +31,12 @@ class ServerToClientMessage(_message.Message):
     LOBBY_UPDATED_FIELD_NUMBER: _ClassVar[int]
     GAME_STARTED_FIELD_NUMBER: _ClassVar[int]
     TIMER_UPDATE_FIELD_NUMBER: _ClassVar[int]
+    ROLE_UPDATED_FIELD_NUMBER: _ClassVar[int]
     lobby_updated: LobbyUpdatedMessage
     game_started: GameStartedMessage
     timer_update: TimerUpdateMessage
-    def __init__(self, lobby_updated: _Optional[_Union[LobbyUpdatedMessage, _Mapping]] = ..., game_started: _Optional[_Union[GameStartedMessage, _Mapping]] = ..., timer_update: _Optional[_Union[TimerUpdateMessage, _Mapping]] = ...) -> None: ...
+    role_updated: RoleUpdatedMessage
+    def __init__(self, lobby_updated: _Optional[_Union[LobbyUpdatedMessage, _Mapping]] = ..., game_started: _Optional[_Union[GameStartedMessage, _Mapping]] = ..., timer_update: _Optional[_Union[TimerUpdateMessage, _Mapping]] = ..., role_updated: _Optional[_Union[RoleUpdatedMessage, _Mapping]] = ...) -> None: ...
 
 class LobbyUpdatedMessage(_message.Message):
     __slots__ = ()
@@ -47,3 +59,9 @@ class TimerUpdateMessage(_message.Message):
     REMAINING_SECONDS_FIELD_NUMBER: _ClassVar[int]
     remaining_seconds: int
     def __init__(self, remaining_seconds: _Optional[int] = ...) -> None: ...
+
+class RoleUpdatedMessage(_message.Message):
+    __slots__ = ()
+    NEW_ROLE_FIELD_NUMBER: _ClassVar[int]
+    new_role: PlayerRole
+    def __init__(self, new_role: _Optional[_Union[PlayerRole, str]] = ...) -> None: ...

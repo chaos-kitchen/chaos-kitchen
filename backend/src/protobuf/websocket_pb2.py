@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fwebsocket.proto\x12\twebsocket\"`\n\x15\x43lientToServerMessage\x12<\n\nstart_game\x18\x01 \x01(\x0b\x32\x1b.websocket.StartGameMessageH\x00R\tstartGameB\t\n\x07payload\"\x12\n\x10StartGameMessage\"\xf1\x01\n\x15ServerToClientMessage\x12\x45\n\rlobby_updated\x18\x01 \x01(\x0b\x32\x1e.websocket.LobbyUpdatedMessageH\x00R\x0clobbyUpdated\x12\x42\n\x0cgame_started\x18\x02 \x01(\x0b\x32\x1d.websocket.GameStartedMessageH\x00R\x0bgameStarted\x12\x42\n\x0ctimer_update\x18\x03 \x01(\x0b\x32\x1d.websocket.TimerUpdateMessageH\x00R\x0btimerUpdateB\t\n\x07payload\"n\n\x13LobbyUpdatedMessage\x12\x1b\n\troom_code\x18\x01 \x01(\tR\x08roomCode\x12!\n\x0cplayer_names\x18\x02 \x03(\tR\x0bplayerNames\x12\x17\n\x07is_host\x18\x03 \x01(\x08R\x06isHost\"6\n\x12GameStartedMessage\x12 \n\x0cgame_room_id\x18\x01 \x01(\tR\ngameRoomId\"A\n\x12TimerUpdateMessage\x12+\n\x11remaining_seconds\x18\x01 \x01(\x05R\x10remainingSecondsBc\n\rcom.websocketB\x0eWebsocketProtoP\x01\xa2\x02\x03WXX\xaa\x02\tWebsocket\xca\x02\tWebsocket\xe2\x02\x15Websocket\\GPBMetadata\xea\x02\tWebsocketb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fwebsocket.proto\x12\twebsocket\"`\n\x15\x43lientToServerMessage\x12<\n\nstart_game\x18\x01 \x01(\x0b\x32\x1b.websocket.StartGameMessageH\x00R\tstartGameB\t\n\x07payload\"\x12\n\x10StartGameMessage\"\xb5\x02\n\x15ServerToClientMessage\x12\x45\n\rlobby_updated\x18\x01 \x01(\x0b\x32\x1e.websocket.LobbyUpdatedMessageH\x00R\x0clobbyUpdated\x12\x42\n\x0cgame_started\x18\x02 \x01(\x0b\x32\x1d.websocket.GameStartedMessageH\x00R\x0bgameStarted\x12\x42\n\x0ctimer_update\x18\x03 \x01(\x0b\x32\x1d.websocket.TimerUpdateMessageH\x00R\x0btimerUpdate\x12\x42\n\x0crole_updated\x18\x04 \x01(\x0b\x32\x1d.websocket.RoleUpdatedMessageH\x00R\x0broleUpdatedB\t\n\x07payload\"n\n\x13LobbyUpdatedMessage\x12\x1b\n\troom_code\x18\x01 \x01(\tR\x08roomCode\x12!\n\x0cplayer_names\x18\x02 \x03(\tR\x0bplayerNames\x12\x17\n\x07is_host\x18\x03 \x01(\x08R\x06isHost\"6\n\x12GameStartedMessage\x12 \n\x0cgame_room_id\x18\x01 \x01(\tR\ngameRoomId\"A\n\x12TimerUpdateMessage\x12+\n\x11remaining_seconds\x18\x01 \x01(\x05R\x10remainingSeconds\"F\n\x12RoleUpdatedMessage\x12\x30\n\x08new_role\x18\x01 \x01(\x0e\x32\x15.websocket.PlayerRoleR\x07newRole*[\n\nPlayerRole\x12\x1b\n\x17PLAYER_ROLE_UNSPECIFIED\x10\x00\x12\x14\n\x10PLAYER_ROLE_COOK\x10\x01\x12\x1a\n\x16PLAYER_ROLE_INSTRUCTOR\x10\x02\x42\x63\n\rcom.websocketB\x0eWebsocketProtoP\x01\xa2\x02\x03WXX\xaa\x02\tWebsocket\xca\x02\tWebsocket\xe2\x02\x15Websocket\\GPBMetadata\xea\x02\tWebsocketb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,16 +32,20 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'websocket_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\rcom.websocketB\016WebsocketProtoP\001\242\002\003WXX\252\002\tWebsocket\312\002\tWebsocket\342\002\025Websocket\\GPBMetadata\352\002\tWebsocket'
+  _globals['_PLAYERROLE']._serialized_start=767
+  _globals['_PLAYERROLE']._serialized_end=858
   _globals['_CLIENTTOSERVERMESSAGE']._serialized_start=30
   _globals['_CLIENTTOSERVERMESSAGE']._serialized_end=126
   _globals['_STARTGAMEMESSAGE']._serialized_start=128
   _globals['_STARTGAMEMESSAGE']._serialized_end=146
   _globals['_SERVERTOCLIENTMESSAGE']._serialized_start=149
-  _globals['_SERVERTOCLIENTMESSAGE']._serialized_end=390
-  _globals['_LOBBYUPDATEDMESSAGE']._serialized_start=392
-  _globals['_LOBBYUPDATEDMESSAGE']._serialized_end=502
-  _globals['_GAMESTARTEDMESSAGE']._serialized_start=504
-  _globals['_GAMESTARTEDMESSAGE']._serialized_end=558
-  _globals['_TIMERUPDATEMESSAGE']._serialized_start=560
-  _globals['_TIMERUPDATEMESSAGE']._serialized_end=625
+  _globals['_SERVERTOCLIENTMESSAGE']._serialized_end=458
+  _globals['_LOBBYUPDATEDMESSAGE']._serialized_start=460
+  _globals['_LOBBYUPDATEDMESSAGE']._serialized_end=570
+  _globals['_GAMESTARTEDMESSAGE']._serialized_start=572
+  _globals['_GAMESTARTEDMESSAGE']._serialized_end=626
+  _globals['_TIMERUPDATEMESSAGE']._serialized_start=628
+  _globals['_TIMERUPDATEMESSAGE']._serialized_end=693
+  _globals['_ROLEUPDATEDMESSAGE']._serialized_start=695
+  _globals['_ROLEUPDATEDMESSAGE']._serialized_end=765
 # @@protoc_insertion_point(module_scope)

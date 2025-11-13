@@ -5,13 +5,14 @@ from uuid import UUID
 
 from fastapi import WebSocket
 
-from protobuf.websocket_pb2 import ClientToServerMessage, ServerToClientMessage
+from protobuf.websocket_pb2 import ClientToServerMessage, PlayerRole, ServerToClientMessage
 
 logger = logging.getLogger(__name__)
 
 @dataclass
 class PlayerInfo:
     player_name: str
+    role: PlayerRole
 
 class BaseRoom:
     def __init__(self):

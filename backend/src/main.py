@@ -47,7 +47,7 @@ async def game_websocket(websocket: WebSocket, room_id: UUID, client_id: UUID):
 
     await room.connect(client_id, websocket)
     await room.start_round_timer(300)
-    
+
     try:
         while True:
             await room.receive_message(client_id, websocket)

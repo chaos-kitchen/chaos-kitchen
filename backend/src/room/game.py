@@ -6,11 +6,14 @@ from uuid import UUID
 from fastapi import HTTPException, WebSocket
 
 from protobuf.websocket_pb2 import (
+    PLAYER_ROLE_COOK,
+    PLAYER_ROLE_INSTRUCTOR,
     ClientToServerMessage,
+    RoleUpdatedMessage,
     ServerToClientMessage,
     TimerUpdateMessage,
 )
-from room.base import BaseRoom, PlayerInfo
+from room.base import BaseRoom, PlayerInfo, PlayerRole
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +27,7 @@ class GameRoom(BaseRoom):
         super().__init__()
         self.player_info = player_info
         self._on_finish_game = on_finish_game
-        
+
         # keep track of timer so we don’t start it twice
         self._timer_task: asyncio.Task | None = None
 
@@ -32,6 +35,14 @@ class GameRoom(BaseRoom):
         if client_id not in self.player_info:
             raise HTTPException(status_code=403, detail="Client not in player list")
         await super().connect(client_id, websocket)
+        await self.send_message(
+            client_id,
+            ServerToClientMessage(
+                role_updated=RoleUpdatedMessage(
+                    new_role=self.player_info[client_id].role,
+                )
+            )
+        )
 
     async def disconnect(self, client_id: UUID):
         await super().disconnect(client_id)
