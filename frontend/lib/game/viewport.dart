@@ -58,6 +58,7 @@ class PlayerJoystick extends JoystickComponent {
     super.update(dt);
     if (direction != JoystickDirection.idle) {
       player.position.add(relativeDelta * maxSpeed * dt);
+      player.updateDirection(relativeDelta);
     }
   }
 }
