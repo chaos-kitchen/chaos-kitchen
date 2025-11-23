@@ -1,7 +1,9 @@
 import 'dart:io';
 
 class AppConfig {
-  static String clientIdPrefKey = 'clientId';
+  static const String clientIdPrefKey = 'clientId';
+
+  static const bool showDebugCollisionBoxes = true;
 
   static Uri get apiBaseUri {
     final urlStr = String.fromEnvironment('API_BASE_URL');

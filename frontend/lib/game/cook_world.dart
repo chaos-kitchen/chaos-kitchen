@@ -1,6 +1,7 @@
 import 'package:chaos_kitchen/game/actors/player.dart';
 import 'package:chaos_kitchen/game/game.dart';
-import 'package:chaos_kitchen/game/objects.dart';
+import 'package:chaos_kitchen/game/objects/oven.dart';
+import 'package:chaos_kitchen/game/objects/solid_object.dart';
 import 'package:chaos_kitchen/game/viewport.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -18,7 +19,18 @@ class CookWorld extends World
       ..position = Vector2(-32 * 7.5, -32 * 5.5);
     add(background);
 
-    final player = Player(position: Vector2(400.0, 200.0));
+    final animation = SpriteAnimation.fromFrameData(
+      await game.images.load('cook.png'),
+      SpriteAnimationData.sequenced(
+        amount: 3,
+        textureSize: Vector2.all(400),
+        stepTime: 0.12,
+      ),
+    );
+    final player = Player(
+      position: Vector2(400.0, 200.0),
+      animation: animation,
+    );
     add(player);
 
     game.camera.viewport = PlayerViewport(player);
@@ -116,6 +128,8 @@ class CookWorld extends World
         Vector2(237.0, 593.2),
       ]),
     ]);
+
+    add(OvenObject(position: Vector2(830, 276.7), radius: 32 * 1.5));
   }
 
   // TEMP: temporarily print tap positions for creating hitboxes
