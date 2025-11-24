@@ -12,8 +12,6 @@ class PlayerViewport extends MaxViewport
     with HasGameReference<ChaosKitchenGame> {
   final Player player;
 
-  InteractableObject? _currentInteractable;
-
   PlayerViewport(this.player);
 
   @override
@@ -27,45 +25,33 @@ class PlayerViewport extends MaxViewport
       ),
     );
 
+    var isInteractButtonShown = false;
+    InteractableObject? currentInteractable;
+
     // Interact button (callback added later)
     final interactButton = HudInteractButton(
       margin: const EdgeInsets.only(right: 40, bottom: 40),
       onPressed: () {
-        if (_currentInteractable != null) {
-          print('Interact pressed: ${_currentInteractable.runtimeType}');
-          _currentInteractable!.interact(player);
+        if (currentInteractable != null) {
+          print('Interact pressed: ${currentInteractable.runtimeType}');
+          currentInteractable!.interact(player);
         } else {
           print('Interact pressed, but no interactable in range');
         }
       },
     );
-    add(interactButton);
 
     // Listen for when player collision set changes
-    player.collisionsCompletedNotifier.addListener(() {
-      final list = player.interactablesInRange;
-      print('Interactables in range: ${list.length}');
-      
-      if (list.isEmpty) {
-        _currentInteractable = null;
-        return;
+    player.interactablesUpdatedNotifier.addListener(() {
+      currentInteractable = player.closestInteractable;
+      if (currentInteractable != null && !isInteractButtonShown) {
+        add(interactButton);
+        isInteractButtonShown = true;
+      } else {
+        remove(interactButton);
+        isInteractButtonShown = false;
       }
-
-      _currentInteractable = _getClosestInteractableObject(list);
     });
-  }
-
-  InteractableObject _getClosestInteractableObject(
-    List<InteractableObject> objects,
-  ) {
-    InteractableObject closest = objects.first;
-    for (final obj in objects) {
-      if (obj.position.distanceTo(player.position) <
-          closest.position.distanceTo(player.position)) {
-        closest = obj;
-      }
-    }
-    return closest;
   }
 }
 
@@ -108,10 +94,8 @@ class PlayerJoystick extends JoystickComponent {
 }
 
 class HudInteractButton extends HudButtonComponent {
-  HudInteractButton({
-    required super.margin,
-    required void Function()? onPressed,
-  }) : super(size: Vector2.all(60), onPressed: onPressed);
+  HudInteractButton({required super.margin, required super.onPressed})
+    : super(size: Vector2.all(60));
 
   @override
   Future<void> onLoad() async {

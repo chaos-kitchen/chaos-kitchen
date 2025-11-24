@@ -13,14 +13,25 @@ class Player extends SpriteAnimationComponent
   Player({super.position, super.animation})
     : super(size: Vector2.all(64), anchor: Anchor.center, priority: 2);
 
-  List<InteractableObject> interactableObjectsInRange = [];
-
   /// Interactable objects currently overlapping the player.
   final List<InteractableObject> interactablesInRange = [];
 
+  InteractableObject? get closestInteractable {
+    if (interactablesInRange.isEmpty) return null;
+
+    InteractableObject closest = interactablesInRange.first;
+    for (final obj in interactablesInRange) {
+      if (obj.position.distanceTo(position) <
+          closest.position.distanceTo(position)) {
+        closest = obj;
+      }
+    }
+    return closest;
+  }
+
   /// Increment this whenever the collision set changes, so listeners
   /// know to recompute the closest interactable.
-  final ValueNotifier<int> collisionsCompletedNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<int> interactablesUpdatedNotifier = ValueNotifier<int>(0);
 
   @override
   void onLoad() async {
@@ -64,7 +75,7 @@ class Player extends SpriteAnimationComponent
 
     if (other is InteractableObject && !interactablesInRange.contains(other)) {
       interactablesInRange.add(other);
-      collisionsCompletedNotifier.value++;
+      interactablesUpdatedNotifier.value++;
     }
   }
 
@@ -74,13 +85,7 @@ class Player extends SpriteAnimationComponent
 
     if (other is InteractableObject) {
       interactablesInRange.remove(other);
-      collisionsCompletedNotifier.value++;
+      interactablesUpdatedNotifier.value++;
     }
-  }
-
-  @override
-  void update(double dt) {
-    super.update(dt);
-    interactableObjectsInRange = [];
   }
 }
