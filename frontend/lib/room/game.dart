@@ -49,11 +49,12 @@ class _GameScreenState extends State<GameScreen> {
     final clientId = await getClientIdFromPrefs();
     if (!mounted) return;
 
-    final wsUrl = AppConfig.getGameWebSocketUri(
+    final wsUrl = await AppConfig.getGameWebSocketUri(
       gameRoomId: widget.roomId,
       clientId: clientId,
       playerName: widget.playerName,
     );
+    if (!mounted) return;
     final controller = WebSocketController(wsUrl);
     await controller.initialize();
     if (!mounted) return;
