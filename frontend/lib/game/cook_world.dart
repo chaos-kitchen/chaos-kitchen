@@ -34,7 +34,7 @@ class CookWorld extends World
       ),
     );
     final player = Player(
-      position: Vector2(400.0, 200.0),
+      position: Vector2(400.0, 400.0),
       animation: animation,
     );
     add(player);
