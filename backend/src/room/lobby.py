@@ -51,12 +51,12 @@ class LobbyRoom(BaseRoom):
         # FIXME: ensure exactly 2 players are connected
         # FIXME: Randomize roles later
         assert len(self.active_connections) >= 1
-        first_client_id = list(self.active_connections.keys())[0]
-        self.player_info[first_client_id].role = (
-            PlayerRole.PLAYER_ROLE_COOK
-            if self.player_info[first_client_id].player_name.lower() == "cook"
-            else PlayerRole.PLAYER_ROLE_INSTRUCTOR
-        )
+        for client_id in self.active_connections.keys():
+            self.player_info[client_id].role = (
+                PlayerRole.PLAYER_ROLE_COOK
+                if self.player_info[client_id].player_name.lower() == "cook"
+                else PlayerRole.PLAYER_ROLE_INSTRUCTOR
+            )
 
         game_room_id = uuid4()
         self._on_start_game(dict(self.player_info), game_room_id)

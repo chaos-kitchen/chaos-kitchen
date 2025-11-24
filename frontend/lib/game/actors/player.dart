@@ -1,63 +1,58 @@
+import 'dart:ui';
+
 import 'package:chaos_kitchen/game/game.dart';
-import 'package:chaos_kitchen/game/objects.dart';
+import 'package:chaos_kitchen/game/objects/interactable_object.dart';
+import 'package:chaos_kitchen/game/objects/solid_object.dart';
+import 'package:chaos_kitchen/utils/config.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/extensions.dart';
-import 'package:flutter/painting.dart';
-import 'dart:math' as math;
+import 'package:flutter/foundation.dart'; // for ValueNotifier
 
 class Player extends PositionComponent
     with HasGameReference<ChaosKitchenGame>, CollisionCallbacks {
-  Player({super.position})
+  Player({super.position, super.animation})
     : super(size: Vector2.all(64), anchor: Anchor.center, priority: 2);
 
-  late SpriteComponent playerSprite;
+  /// Interactable objects currently overlapping the player.
+  final List<InteractableObject> interactablesInRange = [];
 
-  @override
-  Future<void> onLoad() async {
-    final sprite = await game.images.load('cook.png');
+  InteractableObject? get closestInteractable {
+    if (interactablesInRange.isEmpty) return null;
 
-    // add the shadow first
-    add(
-      CircleComponent(
-        radius: 23,
-        position: Vector2(6, -7), // Top-right offset (negative Y is up)
-        anchor: Anchor.center,
-        paint: Paint()
-          ..color = const Color(0x33000000)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
-      ),
-    );
-
-    // add the player sprite over the shadow
-    playerSprite = SpriteComponent(
-      sprite: Sprite(
-        sprite,
-        srcPosition: Vector2(0, 0),
-        srcSize: Vector2(250, 250),
-      ),
-      size: size,
-      anchor: Anchor.center,
-    );
-    add(playerSprite);
+    InteractableObject closest = interactablesInRange.first;
+    for (final obj in interactablesInRange) {
+      if (obj.position.distanceTo(position) <
+          closest.position.distanceTo(position)) {
+        closest = obj;
+      }
+    }
+    return closest;
   }
 
-  void updateDirection(Vector2 velocity) {
-    if (velocity.isZero()) return;
+  /// Increment this whenever the collision set changes, so listeners
+  /// know to recompute the closest interactable.
+  final ValueNotifier<int> interactablesUpdatedNotifier = ValueNotifier<int>(0);
 
-    // Calculate the angle of movement in radians
-    final movementAngle = math.atan2(velocity.y, velocity.x);
-    playerSprite.angle = movementAngle - (math.pi / 2); // rotate by 90 degrees
+  @override
+  void onLoad() async {
+    add(CircleHitbox(radius: size.x / 2, collisionType: CollisionType.active));
+
+    if (AppConfig.showDebugCollisionBoxes) {
+      add(
+        CircleComponent(
+          radius: size.x / 2,
+          paint: Paint()..color = const Color(0x770000FF),
+        ),
+      );
+    }
   }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    // Collision code taken from:
-    // https://docs.flame-engine.org/latest/tutorials/platformer/step_5.html
+    // Existing wall collision resolution
     if (other is SolidObjectHitbox) {
       if (intersectionPoints.length == 2) {
-        // Calculate the collision normal and separation distance.
         final mid =
             (intersectionPoints.elementAt(0) +
                 intersectionPoints.elementAt(1)) /
@@ -66,11 +61,31 @@ class Player extends PositionComponent
         final collisionNormal = absoluteCenter - mid;
         final separationDistance = (size.x / 2) - collisionNormal.length;
         collisionNormal.normalize();
-
-        // Resolve collision by moving ember along
-        // collision normal by separation distance.
         position += collisionNormal.scaled(separationDistance);
       }
+    }
+  }
+
+  @override
+  void onCollisionStart(
+    Set<Vector2> intersectionPoints,
+    PositionComponent other,
+  ) {
+    super.onCollisionStart(intersectionPoints, other);
+
+    if (other is InteractableObject && !interactablesInRange.contains(other)) {
+      interactablesInRange.add(other);
+      interactablesUpdatedNotifier.value++;
+    }
+  }
+
+  @override
+  void onCollisionEnd(PositionComponent other) {
+    super.onCollisionEnd(other);
+
+    if (other is InteractableObject) {
+      interactablesInRange.remove(other);
+      interactablesUpdatedNotifier.value++;
     }
   }
 }

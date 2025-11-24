@@ -1,10 +1,13 @@
-import 'package:flame/input.dart';
+import 'package:chaos_kitchen/game/game.dart';
+import 'package:chaos_kitchen/game/hud/hud_interact_button.dart';
+import 'package:chaos_kitchen/game/objects/interactable_object.dart';
 import 'package:flutter/material.dart';
 import 'package:chaos_kitchen/game/actors/player.dart';
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 
-class PlayerViewport extends MaxViewport {
+class PlayerViewport extends MaxViewport
+    with HasGameReference<ChaosKitchenGame> {
   final Player player;
 
   PlayerViewport(this.player);
@@ -12,15 +15,35 @@ class PlayerViewport extends MaxViewport {
   @override
   void onLoad() async {
     super.onLoad();
+
     add(
       PlayerJoystick(
         player: player,
         margin: const EdgeInsets.only(left: 40, bottom: 40),
       ),
     );
-    add(
-      HudInteractButton(margin: const EdgeInsets.only(right: 40, bottom: 40)),
+
+    InteractableObject? currentInteractable;
+
+    // Interact button (callback added later)
+    final interactButton = HudInteractButton(
+      margin: const EdgeInsets.only(right: 40, bottom: 40),
+      onPressWhenActive: () {
+        if (currentInteractable != null) {
+          print('Interact pressed: ${currentInteractable.runtimeType}');
+          currentInteractable!.interact(player);
+        } else {
+          print('Interact pressed, but no interactable in range');
+        }
+      },
     );
+    add(interactButton);
+
+    // Listen for when player collision set changes
+    player.interactablesUpdatedNotifier.addListener(() {
+      currentInteractable = player.closestInteractable;
+      interactButton.isActive = currentInteractable != null;
+    });
   }
 }
 
@@ -61,21 +84,4 @@ class PlayerJoystick extends JoystickComponent {
       player.updateDirection(relativeDelta);
     }
   }
-}
-
-class HudInteractButton extends HudButtonComponent {
-  HudInteractButton({required super.margin})
-    : super(
-        button: CircleComponent(
-          radius: 30,
-          paintLayers: [
-            Paint()..color = const Color(0xFF888888),
-            Paint()
-              ..color = const Color(0xFF444444)
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 4,
-          ],
-        ),
-        size: Vector2.all(60),
-      );
 }
