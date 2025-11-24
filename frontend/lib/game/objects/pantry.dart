@@ -10,5 +10,8 @@ class PantryObject extends InteractableObject {
   void interact(Player player) {
     // For now, just a debug log.
     print('Pantry interacted with by player at ${player.position}');
+
+    // Open the full-screen pantry UI
+    game.openPantry();
   }
 }

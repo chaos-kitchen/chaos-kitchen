@@ -40,4 +40,24 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
     super.onRemove();
     await Flame.device.restoreFullscreen();
   }
+
+  void openFridge() {
+    pauseEngine();
+    overlays.add('fridge_overlay');
+  }
+
+  void closeFridge() {
+    overlays.remove('fridge_overlay');
+    resumeEngine();
+  }
+
+  void openPantry() {
+    pauseEngine();
+    overlays.add('pantry_overlay');
+  }
+
+  void closePantry() {
+    overlays.remove('pantry_overlay');
+    resumeEngine();
+  }
 }

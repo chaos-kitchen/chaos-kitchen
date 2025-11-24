@@ -5,9 +5,10 @@ import 'package:chaos_kitchen/utils/config.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:chaos_kitchen/game/actors/player.dart';
+import 'package:chaos_kitchen/game/game.dart';
 
 abstract class InteractableObject extends PositionComponent
-    with CollisionCallbacks {
+    with CollisionCallbacks, HasGameReference<ChaosKitchenGame> {
   final bool useRectangle;
   final Vector2? rectSize; // optional size for rectangular hitbox
   final double? radius; // optional radius for circle hitbox

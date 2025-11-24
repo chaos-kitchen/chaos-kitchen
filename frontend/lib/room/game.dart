@@ -6,6 +6,8 @@ import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
 import 'package:chaos_kitchen/utils/config.dart';
 import 'package:chaos_kitchen/utils/prefs.dart';
 import 'package:chaos_kitchen/utils/websocket_controller.dart';
+import 'package:chaos_kitchen/components/fridge_overlay.dart';
+import 'package:chaos_kitchen/components/pantry_overlay.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
@@ -95,10 +97,20 @@ class _GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // 4) game stays stable
-        GameWidget(game: _game),
+        GameWidget<ChaosKitchenGame>(
+          game: _game,
+          overlayBuilderMap: {
+            // Existing overlays you may add elsewhere can stay here
+            'fridge_overlay': (context, game) {
+              return FridgeOverlay(game: game as ChaosKitchenGame);
+            },
 
-        // 5) only this part rebuilds every second
+            'pantry_overlay': (context, game) {
+              return PantryOverlay(game: game as ChaosKitchenGame);
+            },
+          },
+        ),
+
         if (_role == PlayerRole.PLAYER_ROLE_INSTRUCTOR)
           Positioned(
             top: 16,
