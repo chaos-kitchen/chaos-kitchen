@@ -34,11 +34,12 @@ class _LobbyRoomScreenState extends State<LobbyRoomScreen> {
     final clientId = await getClientIdFromPrefs();
     if (!mounted) return;
 
-    final wsUrl = AppConfig.getLobbyWebSocketUri(
+    final wsUrl = await AppConfig.getLobbyWebSocketUri(
       lobbyRoomId: widget.roomId,
       clientId: clientId,
       playerName: widget.playerName,
     );
+    if (!mounted) return;
     final controller = WebSocketController(wsUrl);
     await controller.initialize();
     if (!mounted) return;

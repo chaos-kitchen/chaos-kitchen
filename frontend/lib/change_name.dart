@@ -1,5 +1,6 @@
 import 'package:chaos_kitchen/components/button.dart';
 import 'package:chaos_kitchen/components/snackbar.dart';
+import 'package:chaos_kitchen/utils/prefs.dart';
 import 'package:flutter/material.dart';
 
 class ChangePlayerNameScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class ChangePlayerNameScreen extends StatefulWidget {
 }
 
 class _ChangePlayerNameScreenState extends State<ChangePlayerNameScreen> {
+  bool isLoading = true;
   TextEditingController codeController = TextEditingController();
 
   Future<void> onChangeName(BuildContext context) async {
@@ -21,7 +23,27 @@ class _ChangePlayerNameScreenState extends State<ChangePlayerNameScreen> {
       return;
     }
 
+    setState(() {
+      isLoading = true;
+    });
+    await setPlayerNameInPrefs(playerName);
+    if (!mounted) return;
     widget.onNameChanged(playerName);
+  }
+
+  void loadInitialName() async {
+    final currentName = await getPlayerNameFromPrefs();
+    if (!mounted) return;
+    codeController.text = currentName;
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadInitialName();
   }
 
   @override
@@ -37,6 +59,7 @@ class _ChangePlayerNameScreenState extends State<ChangePlayerNameScreen> {
               constraints: BoxConstraints(maxWidth: 300),
               child: TextField(
                 controller: codeController,
+                readOnly: isLoading,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Enter player name',
