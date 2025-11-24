@@ -4,11 +4,12 @@ import 'package:device_info_plus/device_info_plus.dart';
 
 class AppConfig {
   static const String clientIdPrefKey = 'clientId';
+  static const String playerNamePrefKey = 'playerName';
 
   static const bool showDebugCollisionBoxes = true;
+  static const bool showDebugJoinGameButton = true;
 
   static Uri? _apiBaseUriCached;
-
   static Future<Uri> getApiBaseUri() async {
     if (_apiBaseUriCached != null) {
       return _apiBaseUriCached!;

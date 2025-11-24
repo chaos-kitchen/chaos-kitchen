@@ -13,3 +13,17 @@ Future<String> getClientIdFromPrefs() async {
 
   return clientId;
 }
+
+Future<String> getPlayerNameFromPrefs() async {
+  final asyncPrefs = SharedPreferencesAsync();
+  var playerName = await asyncPrefs.getString(AppConfig.playerNamePrefKey);
+  if (playerName == null) {
+    return '';
+  }
+  return playerName;
+}
+
+Future<void> setPlayerNameInPrefs(String playerName) async {
+  final asyncPrefs = SharedPreferencesAsync();
+  await asyncPrefs.setString(AppConfig.playerNamePrefKey, playerName);
+}
