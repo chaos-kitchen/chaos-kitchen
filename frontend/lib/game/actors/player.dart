@@ -15,12 +15,7 @@ class Player extends PositionComponent
 
   @override
   Future<void> onLoad() async {
-    final spriteSheet = await game.images.load('cook_2.png');
-
-    final spriteSize = Vector2(
-      spriteSheet.width / 4,
-      spriteSheet.height.toDouble(),
-    );
+    final sprite = await game.images.load('cook.png');
 
     // add the shadow first
     add(
@@ -37,9 +32,9 @@ class Player extends PositionComponent
     // add the player sprite over the shadow
     playerSprite = SpriteComponent(
       sprite: Sprite(
-        spriteSheet,
+        sprite,
         srcPosition: Vector2(0, 0),
-        srcSize: spriteSize,
+        srcSize: Vector2(250, 250),
       ),
       size: size,
       anchor: Anchor.center,
