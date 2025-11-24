@@ -12,41 +12,47 @@ class PlayerViewport extends MaxViewport
     with HasGameReference<ChaosKitchenGame> {
   final Player player;
 
+  InteractableObject? _currentInteractable;
+
   PlayerViewport(this.player);
 
   @override
   void onLoad() async {
     super.onLoad();
+
     add(
       PlayerJoystick(
         player: player,
         margin: const EdgeInsets.only(left: 40, bottom: 40),
       ),
     );
+
+    // Interact button (callback added later)
     final interactButton = HudInteractButton(
       margin: const EdgeInsets.only(right: 40, bottom: 40),
+      onPressed: () {
+        if (_currentInteractable != null) {
+          print('Interact pressed: ${_currentInteractable.runtimeType}');
+          _currentInteractable!.interact(player);
+        } else {
+          print('Interact pressed, but no interactable in range');
+        }
+      },
     );
     add(interactButton);
 
-    var isInteractButtonShown = false;
-    // game.collisionDetection.collisionsCompletedNotifier.addListener(() {
-    //   print(
-    //     'Interactable objects in range: ${player.interactableObjectsInRange.length}',
-    //   )
-    //   if (player.interactableObjectsInRange.isEmpty && isInteractButtonShown) {
-    //     isInteractButtonShown = false;
-    //     // interactButton.removeFromParent();
-    //   }
-    //
-    //   if (player.interactableObjectsInRange.isNotEmpty &&
-    //       !isInteractButtonShown) {
-    //     isInteractButtonShown = true;
-    //     interactButton.interactableObject = _getClosestInteractableObject(
-    //       player.interactableObjectsInRange,
-    //     );
-    //     // add(interactButton);
-    //   }
-    // });
+    // Listen for when player collision set changes
+    player.collisionsCompletedNotifier.addListener(() {
+      final list = player.interactablesInRange;
+      print('Interactables in range: ${list.length}');
+      
+      if (list.isEmpty) {
+        _currentInteractable = null;
+        return;
+      }
+
+      _currentInteractable = _getClosestInteractableObject(list);
+    });
   }
 
   InteractableObject _getClosestInteractableObject(
@@ -102,9 +108,10 @@ class PlayerJoystick extends JoystickComponent {
 }
 
 class HudInteractButton extends HudButtonComponent {
-  late InteractableObject interactableObject;
-
-  HudInteractButton({required super.margin}) : super(size: Vector2.all(60));
+  HudInteractButton({
+    required super.margin,
+    required void Function()? onPressed,
+  }) : super(size: Vector2.all(60), onPressed: onPressed);
 
   @override
   Future<void> onLoad() async {
@@ -120,9 +127,5 @@ class HudInteractButton extends HudButtonComponent {
           ..strokeWidth = 4,
       ],
     );
-    onPressed = () {
-      print('Interact button pressed');
-      print('Interactable objects in range: ${interactableObject.runtimeType}');
-    };
   }
 }

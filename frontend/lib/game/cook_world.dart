@@ -1,6 +1,12 @@
 import 'package:chaos_kitchen/game/actors/player.dart';
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/game/objects/oven.dart';
+import 'package:chaos_kitchen/game/objects/cutting_board.dart';
+import 'package:chaos_kitchen/game/objects/sink.dart';
+import 'package:chaos_kitchen/game/objects/appliances_shelf.dart';
+import 'package:chaos_kitchen/game/objects/conveyor.dart';
+import 'package:chaos_kitchen/game/objects/pantry.dart';
+import 'package:chaos_kitchen/game/objects/fridge.dart';
 import 'package:chaos_kitchen/game/objects/solid_object.dart';
 import 'package:chaos_kitchen/game/viewport.dart';
 import 'package:flame/components.dart';
@@ -37,6 +43,13 @@ class CookWorld extends World
     game.camera.viewfinder.visibleGameSize = gameBounds;
     game.camera.viewfinder.position = gameBounds / 2;
     game.camera.viewfinder.anchor = Anchor.center;
+
+    // add(
+    //   OvenObject(
+    //     position: Vector2(600, 300), // TODO: adjust to real oven location
+    //     radius: 60,
+    //   ),
+    // );
 
     addAll([
       // four walls of the kitchen
@@ -130,6 +143,24 @@ class CookWorld extends World
     ]);
 
     add(OvenObject(position: Vector2(830, 276.7), radius: 32 * 1.5));
+
+    add(CuttingBoardObject(position: Vector2(627.5, 479.4), radius: 32 * 1.5));
+
+    add(SinkObject(position: Vector2(842.0, 539.3), size: Vector2(60, 70)));
+
+    add(
+      AppliancesShelfObject(
+        position: Vector2(417.1, 157.6),
+        size: Vector2(145, 50),
+      ),
+    );
+
+    add(ConveyorObject(position: Vector2(800.5, 145.8), radius: 32 * 1.3));
+
+    add(PantryObject(position: Vector2(157.0, 537.5), size: Vector2(120, 120)));
+
+    add(FridgeObject(position: Vector2(122.0, 185.5), size: Vector2(40, 160)));
+    add(FridgeObject(position: Vector2(241.1, 168.3), size: Vector2(130, 80)));
   }
 
   // TEMP: temporarily print tap positions for creating hitboxes
