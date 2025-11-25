@@ -9,5 +9,7 @@ class ClipboardObject extends InteractableObject {
   void interact(Player player) {
     // For now just log it
     print('Clipboard interacted with by player at ${player.position}');
+
+    game.openRecipe();
   }
 }

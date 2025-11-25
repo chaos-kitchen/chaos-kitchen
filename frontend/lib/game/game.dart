@@ -91,4 +91,14 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
     overlays.remove('pantry_overlay');
     resumeEngine();
   }
+
+  void openRecipe() {
+    pauseEngine();
+    overlays.add('recipe_overlay');
+  }
+
+  void closeRecipe() {
+    overlays.remove('recipe_overlay');
+    resumeEngine();
+  }
 }
