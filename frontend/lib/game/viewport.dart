@@ -61,7 +61,6 @@ class PlayerViewport extends MaxViewport
 
 class PlayerJoystick extends JoystickComponent {
   final Player player;
-  final double maxSpeed = 200.0;
 
   PlayerJoystick({required this.player, required super.margin})
     : super(
@@ -91,10 +90,7 @@ class PlayerJoystick extends JoystickComponent {
   @override
   void update(double dt) {
     super.update(dt);
-    if (direction != JoystickDirection.idle) {
-      player.position.add(relativeDelta * maxSpeed * dt);
-      player.updateDirection(relativeDelta);
-    }
+    player.applyInput(relativeDelta, dt);
   }
 }
 

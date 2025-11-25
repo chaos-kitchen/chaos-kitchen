@@ -19,6 +19,11 @@ class Player extends PositionComponent
   final Sprite sprite;
   late SpriteComponent playerSprite;
 
+  final Vector2 velocity = Vector2.zero();
+  double maxSpeed = 400;
+  double acceleration = 800;
+  double friction = 800;
+
   /// Interactable objects currently overlapping the player.
   final List<InteractableObject> interactablesInRange = [];
 
@@ -150,6 +155,36 @@ class Player extends PositionComponent
       interactablesInRange.remove(other);
       interactablesUpdatedNotifier.value++;
     }
+  }
+
+  void applyInput(Vector2 input, double dt) {
+    if (!input.isZero()) {
+      final desired = input.normalized() * maxSpeed;
+
+      final delta = desired - velocity;
+      final dist = delta.length;
+      final maxDelta = acceleration * dt;
+      if (dist <= maxDelta || dist == 0) {
+        velocity.setFrom(desired);
+      } else {
+        delta.normalize();
+        velocity.add(delta.scaled(maxDelta));
+      }
+    } else {
+      final speed = velocity.length;
+      if (speed > 0) {
+        final decel = friction * dt;
+        if (decel >= speed) {
+          velocity.setZero();
+        } else {
+          velocity.scale((speed - decel) / speed);
+        }
+      }
+    }
+
+    position += velocity * dt;
+
+    updateDirection(velocity);
   }
 
   void updateDirection(Vector2 velocity) {
