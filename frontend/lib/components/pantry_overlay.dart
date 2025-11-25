@@ -75,7 +75,10 @@ class _PantryOverlayState extends State<PantryOverlay> {
     return Stack(
       children: [
         Positioned.fill(
-          child: Image.asset('assets/images/backgrounds/pantry.png', fit: BoxFit.cover),
+          child: Image.asset(
+            'assets/images/backgrounds/pantry.png',
+            fit: BoxFit.cover,
+          ),
         ),
 
         SafeArea(
@@ -105,8 +108,8 @@ class _PantryOverlayState extends State<PantryOverlay> {
           child: GestureDetector(
             onTap: _handleInventoryTap,
             child: Container(
-              width: 60,
-              height: 60,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Colors.white.withOpacity(0.5),
@@ -124,8 +127,8 @@ class _PantryOverlayState extends State<PantryOverlay> {
                     )
                   : Image.asset(
                       'assets/images/food/beef_steak.png',
-                      width: 40,
-                      height: 40,
+                      width: 50,
+                      height: 50,
                     ),
             ),
           ),

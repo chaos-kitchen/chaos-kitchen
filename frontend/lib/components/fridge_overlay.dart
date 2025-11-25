@@ -127,21 +127,21 @@ class _FridgeOverlayState extends State<FridgeOverlay> {
             data: 'beef_steak',
             feedback: Image.asset(
               'assets/images/food/beef_steak.png',
-              width: 48,
-              height: 48,
+              width: 58,
+              height: 58,
             ),
             childWhenDragging: Opacity(
               opacity: 0.3,
               child: Image.asset(
                 'assets/images/food/beef_steak.png',
-                width: 48,
-                height: 48,
+                width: 58,
+                height: 58,
               ),
             ),
             child: Image.asset(
               'assets/images/food/beef_steak.png',
-              width: 48,
-              height: 48,
+              width: 58,
+              height: 58,
             ),
           ),
         ),
@@ -184,8 +184,8 @@ class _InventoryDragTarget extends StatelessWidget {
           final borderColor = Colors.white.withOpacity(isActive ? 0.9 : 0.5);
 
           return Container(
-            width: 60,
-            height: 60,
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
               border: Border.all(color: borderColor, width: 3),
             ),
@@ -193,12 +193,12 @@ class _InventoryDragTarget extends StatelessWidget {
             child: heldItemId == null
                 ? Text(
                     'empty',
-                    style: TextStyle(color: borderColor, fontSize: 10),
+                    style: TextStyle(color: borderColor, fontSize: 12),
                   )
                 : Image.asset(
                     'assets/images/food/beef_steak.png',
-                    width: 40,
-                    height: 40,
+                    width: 50,
+                    height: 50,
                   ),
           );
         },

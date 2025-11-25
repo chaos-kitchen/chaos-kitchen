@@ -7,6 +7,7 @@ import 'package:chaos_kitchen/game/objects/appliances_shelf.dart';
 import 'package:chaos_kitchen/game/objects/conveyor.dart';
 import 'package:chaos_kitchen/game/objects/pantry.dart';
 import 'package:chaos_kitchen/game/objects/fridge.dart';
+import 'package:chaos_kitchen/game/objects/garbage.dart';
 import 'package:chaos_kitchen/game/objects/solid_object.dart';
 import 'package:chaos_kitchen/game/viewport.dart';
 import 'package:flame/components.dart';
@@ -190,6 +191,8 @@ class CookWorld extends World
 
     add(FridgeObject(position: Vector2(68.7, 195.0), size: Vector2(40, 160)));
     add(FridgeObject(position: Vector2(182.5, 247.7), size: Vector2(130, 60)));
+
+    add(GarbageObject(position: Vector2(923.8, 477.6), radius: 32 * 1.3));
   }
 
   // TEMP: temporarily print tap positions for creating hitboxes

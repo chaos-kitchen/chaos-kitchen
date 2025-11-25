@@ -53,7 +53,7 @@ class PlayerViewport extends MaxViewport
     add(
       HudInventorySlot(
         player: player,
-        margin: const EdgeInsets.only(right: 40, bottom: 40 + 60 + 12),
+        margin: const EdgeInsets.only(right: 40, bottom: 40 + 80 + 12),
       ),
     );
   }
@@ -109,7 +109,7 @@ class HudInventorySlot extends HudMarginComponent
   Future<void> onLoad() async {
     await super.onLoad();
 
-    size = Vector2.all(60);
+    size = Vector2.all(80);
 
     // Same color as before (semi-transparent white)
     const borderColor = Color(0x55FFFFFF);
@@ -134,7 +134,7 @@ class HudInventorySlot extends HudMarginComponent
       textRenderer: TextPaint(
         style: const TextStyle(
           color: borderColor, // same color as border
-          fontSize: 10,
+          fontSize: 12,
         ),
       ),
     );
@@ -142,6 +142,10 @@ class HudInventorySlot extends HudMarginComponent
 
     final beefSprite = await game.loadSprite('food/beef_steak.png');
     setItemSprite(beefSprite);
+
+    _itemSprite!
+      ..anchor = Anchor.center
+      ..position = size / 2;
 
     // Start hidden if the player isn't holding anything yet
     _itemSprite!.opacity = player.hasHeldItem ? 1.0 : 0.0;

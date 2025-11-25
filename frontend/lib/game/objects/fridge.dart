@@ -12,6 +12,6 @@ class FridgeObject extends InteractableObject {
     print('Fridge interacted with by player at ${player.position}');
 
     // Open the full-screen fridge UI
-    // game.openFridge();
+    game.openFridge();
   }
 }
