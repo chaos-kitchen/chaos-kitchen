@@ -19,6 +19,11 @@ class Player extends PositionComponent
   final Sprite sprite;
   late SpriteComponent playerSprite;
 
+  final Vector2 velocity = Vector2.zero();
+  double maxSpeed = 400; // top speed (match old joystick)
+  double acceleration = 800; // how fast to reach target speed
+  double friction = 600;
+
   /// Interactable objects currently overlapping the player.
   final List<InteractableObject> interactablesInRange = [];
 
@@ -120,6 +125,41 @@ class Player extends PositionComponent
       interactablesInRange.remove(other);
       interactablesUpdatedNotifier.value++;
     }
+  }
+
+  void applyInput(Vector2 input, double dt) {
+    if (!input.isZero()) {
+      // Determine desired velocity.
+      final desired = input.normalized() * maxSpeed;
+
+      // Accelerate toward desired.
+      final delta = desired - velocity;
+      final dist = delta.length;
+      final maxDelta = acceleration * dt;
+      if (dist <= maxDelta || dist == 0) {
+        velocity.setFrom(desired);
+      } else {
+        delta.normalize();
+        velocity.add(delta.scaled(maxDelta));
+      }
+    } else {
+      // Apply friction when no input.
+      final speed = velocity.length;
+      if (speed > 0) {
+        final decel = friction * dt;
+        if (decel >= speed) {
+          velocity.setZero();
+        } else {
+          velocity.scale((speed - decel) / speed);
+        }
+      }
+    }
+
+    // Move by current velocity.
+    position += velocity * dt;
+
+    // Update facing based on velocity.
+    updateDirection(velocity);
   }
 
   void updateDirection(Vector2 velocity) {
