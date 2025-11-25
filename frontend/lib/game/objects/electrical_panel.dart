@@ -1,8 +1,8 @@
 import 'package:chaos_kitchen/game/actors/player.dart';
 import 'package:chaos_kitchen/game/objects/interactable_object.dart';
 
-class ElectricPanelObject extends InteractableObject {
-  ElectricPanelObject({required super.position, required double radius})
+class ElectricalPanelObject extends InteractableObject {
+  ElectricalPanelObject({required super.position, required double radius})
     : super(radius: radius, useRectangle: false);
 
   @override
