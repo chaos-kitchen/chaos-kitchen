@@ -171,25 +171,25 @@ class CookWorld extends World
       (hb) => hb.priority = overlay.priority + 1,
     );
 
-    add(OvenObject(position: Vector2(830, 276.7), radius: 32 * 1.5));
+    add(OvenObject(position: Vector2(895.9, 274.4), radius: 32 * 1.5));
 
-    add(CuttingBoardObject(position: Vector2(627.5, 479.4), radius: 32 * 1.5));
+    add(CuttingBoardObject(position: Vector2(651.8, 482.4), radius: 32 * 1.5));
 
-    add(SinkObject(position: Vector2(842.0, 539.3), size: Vector2(60, 70)));
+    add(SinkObject(position: Vector2(875.8, 566.5), size: Vector2(60, 70)));
 
     add(
       AppliancesShelfObject(
-        position: Vector2(417.1, 157.6),
+        position: Vector2(381.6, 148.1),
         size: Vector2(145, 50),
       ),
     );
 
-    add(ConveyorObject(position: Vector2(800.5, 145.8), radius: 32 * 1.3));
+    add(ConveyorObject(position: Vector2(858.6, 126.8), radius: 32 * 1.3));
 
-    add(PantryObject(position: Vector2(157.0, 537.5), size: Vector2(120, 120)));
+    add(PantryObject(position: Vector2(120, 555.3), size: Vector2(140, 50)));
 
-    add(FridgeObject(position: Vector2(122.0, 185.5), size: Vector2(40, 160)));
-    add(FridgeObject(position: Vector2(241.1, 168.3), size: Vector2(130, 80)));
+    add(FridgeObject(position: Vector2(68.7, 195.0), size: Vector2(40, 160)));
+    add(FridgeObject(position: Vector2(182.5, 247.7), size: Vector2(130, 60)));
   }
 
   // TEMP: temporarily print tap positions for creating hitboxes
