@@ -12,10 +12,9 @@ import 'package:flame/input.dart';
 
 class PlayerViewport extends MaxViewport
     with HasGameReference<ChaosKitchenGame> {
-  final bool showTimer;
   final Player player;
 
-  PlayerViewport({required this.player, required this.showTimer});
+  PlayerViewport({required this.player});
 
   @override
   void onLoad() async {

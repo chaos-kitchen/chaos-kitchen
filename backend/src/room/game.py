@@ -65,12 +65,9 @@ class GameRoom:
             raise HTTPException(status_code=403, detail="Game has already started")
 
         # Edge case: player connecting twice
-        if (player := self.players.get(client_id)) and (ws := player.websocket):
-            logger.warning(
-                f"Client {client_id} reconnected, closing previous connection"
-            )
-            player.websocket = None
-            await ws.close()
+        old_websocket = (
+            self.players[client_id].websocket if client_id in self.players else None
+        )
 
         # New player joining before game started
         if client_id not in self.players:
@@ -85,6 +82,10 @@ class GameRoom:
         player.player_name = player_name
         player.websocket = websocket
         await websocket.accept()
+
+        if old_websocket:
+            # Close old connection
+            await old_websocket.close()
 
         if self.has_started:
             # Game already started - send game started message

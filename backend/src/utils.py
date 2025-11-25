@@ -1,4 +1,3 @@
-# asyncio-based timer utility
 import asyncio
 from datetime import UTC, timedelta, datetime
 from typing import Any, Callable

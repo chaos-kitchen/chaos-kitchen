@@ -200,7 +200,7 @@ class InstructorWorld extends World
       ),
     );
 
-    game.camera.viewport = PlayerViewport(player: player, showTimer: true);
+    game.camera.viewport = PlayerViewport(player: player);
     game.camera.viewfinder.visibleGameSize = gameBounds;
     game.camera.viewfinder.position = gameBounds / 2;
     game.camera.viewfinder.anchor = Anchor.center;
