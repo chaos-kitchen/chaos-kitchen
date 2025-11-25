@@ -4,6 +4,7 @@ import 'package:chaos_kitchen/protobuf/websocket.pbenum.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
+import 'package:chaos_kitchen/game/actors/player.dart';
 
 class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
   final Future<PlayerRole> _roleFuture;
@@ -11,6 +12,8 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
   ChaosKitchenGame(this._roleFuture);
 
   late final PlayerRole playerRole;
+
+  Player? cookPlayer;
 
   @override
   Future<void> onLoad() async {

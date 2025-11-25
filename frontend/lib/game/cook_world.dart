@@ -33,11 +33,16 @@ class CookWorld extends World
         stepTime: 0.12,
       ),
     );
+
+    await game.images.load('food/beef_steak.png');
+
     final player = Player(
       position: Vector2(400.0, 200.0),
       animation: animation,
     );
     add(player);
+
+    game.cookPlayer = player;
 
     game.camera.viewport = PlayerViewport(player);
     game.camera.viewfinder.visibleGameSize = gameBounds;
