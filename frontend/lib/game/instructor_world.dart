@@ -1,6 +1,13 @@
 import 'package:chaos_kitchen/game/actors/player.dart';
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/game/viewport.dart';
+import 'package:chaos_kitchen/game/objects/clipboard.dart';
+import 'package:chaos_kitchen/game/objects/coal_pile.dart';
+import 'package:chaos_kitchen/game/objects/computer.dart';
+import 'package:chaos_kitchen/game/objects/conveyor_exit.dart';
+import 'package:chaos_kitchen/game/objects/electrical_panel.dart';
+import 'package:chaos_kitchen/game/objects/furnace.dart';
+import 'package:chaos_kitchen/game/objects/water_pipes.dart';
 import 'package:chaos_kitchen/game/objects/solid_object.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -171,6 +178,16 @@ class InstructorWorld extends World
     children.whereType<SolidObjectHitbox>().forEach(
       (hb) => hb.priority = overlay.priority + 1,
     );
+
+    add(ClipboardObject(position: Vector2(526.2, 404.7), radius: 32 * 1.5));
+    add(CoalPileObject(position: Vector2(160.6, 546.4), radius: 32 * 1.2));
+    add(ComputerObject(position: Vector2(230.5, 123.9), radius: 32 * 1.5));
+    add(ConveyorExitObject(position: Vector2(85.9, 115.6), radius: 32 * 1.5));
+    add(
+      ElectricalPanelObject(position: Vector2(52.1, 352.0), radius: 32 * 1.5),
+    );
+    add(FurnaceObject(position: Vector2(33.2, 235.3), radius: 32 * 1.4));
+    add(WaterPipesObject(position: Vector2(39.7, 533.9), radius: 32 * 1.2));
 
     game.camera.viewport = PlayerViewport(player);
     game.camera.viewfinder.visibleGameSize = gameBounds;
