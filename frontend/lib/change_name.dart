@@ -2,11 +2,12 @@ import 'package:chaos_kitchen/components/button.dart';
 import 'package:chaos_kitchen/components/snackbar.dart';
 import 'package:chaos_kitchen/utils/prefs.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ChangePlayerNameScreen extends StatefulWidget {
-  final void Function(String) onNameChanged;
+  final String roomId;
 
-  const ChangePlayerNameScreen({super.key, required this.onNameChanged});
+  const ChangePlayerNameScreen({super.key, required this.roomId});
 
   @override
   State<ChangePlayerNameScreen> createState() => _ChangePlayerNameScreenState();
@@ -28,7 +29,15 @@ class _ChangePlayerNameScreenState extends State<ChangePlayerNameScreen> {
     });
     await setPlayerNameInPrefs(playerName);
     if (!mounted) return;
-    widget.onNameChanged(playerName);
+
+    if (!context.mounted) return;
+    final router = GoRouter.of(context);
+
+    if (widget.roomId.isNotEmpty) {
+      router.replace('/room/${widget.roomId}');
+    } else {
+      router.go('/');
+    }
   }
 
   void loadInitialName() async {

@@ -2,18 +2,20 @@ import 'dart:async';
 import 'dart:ui' show Paint;
 
 import 'package:chaos_kitchen/game/game.dart';
+import 'package:chaos_kitchen/game/hud/hud_interact_button.dart';
 import 'package:chaos_kitchen/game/objects/interactable_object.dart';
-import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 import 'package:chaos_kitchen/game/actors/player.dart';
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
+import 'package:flame/input.dart';
 
 class PlayerViewport extends MaxViewport
     with HasGameReference<ChaosKitchenGame> {
+  final bool showTimer;
   final Player player;
 
-  PlayerViewport(this.player);
+  PlayerViewport({required this.player, required this.showTimer});
 
   @override
   void onLoad() async {
@@ -26,13 +28,12 @@ class PlayerViewport extends MaxViewport
       ),
     );
 
-    var isInteractButtonShown = false;
     InteractableObject? currentInteractable;
 
     // Interact button (callback added later)
     final interactButton = HudInteractButton(
       margin: const EdgeInsets.only(right: 40, bottom: 40),
-      onPressed: () {
+      onPressWhenActive: () {
         if (currentInteractable != null) {
           print('Interact pressed: ${currentInteractable.runtimeType}');
           currentInteractable!.interact(player);
@@ -41,17 +42,12 @@ class PlayerViewport extends MaxViewport
         }
       },
     );
+    add(interactButton);
 
     // Listen for when player collision set changes
     player.interactablesUpdatedNotifier.addListener(() {
       currentInteractable = player.closestInteractable;
-      if (currentInteractable != null && !isInteractButtonShown) {
-        add(interactButton);
-        isInteractButtonShown = true;
-      } else {
-        remove(interactButton);
-        isInteractButtonShown = false;
-      }
+      interactButton.isActive = currentInteractable != null;
     });
 
     // Inventory HUD slot – positioned above the interact button.
@@ -98,28 +94,8 @@ class PlayerJoystick extends JoystickComponent {
     super.update(dt);
     if (direction != JoystickDirection.idle) {
       player.position.add(relativeDelta * maxSpeed * dt);
+      player.updateDirection(relativeDelta);
     }
-  }
-}
-
-class HudInteractButton extends HudButtonComponent {
-  HudInteractButton({required super.margin, required super.onPressed})
-    : super(size: Vector2.all(60));
-
-  @override
-  Future<void> onLoad() async {
-    await super.onLoad();
-
-    button = CircleComponent(
-      radius: 30,
-      paintLayers: [
-        Paint()..color = const Color(0xFF888888),
-        Paint()
-          ..color = const Color(0xFF444444)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 4,
-      ],
-    );
   }
 }
 

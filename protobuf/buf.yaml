@@ -5,6 +5,8 @@ modules:
 lint:
   use:
     - STANDARD
+  ignore:
+    - google/type/timestamp.proto
 breaking:
   use:
     - FILE

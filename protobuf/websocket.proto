@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package websocket;
 
+import "google/protobuf/timestamp.proto";
+
 message ClientToServerMessage {
   oneof payload {
     // Lobby messages
@@ -20,7 +22,6 @@ message ServerToClientMessage {
 
     // Game messages
     TimerUpdateMessage timer_update = 3;
-    RoleUpdatedMessage role_updated = 4;
   }
 }
 
@@ -31,16 +32,12 @@ message LobbyUpdatedMessage {
 }
 
 message GameStartedMessage {
-  string game_room_id = 1;
+  PlayerRole role = 1;
+  google.protobuf.Timestamp end_time = 2;
 }
 
 message TimerUpdateMessage {
   int32 remaining_seconds = 1;
-}
-
-// Represents an update to the game state
-message RoleUpdatedMessage {
-  PlayerRole new_role = 1;
 }
 
 enum PlayerRole {

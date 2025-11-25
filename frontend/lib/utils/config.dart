@@ -35,22 +35,6 @@ class AppConfig {
     return baseUri;
   }
 
-  static Future<Uri> getLobbyWebSocketUri({
-    required String lobbyRoomId,
-    required String clientId,
-    required String playerName,
-  }) async {
-    final apiBaseUri = await getApiBaseUri();
-    final wsUrl = Uri(
-      scheme: apiBaseUri.scheme == 'https' ? 'wss' : 'ws',
-      host: apiBaseUri.host,
-      port: apiBaseUri.port,
-      path: '/ws/lobby/$lobbyRoomId/$clientId',
-      queryParameters: {"player_name": playerName},
-    );
-    return wsUrl;
-  }
-
   static Future<Uri> getGameWebSocketUri({
     required String gameRoomId,
     required String clientId,
@@ -62,6 +46,7 @@ class AppConfig {
       host: apiBaseUri.host,
       port: apiBaseUri.port,
       path: '/ws/game/$gameRoomId/$clientId',
+      queryParameters: {"player_name": playerName},
     );
     return wsUrl;
   }

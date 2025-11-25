@@ -1,3 +1,4 @@
+import 'package:chaos_kitchen/change_name.dart';
 import 'package:chaos_kitchen/home.dart';
 import 'package:chaos_kitchen/join_room.dart';
 import 'package:chaos_kitchen/options.dart';
@@ -19,8 +20,10 @@ class MainApp extends StatelessWidget {
       GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
       GoRoute(
         path: '/room/:roomId',
-        builder: (context, state) =>
-            RoomScreen(initialRoomId: state.pathParameters['roomId'] ?? ''),
+        builder: (context, state) => RoomScreen(
+          roomId: state.pathParameters['roomId'] ?? '',
+          router: GoRouter.of(context),
+        ),
       ),
       GoRoute(
         path: '/join-room',
@@ -29,6 +32,13 @@ class MainApp extends StatelessWidget {
       GoRoute(
         path: '/options',
         builder: (context, state) => const OptionsScreen(),
+      ),
+      GoRoute(
+        path: '/change-name',
+        builder: (context, state) {
+          final roomId = state.uri.queryParameters['roomId'] ?? '';
+          return ChangePlayerNameScreen(roomId: roomId);
+        },
       ),
     ],
   );

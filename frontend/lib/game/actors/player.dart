@@ -7,11 +7,17 @@ import 'package:chaos_kitchen/utils/config.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart'; // for ValueNotifier
+import 'package:flame/extensions.dart';
+import 'package:flutter/painting.dart';
+import 'dart:math' as math;
 
-class Player extends SpriteAnimationComponent
+class Player extends PositionComponent
     with HasGameReference<ChaosKitchenGame>, CollisionCallbacks {
-  Player({super.position, super.animation})
+  Player({super.position, required this.sprite})
     : super(size: Vector2.all(64), anchor: Anchor.center, priority: 2);
+
+  final Sprite sprite;
+  late SpriteComponent playerSprite;
 
   /// Interactable objects currently overlapping the player.
   final List<InteractableObject> interactablesInRange = [];
@@ -65,12 +71,38 @@ class Player extends SpriteAnimationComponent
 
   @override
   void onLoad() async {
-    add(CircleHitbox(radius: size.x / 2, collisionType: CollisionType.active));
+    // add the shadow first
+    add(
+      CircleComponent(
+        radius: 23,
+        position: Vector2(6, -7), // Top-right offset (negative Y is up)
+        anchor: Anchor.center,
+        paint: Paint()
+          ..color = const Color(0x33000000)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+      ),
+    );
+
+    playerSprite = SpriteComponent(
+      sprite: sprite,
+      size: size,
+      anchor: Anchor.center,
+    );
+    add(playerSprite);
+
+    add(
+      CircleHitbox(
+        radius: size.x / 2,
+        anchor: Anchor.center,
+        collisionType: CollisionType.active,
+      ),
+    );
 
     if (AppConfig.showDebugCollisionBoxes) {
       add(
         CircleComponent(
           radius: size.x / 2,
+          anchor: Anchor.center,
           paint: Paint()..color = const Color(0x770000FF),
         ),
       );
@@ -88,7 +120,8 @@ class Player extends SpriteAnimationComponent
                 intersectionPoints.elementAt(1)) /
             2;
 
-        final collisionNormal = absoluteCenter - mid;
+        final hitboxCenter = absoluteCenter - (size / 2);
+        final collisionNormal = hitboxCenter - mid;
         final separationDistance = (size.x / 2) - collisionNormal.length;
         collisionNormal.normalize();
         position += collisionNormal.scaled(separationDistance);
@@ -117,5 +150,13 @@ class Player extends SpriteAnimationComponent
       interactablesInRange.remove(other);
       interactablesUpdatedNotifier.value++;
     }
+  }
+
+  void updateDirection(Vector2 velocity) {
+    if (velocity.isZero()) return;
+
+    // Calculate the angle of movement in radians
+    final movementAngle = math.atan2(velocity.y, velocity.x);
+    playerSprite.angle = movementAngle - (math.pi / 2);
   }
 }
