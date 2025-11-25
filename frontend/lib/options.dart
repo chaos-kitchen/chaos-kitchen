@@ -1,4 +1,6 @@
+import 'package:chaos_kitchen/components/button.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class OptionsScreen extends StatelessWidget {
   const OptionsScreen({super.key});
@@ -12,7 +14,12 @@ class OptionsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 16,
           children: [
-            const Text('Options', style: TextStyle(fontSize: 32, height: 2)),
+            UIButton(
+              onPressed: () {
+                GoRouter.of(context).push('/change-name');
+              },
+              child: Text("Change name"),
+            ),
           ],
         ),
       ),
