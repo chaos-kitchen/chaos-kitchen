@@ -44,6 +44,36 @@ class Player extends PositionComponent
   /// know to recompute the closest interactable.
   final ValueNotifier<int> interactablesUpdatedNotifier = ValueNotifier<int>(0);
 
+  // ============================================================
+  //                SINGLE-SLOT INVENTORY SYSTEM
+  // ============================================================
+
+  /// The ID/name of the ingredient the player is currently holding.
+  /// Null means inventory slot is empty.
+  String? heldItemId;
+
+  /// Whether the player is currently holding something.
+  bool get hasHeldItem => heldItemId != null;
+
+  /// Attempt to pick up an ingredient.
+  /// Returns true if successful (slot was empty).
+  /// Returns false if inventory was full.
+  bool tryPickItem(String itemId) {
+    if (heldItemId != null) {
+      return false; // slot already full
+    }
+    heldItemId = itemId;
+    return true;
+  }
+
+  /// Drop and return the currently held item, or null if empty.
+  String? dropHeldItem() {
+    final item = heldItemId;
+    heldItemId = null;
+    return item;
+  }
+
+
   @override
   void onLoad() async {
     // add the shadow first

@@ -4,6 +4,8 @@ managed:
 plugins:
   - remote: buf.build/protocolbuffers/dart
     out: ../frontend/lib/protobuf
+    include_imports: true
+    include_wkt: true
   - remote: buf.build/protocolbuffers/pyi
     out: ../backend/src/protobuf
   - remote: buf.build/protocolbuffers/python

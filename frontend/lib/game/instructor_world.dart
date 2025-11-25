@@ -1,5 +1,6 @@
 import 'package:chaos_kitchen/game/actors/player.dart';
 import 'package:chaos_kitchen/game/game.dart';
+import 'package:chaos_kitchen/game/objects/timer_object.dart';
 import 'package:chaos_kitchen/game/viewport.dart';
 import 'package:chaos_kitchen/game/objects/clipboard.dart';
 import 'package:chaos_kitchen/game/objects/coal_pile.dart';
@@ -14,6 +15,9 @@ import 'package:flame/events.dart';
 
 class InstructorWorld extends World
     with HasGameReference<ChaosKitchenGame>, TapCallbacks {
+  final DateTime gameEndTime;
+  InstructorWorld({required this.gameEndTime});
+
   @override
   Future<void> onLoad() async {
     final gameBounds = Vector2(32 * 30, 32 * 20);
@@ -189,7 +193,14 @@ class InstructorWorld extends World
     add(FurnaceObject(position: Vector2(33.2, 235.3), radius: 32 * 1.4));
     add(WaterPipesObject(position: Vector2(39.7, 533.9), radius: 32 * 1.2));
 
-    game.camera.viewport = PlayerViewport(player);
+    add(
+      PositionComponent(
+        position: Vector2(107.8, 5.0),
+        children: [TimerObject(gameEndTime: gameEndTime)],
+      ),
+    );
+
+    game.camera.viewport = PlayerViewport(player: player);
     game.camera.viewfinder.visibleGameSize = gameBounds;
     game.camera.viewfinder.position = gameBounds / 2;
     game.camera.viewfinder.anchor = Anchor.center;

@@ -1,32 +1,39 @@
 import 'package:chaos_kitchen/game/cook_world.dart';
 import 'package:chaos_kitchen/game/instructor_world.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pbenum.dart';
+import 'package:chaos_kitchen/utils/config.dart';
+import 'package:chaos_kitchen/utils/prefs.dart';
+import 'package:chaos_kitchen/utils/websocket_controller.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
+import 'package:chaos_kitchen/game/actors/player.dart';
 
 class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
-  final Future<PlayerRole> _roleFuture;
+  final String roomId;
+  final String playerName;
 
-  ChaosKitchenGame(this._roleFuture);
+  ChaosKitchenGame({required this.roomId, required this.playerName});
 
-  late final PlayerRole playerRole;
+  late final WebSocketController websocket;
+
+  Player? cookPlayer;
 
   @override
   Future<void> onLoad() async {
-    playerRole = await _roleFuture;
-    switch (playerRole) {
-      case PlayerRole.PLAYER_ROLE_COOK:
-        world = CookWorld();
-        break;
-      case PlayerRole.PLAYER_ROLE_INSTRUCTOR:
-        world = InstructorWorld();
-        break;
-      default:
-        throw UnimplementedError("Unknown player role: $playerRole");
-    }
-
     camera.viewfinder.anchor = Anchor.topLeft;
+
+    final clientId = await getClientIdFromPrefs();
+
+    final wsUrl = await AppConfig.getGameWebSocketUri(
+      gameRoomId: roomId,
+      clientId: clientId,
+      playerName: playerName,
+    );
+
+    websocket = WebSocketController(wsUrl);
+    await websocket.initialize();
+    openLobby();
   }
 
   @override
@@ -39,6 +46,30 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
   void onRemove() async {
     super.onRemove();
     await Flame.device.restoreFullscreen();
+  }
+
+  void switchRole(PlayerRole newRole, DateTime gameEndTime) {
+    world.removeFromParent();
+    switch (newRole) {
+      case PlayerRole.PLAYER_ROLE_COOK:
+        world = CookWorld();
+        break;
+      case PlayerRole.PLAYER_ROLE_INSTRUCTOR:
+        world = InstructorWorld(gameEndTime: gameEndTime);
+        break;
+      default:
+        throw UnimplementedError("Unknown player role: $newRole");
+    }
+  }
+
+  void openLobby() {
+    pauseEngine();
+    overlays.add('lobby_overlay');
+  }
+
+  void closeLobby() {
+    overlays.remove('lobby_overlay');
+    resumeEngine();
   }
 
   void openFridge() {

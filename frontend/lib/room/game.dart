@@ -1,129 +1,52 @@
-import 'dart:async';
-
-import 'package:chaos_kitchen/components/instructor_timer.dart';
+import 'package:chaos_kitchen/components/lobby_overlay.dart';
 import 'package:chaos_kitchen/game/game.dart';
-import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
-import 'package:chaos_kitchen/utils/config.dart';
-import 'package:chaos_kitchen/utils/prefs.dart';
-import 'package:chaos_kitchen/utils/websocket_controller.dart';
 import 'package:chaos_kitchen/components/fridge_overlay.dart';
 import 'package:chaos_kitchen/components/pantry_overlay.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
-class GameScreen extends StatefulWidget {
+// NOTE: GameScreen is a StatelessWidget, meaning the game will be
+//       recreated on each hot-reload.
+//       This is intentional because Flame does not support hot-reload.
+
+class GameScreen extends StatelessWidget {
   final String roomId;
   final String playerName;
 
-  final void Function(String lobbyRoomId) onGameFinished;
-
-  const GameScreen({
-    super.key,
-    required this.roomId,
-    required this.playerName,
-    required this.onGameFinished,
-  });
-
-  @override
-  State<GameScreen> createState() => _GameScreenState();
-}
-
-class _GameScreenState extends State<GameScreen> {
-  late WebSocketController _wsController;
-
-  // 1) keep game instance stable so it doesn't rebuild
-  late final ChaosKitchenGame _game;
-
-  // 2) use a notifier for the timer
-  final ValueNotifier<int?> _remainingSeconds = ValueNotifier<int?>(null);
-
-  PlayerRole? _role;
-  final Completer<PlayerRole> roleCompleter = Completer<PlayerRole>();
-
-  @override
-  void initState() {
-    super.initState();
-    _game = ChaosKitchenGame(roleCompleter.future);
-    _createWs();
-  }
-
-  Future<void> _createWs() async {
-    final clientId = await getClientIdFromPrefs();
-    if (!mounted) return;
-
-    final wsUrl = await AppConfig.getGameWebSocketUri(
-      gameRoomId: widget.roomId,
-      clientId: clientId,
-      playerName: widget.playerName,
-    );
-    if (!mounted) return;
-    final controller = WebSocketController(wsUrl);
-    await controller.initialize();
-    if (!mounted) return;
-
-    _wsController = controller;
-    _wsController.stream.listen(_handleMessage);
-  }
-
-  @override
-  void dispose() {
-    _remainingSeconds.dispose();
-    _wsController.dispose();
-    super.dispose();
-  }
-
-  void _handleMessage(ServerToClientMessage message) {
-    switch (message.whichPayload()) {
-      case ServerToClientMessage_Payload.timerUpdate:
-        // 3) update the notifier, NOT setState
-        _remainingSeconds.value = message.timerUpdate.remainingSeconds;
-        break;
-
-      case ServerToClientMessage_Payload.roleUpdated:
-        final roleMessage = message.roleUpdated;
-        roleCompleter.complete(roleMessage.newRole);
-        setState(() {
-          _role = roleMessage.newRole;
-        });
-        break;
-
-      default:
-        // optional
-        // showErrorSnackbar(context, 'Received unknown message from server');
-        break;
-    }
-  }
+  const GameScreen({super.key, required this.roomId, required this.playerName});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         GameWidget<ChaosKitchenGame>(
-          game: _game,
+          game: ChaosKitchenGame(roomId: roomId, playerName: playerName),
+
+          loadingBuilder: (context) {
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [CircularProgressIndicator()],
+                ),
+              ),
+            );
+          },
+
           overlayBuilderMap: {
-            // Existing overlays you may add elsewhere can stay here
             'fridge_overlay': (context, game) {
-              return FridgeOverlay(game: game as ChaosKitchenGame);
+              return FridgeOverlay(game: game);
             },
 
             'pantry_overlay': (context, game) {
-              return PantryOverlay(game: game as ChaosKitchenGame);
+              return PantryOverlay(game: game);
+            },
+
+            'lobby_overlay': (context, game) {
+              return LobbyOverlay(game: game);
             },
           },
         ),
-
-        if (_role == PlayerRole.PLAYER_ROLE_INSTRUCTOR)
-          Positioned(
-            top: 16,
-            right: 16,
-            child: ValueListenableBuilder<int?>(
-              valueListenable: _remainingSeconds,
-              builder: (context, secs, _) {
-                if (secs == null) return const SizedBox.shrink();
-                return InstructorTimer(remainingSeconds: secs);
-              },
-            ),
-          ),
       ],
     );
   }

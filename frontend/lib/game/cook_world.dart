@@ -25,11 +25,16 @@ class CookWorld extends World
     add(background);
 
     final playerSprite = Sprite(await game.images.load('cook.png'));
+
+    await game.images.load('food/beef_steak.png');
+
     final player = Player(
       position: Vector2(400.0, 400.0),
       sprite: playerSprite,
     );
     add(player);
+
+    game.cookPlayer = player;
 
     final overlay = SpriteComponent()
       ..sprite = await game.loadSprite('backgrounds/kitchen_overlay.png')
@@ -37,8 +42,7 @@ class CookWorld extends World
       ..anchor = Anchor.topLeft
       ..priority = player.priority + 1;
     add(overlay);
-
-    game.camera.viewport = PlayerViewport(player);
+    game.camera.viewport = PlayerViewport(player: player);
     game.camera.viewfinder.visibleGameSize = gameBounds;
     game.camera.viewfinder.position = gameBounds / 2;
     game.camera.viewfinder.anchor = Anchor.center;
