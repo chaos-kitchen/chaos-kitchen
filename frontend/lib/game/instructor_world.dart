@@ -17,17 +17,10 @@ class InstructorWorld extends World
       ..position = Vector2(-32 * 12, -32 * 5.5);
     add(background);
 
-    final animation = SpriteAnimation.fromFrameData(
-      await game.images.load('instructor.png'),
-      SpriteAnimationData.sequenced(
-        amount: 3,
-        textureSize: Vector2.all(400),
-        stepTime: 0.12,
-      ),
-    );
+    final playerSprite = Sprite(await game.images.load('instructor.png'));
     final player = Player(
-      position: Vector2(400.0, 200.0),
-      animation: animation,
+      position: Vector2(400.0, 400.0),
+      sprite: playerSprite,
     );
     add(player);
 

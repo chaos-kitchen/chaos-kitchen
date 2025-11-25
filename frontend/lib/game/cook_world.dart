@@ -24,17 +24,10 @@ class CookWorld extends World
       ..anchor = Anchor.topLeft;
     add(background);
 
-    final animation = SpriteAnimation.fromFrameData(
-      await game.images.load('cook.png'),
-      SpriteAnimationData.sequenced(
-        amount: 3,
-        textureSize: Vector2.all(400),
-        stepTime: 0.12,
-      ),
-    );
+    final playerSprite = Sprite(await game.images.load('cook.png'));
     final player = Player(
       position: Vector2(400.0, 400.0),
-      animation: animation,
+      sprite: playerSprite,
     );
     add(player);
 
