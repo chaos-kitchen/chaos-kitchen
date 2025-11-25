@@ -45,14 +45,14 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
     await Flame.device.restoreFullscreen();
   }
 
-  void switchRole(PlayerRole newRole) {
+  void switchRole(PlayerRole newRole, DateTime gameEndTime) {
     world.removeFromParent();
     switch (newRole) {
       case PlayerRole.PLAYER_ROLE_COOK:
         world = CookWorld();
         break;
       case PlayerRole.PLAYER_ROLE_INSTRUCTOR:
-        world = InstructorWorld();
+        world = InstructorWorld(gameEndTime: gameEndTime);
         break;
       default:
         throw UnimplementedError("Unknown player role: $newRole");

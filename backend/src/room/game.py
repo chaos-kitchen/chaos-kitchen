@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import timedelta
 import logging
 from typing import Callable
 from uuid import UUID
@@ -37,8 +37,6 @@ class GameRoom:
         self.room_code: str | None = room_code_store.get_unique_code()
         self._room_code_store = room_code_store
 
-        self.game_ends_at = datetime.min
-
         # Note: initialize game end timer, but don't start it yet
         self._game_end_timer = Timer(
             timedelta(minutes=5),
@@ -63,15 +61,15 @@ class GameRoom:
 
     async def connect(self, client_id: UUID, player_name: str, websocket: WebSocket):
         # Player trying to join after game started
-        print("Connecting:", client_id, player_name, self.room_code, self.has_started)
         if self.has_started and client_id not in self.players:
             raise HTTPException(status_code=403, detail="Game has already started")
 
         # Edge case: player connecting twice
-        if client_id in self.players and (ws := self.players[client_id].websocket):
+        if (player := self.players.get(client_id)) and (ws := player.websocket):
             logger.warning(
                 f"Client {client_id} reconnected, closing previous connection"
             )
+            player.websocket = None
             await ws.close()
 
         # New player joining before game started
@@ -95,7 +93,7 @@ class GameRoom:
                 ServerToClientMessage(
                     game_started=GameStartedMessage(
                         role=player.role,
-                        end_time=self.game_ends_at,
+                        end_time=self._game_end_timer.ends_at,
                     )
                 ),
             )
@@ -136,8 +134,6 @@ class GameRoom:
         self._room_code_store.release_code(self.room_code)
         self.room_code = None
 
-        self.game_ends_at = datetime.now() + timedelta(minutes=5)
-
         assert not self._game_end_timer.is_running
         self._game_end_timer.start()
         self._room_deletion_timer.restart()
@@ -156,7 +152,7 @@ class GameRoom:
                 ServerToClientMessage(
                     game_started=GameStartedMessage(
                         role=player.role,
-                        end_time=self.game_ends_at,
+                        end_time=self._game_end_timer.ends_at,
                     )
                 ),
             )

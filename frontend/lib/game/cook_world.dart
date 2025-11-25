@@ -38,7 +38,7 @@ class CookWorld extends World
       ..priority = player.priority + 1;
     add(overlay);
 
-    game.camera.viewport = PlayerViewport(player);
+    game.camera.viewport = PlayerViewport(player: player, showTimer: false);
     game.camera.viewfinder.visibleGameSize = gameBounds;
     game.camera.viewfinder.position = gameBounds / 2;
     game.camera.viewfinder.anchor = Anchor.center;

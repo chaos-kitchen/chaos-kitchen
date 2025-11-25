@@ -21,6 +21,18 @@ class GameScreen extends StatelessWidget {
       children: [
         GameWidget<ChaosKitchenGame>(
           game: ChaosKitchenGame(roomId: roomId, playerName: playerName),
+
+          loadingBuilder: (context) {
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [CircularProgressIndicator()],
+                ),
+              ),
+            );
+          },
+
           overlayBuilderMap: {
             'fridge_overlay': (context, game) {
               return FridgeOverlay(game: game);

@@ -37,7 +37,10 @@ class _LobbyOverlayState extends State<LobbyOverlay> {
 
       case ServerToClientMessage_Payload.gameStarted:
         final gameStartedMessage = message.gameStarted;
-        widget.game.switchRole(gameStartedMessage.role);
+        widget.game.switchRole(
+          gameStartedMessage.role,
+          gameStartedMessage.endTime.toDateTime(),
+        );
         widget.game.closeLobby();
         break;
 
