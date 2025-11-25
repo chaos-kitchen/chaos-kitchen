@@ -20,9 +20,9 @@ class Player extends PositionComponent
   late SpriteComponent playerSprite;
 
   final Vector2 velocity = Vector2.zero();
-  double maxSpeed = 400; // top speed (match old joystick)
-  double acceleration = 800; // how fast to reach target speed
-  double friction = 600;
+  double maxSpeed = 400;
+  double acceleration = 800;
+  double friction = 800;
 
   /// Interactable objects currently overlapping the player.
   final List<InteractableObject> interactablesInRange = [];
