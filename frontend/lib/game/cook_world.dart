@@ -31,6 +31,13 @@ class CookWorld extends World
     );
     add(player);
 
+    final overlay = SpriteComponent()
+      ..sprite = await game.loadSprite('backgrounds/kitchen_overlay.png')
+      ..size = gameBounds * scaleFactor
+      ..anchor = Anchor.topLeft
+      ..priority = player.priority + 1;
+    add(overlay);
+
     game.camera.viewport = PlayerViewport(player);
     game.camera.viewfinder.visibleGameSize = gameBounds;
     game.camera.viewfinder.position = gameBounds / 2;
@@ -132,8 +139,8 @@ class CookWorld extends World
       ]),
       SolidObjectHitbox([
         // pantry wall
-        Vector2(2.4, 439.1),
-        Vector2(162.3, 445.0),
+        Vector2(2.4, 469.9),
+        Vector2(162.3, 469.9),
         Vector2(165.3, 493.0),
         Vector2(126.2, 494.8),
         Vector2(125.0, 525.6),
@@ -141,19 +148,24 @@ class CookWorld extends World
       ]),
       SolidObjectHitbox([
         // pantry wall right
-        Vector2(8.3, 569.5),
-        Vector2(184.3, 570.7),
-        Vector2(184.3, 589.6),
-        Vector2(266.6, 583.1),
-        Vector2(235.2, 445.0),
-        Vector2(275.5, 448.0),
-        Vector2(280.3, 566.5),
-        Vector2(302.2, 575.4),
-        Vector2(305.1, 603.8),
-        Vector2(280.3, 617.5),
-        Vector2(8.3, 628.1),
+        Vector2(184.3, 592.6),
+        Vector2(210.3, 591.4),
+        Vector2(224.6, 525.6),
+        Vector2(237.0, 493.0),
+        Vector2(274.3, 480.6),
+        Vector2(277.3, 558.8),
+        Vector2(303.4, 570.7),
+        Vector2(305.1, 600.3),
+        Vector2(279.1, 614.5),
+        Vector2(279.1, 631.7),
+        Vector2(2.4, 634.6),
+        Vector2(3.5, 589.6),
       ]),
     ]);
+
+    children.whereType<SolidObjectHitbox>().forEach(
+      (hb) => hb.priority = overlay.priority + 1,
+    );
 
     add(OvenObject(position: Vector2(830, 276.7), radius: 32 * 1.5));
 

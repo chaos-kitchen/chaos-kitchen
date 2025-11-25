@@ -24,6 +24,13 @@ class InstructorWorld extends World
     );
     add(player);
 
+    final overlay = SpriteComponent()
+      ..sprite = await game.loadSprite('backgrounds/customer_area_overlay.png')
+      ..size = gameBounds * scaleFactor
+      ..anchor = Anchor.topLeft
+      ..priority = player.priority + 1;
+    add(overlay);
+
     addAll([
       // Outer boundary walls
       SolidObjectHitbox([
@@ -160,6 +167,10 @@ class InstructorWorld extends World
         Vector2(774.4, 271.4),
       ]),
     ]);
+
+    children.whereType<SolidObjectHitbox>().forEach(
+      (hb) => hb.priority = overlay.priority + 1,
+    );
 
     game.camera.viewport = PlayerViewport(player);
     game.camera.viewfinder.visibleGameSize = gameBounds;
