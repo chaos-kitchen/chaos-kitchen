@@ -1,65 +1,47 @@
-import 'package:chaos_kitchen/change_name.dart';
 import 'package:chaos_kitchen/room/game.dart';
-import 'package:chaos_kitchen/room/lobby.dart';
+import 'package:chaos_kitchen/utils/prefs.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class RoomScreen extends StatefulWidget {
-  final String initialRoomId;
+  final GoRouter router;
+  final String roomId;
 
-  const RoomScreen({super.key, required this.initialRoomId});
+  const RoomScreen({super.key, required this.roomId, required this.router});
 
   @override
   State<RoomScreen> createState() => _RoomScreenState();
 }
 
 class _RoomScreenState extends State<RoomScreen> {
-  String? _playerName;
-  String? _roomId;
-  bool _gameStarted = false;
+  String _playerName = '';
+
+  Future<void> loadPlayerName() async {
+    final currentName = await getPlayerNameFromPrefs();
+    if (!mounted) return;
+
+    if (currentName.isEmpty) {
+      widget.router.go('/change-name?roomId=${widget.roomId}');
+      return;
+    }
+
+    setState(() {
+      _playerName = currentName;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-  }
-
-  void onNameChanged(String playerName) async {
-    setState(() {
-      _playerName = playerName;
-    });
-  }
-
-  void onGameStarted(String gameRoomId) {
-    setState(() {
-      _gameStarted = true;
-      _roomId = gameRoomId;
-    });
-  }
-
-  void onGameFinished(String lobbyRoomId) {
-    setState(() {
-      _gameStarted = false;
-      _roomId = lobbyRoomId;
-    });
+    loadPlayerName();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_playerName == null) {
-      return ChangePlayerNameScreen(onNameChanged: onNameChanged);
+    if (_playerName.isEmpty) {
+      return CircularProgressIndicator();
     }
 
-    if (!_gameStarted) {
-      return LobbyRoomScreen(
-        roomId: _roomId ?? widget.initialRoomId,
-        playerName: _playerName!,
-        onGameStarted: onGameStarted,
-      );
-    }
-
-    return GameScreen(
-      roomId: _roomId ?? widget.initialRoomId,
-      playerName: _playerName!,
-      onGameFinished: onGameFinished,
-    );
+    return GameScreen(roomId: widget.roomId, playerName: _playerName);
   }
 }

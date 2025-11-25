@@ -1,65 +1,27 @@
+import 'dart:async';
+
 import 'package:chaos_kitchen/components/button.dart';
 import 'package:chaos_kitchen/components/snackbar.dart';
+import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
-import 'package:chaos_kitchen/utils/config.dart';
-import 'package:chaos_kitchen/utils/prefs.dart';
-import 'package:chaos_kitchen/utils/websocket_controller.dart';
 import 'package:flutter/material.dart';
 
-class LobbyRoomScreen extends StatefulWidget {
-  final String roomId;
-  final String playerName;
-  final void Function(String gameRoomId) onGameStarted;
+class LobbyOverlay extends StatefulWidget {
+  final ChaosKitchenGame game;
 
-  const LobbyRoomScreen({
-    super.key,
-    required this.roomId,
-    required this.playerName,
-    required this.onGameStarted,
-  });
+  const LobbyOverlay({super.key, required this.game});
 
   @override
-  State<LobbyRoomScreen> createState() => _LobbyRoomScreenState();
+  State<LobbyOverlay> createState() => _LobbyOverlayState();
 }
 
-class _LobbyRoomScreenState extends State<LobbyRoomScreen> {
-  late WebSocketController _wsController;
-
+class _LobbyOverlayState extends State<LobbyOverlay> {
   bool isLoadingRoom = true;
   bool isHost = false;
   String roomCode = "";
   List<String> players = [];
 
-  Future<void> createWebSocketConnection() async {
-    final clientId = await getClientIdFromPrefs();
-    if (!mounted) return;
-
-    final wsUrl = await AppConfig.getLobbyWebSocketUri(
-      lobbyRoomId: widget.roomId,
-      clientId: clientId,
-      playerName: widget.playerName,
-    );
-    if (!mounted) return;
-    final controller = WebSocketController(wsUrl);
-    await controller.initialize();
-    if (!mounted) return;
-
-    _wsController = controller;
-    controller.stream.listen(handleMessage);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    createWebSocketConnection();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _wsController.dispose();
-  }
+  StreamSubscription<ServerToClientMessage>? _subscription;
 
   void handleMessage(ServerToClientMessage message) {
     switch (message.whichPayload()) {
@@ -75,13 +37,27 @@ class _LobbyRoomScreenState extends State<LobbyRoomScreen> {
 
       case ServerToClientMessage_Payload.gameStarted:
         final gameStartedMessage = message.gameStarted;
-        widget.onGameStarted(gameStartedMessage.gameRoomId);
+        widget.game.switchRole(gameStartedMessage.role);
+        widget.game.closeLobby();
         break;
 
       default:
         showErrorSnackbar(context, 'Received unknown message from server');
         break;
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _subscription = widget.game.websocket.stream.listen(handleMessage);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _subscription?.cancel();
   }
 
   @override
@@ -105,7 +81,7 @@ class _LobbyRoomScreenState extends State<LobbyRoomScreen> {
                   onPressed: () {
                     final message = ClientToServerMessage()
                       ..startGame = StartGameMessage();
-                    _wsController.sendMessage(message);
+                    widget.game.websocket.sendMessage(message);
                   },
                   child: Text('Start Game'),
                 ),
