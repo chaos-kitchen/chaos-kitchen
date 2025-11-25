@@ -129,10 +129,8 @@ class Player extends PositionComponent
 
   void applyInput(Vector2 input, double dt) {
     if (!input.isZero()) {
-      // Determine desired velocity.
       final desired = input.normalized() * maxSpeed;
 
-      // Accelerate toward desired.
       final delta = desired - velocity;
       final dist = delta.length;
       final maxDelta = acceleration * dt;
@@ -143,7 +141,6 @@ class Player extends PositionComponent
         velocity.add(delta.scaled(maxDelta));
       }
     } else {
-      // Apply friction when no input.
       final speed = velocity.length;
       if (speed > 0) {
         final decel = friction * dt;
@@ -155,10 +152,8 @@ class Player extends PositionComponent
       }
     }
 
-    // Move by current velocity.
     position += velocity * dt;
 
-    // Update facing based on velocity.
     updateDirection(velocity);
   }
 
