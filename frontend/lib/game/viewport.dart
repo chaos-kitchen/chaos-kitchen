@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui' show Paint;
 
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/game/hud/hud_interact_button.dart';
@@ -25,6 +24,36 @@ class PlayerViewport extends MaxViewport
       PlayerJoystick(
         player: player,
         margin: const EdgeInsets.only(left: 40, bottom: 40),
+      ),
+    );
+
+    add(
+      HudButtonComponent(
+        margin: const EdgeInsets.only(right: 40, top: 40),
+        size: Vector2.all(50),
+        button: CircleComponent(
+          radius: 25,
+          paintLayers: [
+            Paint()..color = const Color(0x55000000),
+            Paint()
+              ..color = const Color(0xAA000000)
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 4,
+          ],
+          children: [
+            TextComponent(
+              text: '⚙',
+              anchor: Anchor.center,
+              position: Vector2.all(25),
+              textRenderer: TextPaint(
+                style: const TextStyle(color: Colors.white, fontSize: 24),
+              ),
+            ),
+          ],
+        ),
+        onPressed: () {
+          game.openPauseMenu();
+        },
       ),
     );
 
