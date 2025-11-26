@@ -23,7 +23,7 @@ class Timer:
 
     async def _run(self):
         await asyncio.sleep(self.duration)
-        self._callback()
+        await self._callback()
         self._task = None
 
     def start(self):

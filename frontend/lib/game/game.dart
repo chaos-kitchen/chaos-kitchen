@@ -32,19 +32,20 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
     );
 
     websocket = WebSocketController(wsUrl);
-    await websocket.initialize();
     openLobby();
   }
 
   @override
   void onMount() async {
     super.onMount();
+    await websocket.initialize();
     await Flame.device.fullScreen();
   }
 
   @override
   void onRemove() async {
     super.onRemove();
+    websocket.dispose();
     await Flame.device.restoreFullscreen();
   }
 

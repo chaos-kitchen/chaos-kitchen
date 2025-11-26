@@ -1,3 +1,4 @@
+from asyncio import Lock
 from collections import OrderedDict
 from dataclasses import dataclass
 from datetime import timedelta
@@ -25,6 +26,7 @@ class PlayerInfo:
     player_name: str
     role: PlayerRole
     websocket: WebSocket | None
+    connection_lock: Lock
 
 
 class GameRoom:
@@ -64,28 +66,26 @@ class GameRoom:
         if self.has_started and client_id not in self.players:
             raise HTTPException(status_code=403, detail="Game has already started")
 
-        # Edge case: player connecting twice
-        old_websocket = (
-            self.players[client_id].websocket if client_id in self.players else None
-        )
-
         # New player joining before game started
         if client_id not in self.players:
             self.players[client_id] = PlayerInfo(
                 player_name="",
                 role=PlayerRole.PLAYER_ROLE_UNSPECIFIED,
                 websocket=None,
+                connection_lock=Lock(),
             )
 
-        # Update player info + accept connection
         player = self.players[client_id]
-        player.player_name = player_name
-        player.websocket = websocket
-        await websocket.accept()
 
-        if old_websocket:
-            # Close old connection
-            await old_websocket.close()
+        # Ensure websocket connections are closed/opened one at a time
+        async with player.connection_lock:
+            if player.websocket:
+                await player.websocket.close()
+
+            # Update player info + accept new connection
+            player.player_name = player_name
+            player.websocket = websocket
+            await websocket.accept()
 
         if self.has_started:
             # Game already started - send game started message
@@ -101,8 +101,12 @@ class GameRoom:
         else:
             await self._broadcast_lobby_update()
 
-    async def disconnect(self, client_id: UUID):
-        assert client_id in self.players
+    async def disconnect(self, client_id: UUID, websocket: WebSocket):
+        player = self.players.get(client_id)
+
+        if not player or player.websocket != websocket:
+            # A new websocket connection took over - nothing to do
+            return
 
         if self.has_started:
             # Mark player as disconnected
