@@ -1,4 +1,5 @@
 import 'package:chaos_kitchen/game/game.dart';
+import 'package:chaos_kitchen/game/ingredients.dart';
 import 'package:flutter/material.dart';
 
 class RecipeOverlay extends StatefulWidget {
@@ -13,6 +14,20 @@ class RecipeOverlay extends StatefulWidget {
 class _RecipeOverlayState extends State<RecipeOverlay> {
   int _pageNumber = 0;
   final int _totalPages = 5;
+  final List<String> _requiredIngredients = [
+    IngredientIds.flour,
+    IngredientIds.butter,
+    IngredientIds.water,
+    IngredientIds.salt,
+    IngredientIds.pepper,
+    IngredientIds.mushrooms,
+    IngredientIds.onionWhite,
+    IngredientIds.garlic,
+    IngredientIds.thyme,
+    IngredientIds.beefFillet,
+    IngredientIds.prosciutto,
+    IngredientIds.eggs,
+  ];
 
   void _nextPage() {
     if (_pageNumber < _totalPages - 1) {
@@ -28,6 +43,44 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
         _pageNumber -= 1;
       });
     }
+  }
+
+  Widget _ingredientsPage({required List<String> ingredientIds}) {
+    return Column(
+      children: [
+        Text(
+          'Ingredients',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 0,
+            mainAxisSpacing: 0,
+          ),
+          itemCount: ingredientIds.length,
+          itemBuilder: (context, index) {
+            final id = ingredientIds[index];
+            final String? assetPath = ingredientAssetPaths[id];
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (assetPath != null)
+                  Image.asset('assets/images/$assetPath', width: 50, height: 50)
+                else
+                  const SizedBox(width: 50, height: 50),
+              ],
+            );
+          },
+        ),
+      ],
+    );
   }
 
   @override
@@ -61,6 +114,28 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
                   ),
                 ),
               ),
+            ),
+          ),
+
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 65.0, bottom: 40.0),
+              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+              constraints: BoxConstraints(
+                maxHeight:
+                    MediaQuery.of(context).size.height -
+                    0, // Account for margins
+                maxWidth:
+                    MediaQuery.of(context).size.width *
+                    0.3, // % of screen width
+              ),
+              child: (_pageNumber == 0)
+                  ? SingleChildScrollView(
+                      child: _ingredientsPage(
+                        ingredientIds: _requiredIngredients,
+                      ),
+                    )
+                  : null,
             ),
           ),
 
