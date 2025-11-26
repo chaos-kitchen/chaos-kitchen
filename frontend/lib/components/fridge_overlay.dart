@@ -1,51 +1,7 @@
-// import 'package:chaos_kitchen/game/game.dart';
-// import 'package:flutter/material.dart';
-
-// class FridgeOverlay extends StatelessWidget {
-//   final ChaosKitchenGame game;
-
-//   const FridgeOverlay({super.key, required this.game});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Stack(
-//       children: [
-//         // Background fridge art
-//         Positioned.fill(
-//           child: Image.asset(
-//             'assets/images/backgrounds/fridge.png',
-//             fit: BoxFit.cover,
-//           ),
-//         ),
-
-//         // Back arrow
-//         SafeArea(
-//           child: Align(
-//             alignment: Alignment.topLeft,
-//             child: GestureDetector(
-//               onTap: () {
-//                 game.closeFridge();
-//               },
-//               child: Padding(
-//                 padding: const EdgeInsets.all(8.0), // bigger touch area
-//                 child: Image.asset(
-//                   'assets/images/cross_small.png',
-//                   width: 40,
-//                   height: 40,
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-
-//         // TODO: ingredient hotspots / buttons go here later
-//       ],
-//     );
-//   }
-// }
-
 import 'package:chaos_kitchen/game/game.dart';
+import 'package:chaos_kitchen/game/ingredients.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // for kDebugMode + debugPrint
 
 class FridgeOverlay extends StatefulWidget {
   final ChaosKitchenGame game;
@@ -57,6 +13,19 @@ class FridgeOverlay extends StatefulWidget {
 }
 
 class _FridgeOverlayState extends State<FridgeOverlay> {
+  // Base size for fridge ingredient icons
+  static const double _baseIngredientSize = 58.0;
+
+  // Per-ingredient scale overrides: 1.0 = normal, >1 = bigger, <1 = smaller.
+  static const Map<String, double> _ingredientSizeScale = {
+    // tweak these however you like:
+    IngredientIds.eggs: 1.6,
+    IngredientIds.butter: 1.2,
+    IngredientIds.mushrooms: 1.2,
+    IngredientIds.beefFillet: 1.1,
+    IngredientIds.prosciutto: 1.6,
+  };
+
   void _handleItemDropped(String itemId) {
     final player = widget.game.cookPlayer;
     if (player == null) return;
@@ -84,79 +53,134 @@ class _FridgeOverlayState extends State<FridgeOverlay> {
     }
   }
 
+  /// Helper to place a draggable ingredient sprite at a given position.
+  Widget _ingredientDraggable({
+    required String ingredientId,
+    required double left,
+    required double top,
+  }) {
+    final asset = ingredientAssetPaths[ingredientId]!;
+
+    // Look up per-ingredient scale (default 1.0)
+    final scale = _ingredientSizeScale[ingredientId] ?? 1.0;
+    final size = _baseIngredientSize * scale;
+
+    return Positioned(
+      left: left,
+      top: top,
+      child: Draggable<String>(
+        data: ingredientId,
+        feedback: Image.asset(
+          'assets/images/$asset',
+          width: size,
+          height: size,
+        ),
+        childWhenDragging: Opacity(
+          opacity: 0.3,
+          child: Image.asset('assets/images/$asset', width: size, height: size),
+        ),
+        child: Image.asset('assets/images/$asset', width: size, height: size),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final heldItemId = widget.game.cookPlayer?.heldItemId;
 
-    return Stack(
-      children: [
-        // Background fridge art
-        Positioned.fill(
-          child: Image.asset(
-            'assets/images/backgrounds/fridge.png',
-            fit: BoxFit.cover,
-          ),
-        ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTapDown: (TapDownDetails details) {
+            final renderBox = context.findRenderObject() as RenderBox;
+            final localPos = renderBox.globalToLocal(details.globalPosition);
 
-        // Back arrow
-        SafeArea(
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: GestureDetector(
-              onTap: () {
-                widget.game.closeFridge();
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
+            if (kDebugMode) {
+              debugPrint(
+                'Fridge tap at: x= ${localPos.dx.toStringAsFixed(1)}, '
+                'y= ${localPos.dy.toStringAsFixed(1)}',
+              );
+            }
+          },
+          child: Stack(
+            children: [
+              // Background fridge art
+              Positioned.fill(
                 child: Image.asset(
-                  'assets/images/cross_small.png',
-                  width: 32,
-                  height: 32,
-                  color: Colors.white,
+                  'assets/images/backgrounds/fridge.png',
+                  fit: BoxFit.cover,
                 ),
               ),
-            ),
-          ),
-        ),
 
-        // === Draggable beef on the shelf ===
-        Positioned(
-          left: 180, // tweak to line up with shelf
-          top: 200, // tweak to line up with shelf
-          child: Draggable<String>(
-            data: 'beef_steak',
-            feedback: Image.asset(
-              'assets/images/food/beef_steak.png',
-              width: 58,
-              height: 58,
-            ),
-            childWhenDragging: Opacity(
-              opacity: 0.3,
-              child: Image.asset(
-                'assets/images/food/beef_steak.png',
-                width: 58,
-                height: 58,
+              // Close / back button
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: GestureDetector(
+                    onTap: () {
+                      widget.game.closeFridge();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        'assets/images/cross_small.png',
+                        width: 32,
+                        height: 32,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
-            child: Image.asset(
-              'assets/images/food/beef_steak.png',
-              width: 58,
-              height: 58,
-            ),
-          ),
-        ),
 
-        // === Inventory slot (drag target + tap to discard) ===
-        Positioned(
-          right: 32,
-          bottom: 32,
-          child: _InventoryDragTarget(
-            heldItemId: heldItemId,
-            onItemDropped: _handleItemDropped,
-            onTap: _handleInventoryTap,
+              // === Cold ingredients on the shelves ===
+              // tweak positions to line up with your fridge shelves
+              _ingredientDraggable(
+                ingredientId: IngredientIds.butter,
+                left: 155.0,
+                top: 224.1,
+              ),
+              _ingredientDraggable(
+                ingredientId: IngredientIds.mushrooms,
+                left: 270.5,
+                top: 218.4,
+              ),
+              _ingredientDraggable(
+                ingredientId: IngredientIds.beefFillet,
+                left: 460.5,
+                top: 106.0,
+              ),
+              _ingredientDraggable(
+                ingredientId: IngredientIds.prosciutto,
+                left: 453.5,
+                top: 300.0,
+              ),
+              _ingredientDraggable(
+                ingredientId: IngredientIds.eggs,
+                left: 254.3,
+                top: 101.7,
+              ),
+              _ingredientDraggable(
+                ingredientId: IngredientIds.water,
+                left: 152.7,
+                top: 115.5,
+              ),
+
+              // === Inventory slot (drag target + tap to discard) ===
+              Positioned(
+                right: 32,
+                bottom: 32,
+                child: _InventoryDragTarget(
+                  heldItemId: heldItemId,
+                  onItemDropped: _handleItemDropped,
+                  onTap: _handleInventoryTap,
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
@@ -177,7 +201,9 @@ class _InventoryDragTarget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap, // tap to discard
       child: DragTarget<String>(
-        onWillAccept: (data) => data == 'beef_steak',
+        // Accept any recognized ingredient ID
+        onWillAccept: (data) =>
+            data != null && ingredientAssetPaths.containsKey(data),
         onAccept: onItemDropped,
         builder: (context, candidate, rejected) {
           final isActive = candidate.isNotEmpty;
@@ -193,12 +219,17 @@ class _InventoryDragTarget extends StatelessWidget {
             child: heldItemId == null
                 ? Text(
                     'empty',
-                    style: TextStyle(color: borderColor, fontSize: 12),
+                    style: TextStyle(
+                      color: borderColor,
+                      fontSize: 12,
+                      decoration: TextDecoration
+                          .none, // make sure there is no text underline
+                    ),
                   )
                 : Image.asset(
-                    'assets/images/food/beef_steak.png',
-                    width: 50,
-                    height: 50,
+                    'assets/images/${ingredientAssetPaths[heldItemId]!}',
+                    width: 70,
+                    height: 70,
                   ),
           );
         },
