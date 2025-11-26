@@ -23,7 +23,9 @@ class Timer:
 
     async def _run(self):
         await asyncio.sleep(self.duration)
-        await self._callback()
+        res = self._callback()
+        if asyncio.iscoroutine(res):
+            await res
         self._task = None
 
     def start(self):

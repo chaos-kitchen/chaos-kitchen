@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/game/objects/interactable_object.dart';
 import 'package:chaos_kitchen/game/objects/solid_object.dart';
+import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
 import 'package:chaos_kitchen/utils/config.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -13,16 +15,16 @@ import 'dart:math' as math;
 
 class Player extends PositionComponent
     with HasGameReference<ChaosKitchenGame>, CollisionCallbacks {
-  Player({super.position, required this.sprite})
-    : super(size: Vector2.all(64), anchor: Anchor.center, priority: 2);
+  Player({super.position, required this.sprite, this.heldItemId})
+    : super(size: Vector2.all(40), anchor: Anchor.center, priority: 2);
 
   final Sprite sprite;
-  late SpriteComponent playerSprite;
+  late PositionComponent playerSprite;
 
   final Vector2 velocity = Vector2.zero();
-  double maxSpeed = 400;
-  double acceleration = 800;
-  double friction = 800;
+  double maxSpeed = 350;
+  double acceleration = 3000;
+  double friction = 2000;
 
   /// Interactable objects currently overlapping the player.
   final List<InteractableObject> interactablesInRange = [];
@@ -73,9 +75,12 @@ class Player extends PositionComponent
     return item;
   }
 
-
   @override
   void onLoad() async {
+    await super.onLoad();
+
+    add(NotifyServerOfPlayer(player: this));
+
     // add the shadow first
     add(
       CircleComponent(
@@ -88,10 +93,15 @@ class Player extends PositionComponent
       ),
     );
 
-    playerSprite = SpriteComponent(
-      sprite: sprite,
-      size: size,
-      anchor: Anchor.center,
+    playerSprite = PositionComponent(
+      children: [
+        SpriteComponent(
+          sprite: sprite,
+          size: size + Vector2.all(24),
+          position: Vector2(0, -8),
+          anchor: Anchor.center,
+        ),
+      ],
     );
     add(playerSprite);
 
@@ -159,7 +169,7 @@ class Player extends PositionComponent
 
   void applyInput(Vector2 input, double dt) {
     if (!input.isZero()) {
-      final desired = input.normalized() * maxSpeed;
+      final desired = input * maxSpeed;
 
       final delta = desired - velocity;
       final dist = delta.length;
@@ -193,5 +203,56 @@ class Player extends PositionComponent
     // Calculate the angle of movement in radians
     final movementAngle = math.atan2(velocity.y, velocity.x);
     playerSprite.angle = movementAngle - (math.pi / 2);
+  }
+}
+
+class NotifyServerOfPlayer extends Component
+    with HasGameReference<ChaosKitchenGame> {
+  final Player player;
+
+  NotifyServerOfPlayer({required this.player});
+
+  @override
+  FutureOr<void> onLoad() async {
+    await super.onLoad();
+
+    var lastPosition = player.position.clone();
+    var lastHeldItemId = player.heldItemId;
+
+    add(
+      TimerComponent(
+        period: 1 / 6,
+        repeat: true,
+        onTick: () {
+          // if position hasn't changed, don't send update
+          if (lastPosition != player.position) {
+            lastPosition = player.position.clone();
+
+            game.websocket.sendMessage(
+              ClientToServerMessage(
+                positionUpdate: PositionUpdateMessage(
+                  position: PbVector2(
+                    x: player.position.x,
+                    y: player.position.y,
+                  ),
+                ),
+              ),
+            );
+          }
+
+          if (lastHeldItemId != player.heldItemId) {
+            lastHeldItemId = player.heldItemId;
+
+            game.websocket.sendMessage(
+              ClientToServerMessage(
+                inventoryUpdate: InventoryUpdateMessage(
+                  itemId: player.heldItemId,
+                ),
+              ),
+            );
+          }
+        },
+      ),
+    );
   }
 }

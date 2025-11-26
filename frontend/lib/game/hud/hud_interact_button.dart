@@ -8,7 +8,7 @@ class HudInteractButton extends HudButtonComponent {
   HudInteractButton({required super.margin, required this.onPressWhenActive})
     : super(size: Vector2.all(80));
 
-  late final SpriteComponent? buttonSprite;
+  SpriteComponent? buttonSprite;
 
   bool _isActive = false;
   Color _color = Colors.grey.withValues(alpha: 0.5);
