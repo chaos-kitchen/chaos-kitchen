@@ -4,24 +4,37 @@ package websocket;
 
 import "google/protobuf/timestamp.proto";
 
+message PbVector2 {
+  double x = 1;
+  double y = 2;
+}
+
 message ClientToServerMessage {
   oneof payload {
     // Lobby messages
     StartGameMessage start_game = 1;
+
+    // Game messages
+    PositionUpdateMessage position_update = 2;
+    InventoryUpdateMessage inventory_update = 3;
   }
 }
 
 message StartGameMessage {
 }
 
+message PositionUpdateMessage {
+  PbVector2 position = 1;
+}
+
+message InventoryUpdateMessage {
+  string item_id = 1; // empty string if no item is held
+}
+
 message ServerToClientMessage {
   oneof payload {
-    // Lobby messages
     LobbyUpdatedMessage lobby_updated = 1;
     GameStartedMessage game_started = 2;
-
-    // Game messages
-    TimerUpdateMessage timer_update = 3;
   }
 }
 
@@ -34,10 +47,8 @@ message LobbyUpdatedMessage {
 message GameStartedMessage {
   PlayerRole role = 1;
   google.protobuf.Timestamp end_time = 2;
-}
-
-message TimerUpdateMessage {
-  int32 remaining_seconds = 1;
+  PbVector2 initial_position = 3;
+  string held_item_id = 4; // empty string if no item is held
 }
 
 enum PlayerRole {

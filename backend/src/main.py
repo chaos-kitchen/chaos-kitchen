@@ -46,4 +46,4 @@ async def game_websocket(
         while True:
             await room.receive_message(client_id, websocket)
     except WebSocketDisconnect:
-        await room.disconnect(client_id)
+        await room.disconnect(client_id, websocket)

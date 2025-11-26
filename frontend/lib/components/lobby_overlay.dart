@@ -4,6 +4,7 @@ import 'package:chaos_kitchen/components/button.dart';
 import 'package:chaos_kitchen/components/snackbar.dart';
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
+import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
 class LobbyOverlay extends StatefulWidget {
@@ -37,9 +38,14 @@ class _LobbyOverlayState extends State<LobbyOverlay> {
 
       case ServerToClientMessage_Payload.gameStarted:
         final gameStartedMessage = message.gameStarted;
-        widget.game.switchRole(
-          gameStartedMessage.role,
-          gameStartedMessage.endTime.toDateTime(),
+        widget.game.startGame(
+          initialPlayerPosition: Vector2(
+            gameStartedMessage.initialPosition.x,
+            gameStartedMessage.initialPosition.y,
+          ),
+          heldItemId: gameStartedMessage.heldItemId,
+          role: gameStartedMessage.role,
+          gameEndTime: gameStartedMessage.endTime.toDateTime(),
         );
         widget.game.closeLobby();
         break;

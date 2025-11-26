@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:ui' show Paint;
 
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/game/hud/hud_interact_button.dart';
 import 'package:chaos_kitchen/game/objects/interactable_object.dart';
 import 'package:flutter/material.dart';
 import 'package:chaos_kitchen/game/actors/player.dart';
+import 'package:chaos_kitchen/game/ingredients.dart';
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/input.dart';
@@ -24,6 +24,36 @@ class PlayerViewport extends MaxViewport
       PlayerJoystick(
         player: player,
         margin: const EdgeInsets.only(left: 40, bottom: 40),
+      ),
+    );
+
+    add(
+      HudButtonComponent(
+        margin: const EdgeInsets.only(right: 40, top: 40),
+        size: Vector2.all(50),
+        button: CircleComponent(
+          radius: 25,
+          paintLayers: [
+            Paint()..color = const Color(0x55000000),
+            Paint()
+              ..color = const Color(0xAA000000)
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 4,
+          ],
+          children: [
+            TextComponent(
+              text: '⚙',
+              anchor: Anchor.center,
+              position: Vector2.all(25),
+              textRenderer: TextPaint(
+                style: const TextStyle(color: Colors.white, fontSize: 24),
+              ),
+            ),
+          ],
+        ),
+        onPressed: () {
+          game.openPauseMenu();
+        },
       ),
     );
 
@@ -104,6 +134,7 @@ class HudInventorySlot extends HudMarginComponent
   late RectangleComponent _border;
   late TextComponent _emptyText;
   SpriteComponent? _itemSprite;
+  String? _lastItemId;
 
   @override
   Future<void> onLoad() async {
@@ -139,16 +170,27 @@ class HudInventorySlot extends HudMarginComponent
       ),
     );
     add(_emptyText);
+  }
 
-    final beefSprite = await game.loadSprite('food/beef_steak.png');
-    setItemSprite(beefSprite);
+  void _updateSpriteForItemId(String? itemId) {
+    if (itemId == null) {
+      if (_itemSprite != null) {
+        _itemSprite!.opacity = 0.0;
+      }
+      return;
+    }
 
-    _itemSprite!
-      ..anchor = Anchor.center
-      ..position = size / 2;
+    final assetPath = ingredientAssetPaths[itemId];
+    if (assetPath == null) return;
 
-    // Start hidden if the player isn't holding anything yet
-    _itemSprite!.opacity = player.hasHeldItem ? 1.0 : 0.0;
+    // Load sprite async; when ready, apply it
+    game.loadSprite(assetPath).then((sprite) {
+      setItemSprite(sprite);
+      _itemSprite!
+        ..anchor = Anchor.center
+        ..position = size / 2
+        ..opacity = 1.0;
+    });
   }
 
   /// Call this later when you know which image to show for the held item.
@@ -156,7 +198,7 @@ class HudInventorySlot extends HudMarginComponent
     if (_itemSprite == null) {
       _itemSprite = SpriteComponent(
         sprite: sprite,
-        size: size * 0.7, // a bit inset from the border
+        size: size * 0.875, // a bit inset from the border
         anchor: Anchor.center,
         position: size / 2,
       );
@@ -171,12 +213,20 @@ class HudInventorySlot extends HudMarginComponent
     super.update(dt);
 
     final hasItem = player.hasHeldItem;
+    final itemId = player.heldItemId;
 
-    // When the cook has something: hide text, show sprite (if any).
-    // When inventory is empty: show "empty", hide sprite.
+    // text
     _emptyText.text = hasItem ? '' : 'empty';
-    if (_itemSprite != null) {
-      _itemSprite!.opacity = hasItem ? 1.0 : 0.0;
+
+    // if the item type changed, update sprite
+    if (itemId != _lastItemId) {
+      _lastItemId = itemId;
+      _updateSpriteForItemId(itemId);
+    }
+
+    // If there is no item, make sure sprite is hidden.
+    if (!hasItem && _itemSprite != null) {
+      _itemSprite!.opacity = 0.0;
     }
   }
 }

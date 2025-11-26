@@ -1,5 +1,6 @@
 import 'package:chaos_kitchen/game/cook_world.dart';
 import 'package:chaos_kitchen/game/instructor_world.dart';
+import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pbenum.dart';
 import 'package:chaos_kitchen/utils/config.dart';
 import 'package:chaos_kitchen/utils/prefs.dart';
@@ -32,34 +33,54 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
     );
 
     websocket = WebSocketController(wsUrl);
-    await websocket.initialize();
     openLobby();
   }
 
   @override
   void onMount() async {
     super.onMount();
+    await websocket.initialize();
     await Flame.device.fullScreen();
   }
 
   @override
   void onRemove() async {
     super.onRemove();
+    websocket.dispose();
     await Flame.device.restoreFullscreen();
   }
 
-  void switchRole(PlayerRole newRole, DateTime gameEndTime) {
-    world.removeFromParent();
-    switch (newRole) {
+  void startGame({
+    required Vector2 initialPlayerPosition,
+    required PlayerRole role,
+    required String? heldItemId,
+    required DateTime gameEndTime,
+  }) {
+    switch (role) {
       case PlayerRole.PLAYER_ROLE_COOK:
-        world = CookWorld();
+        world = CookWorld(
+          initialPlayerPosition: initialPlayerPosition,
+          initialHeldItemId: heldItemId,
+        );
         break;
       case PlayerRole.PLAYER_ROLE_INSTRUCTOR:
-        world = InstructorWorld(gameEndTime: gameEndTime);
+        world = InstructorWorld(
+          initialPlayerPosition: initialPlayerPosition,
+          initialHeldItemId: heldItemId,
+          gameEndTime: gameEndTime,
+        );
         break;
       default:
-        throw UnimplementedError("Unknown player role: $newRole");
+        throw UnimplementedError("Unknown player role: $role");
     }
+  }
+
+  void openPauseMenu() {
+    overlays.add('pause_overlay');
+  }
+
+  void closePauseMenu() {
+    overlays.remove('pause_overlay');
   }
 
   void openLobby() {
