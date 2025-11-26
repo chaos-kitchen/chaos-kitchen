@@ -11,9 +11,9 @@ class DoughMixerOverlay extends StatefulWidget {
   State<DoughMixerOverlay> createState() => _DoughMixerOverlayState();
 }
 
-/// Payload for drag operations: which item, and where it came from.
-/// sourceSlotIndex == null  -> came from inventory
-/// sourceSlotIndex != null -> came from that slot index
+/// Drag payload: which item is being dragged, and from where.
+/// sourceSlotIndex == null  => from inventory
+/// sourceSlotIndex != null => from slot[index]
 class _DragPayload {
   final String itemId;
   final int? sourceSlotIndex;
@@ -30,15 +30,32 @@ class IngredientSlot {
   IngredientSlot({required this.alignment, this.itemId});
 }
 
+// The correct dough recipe (order doesn’t matter)
+const Set<String> _correctDoughSet = {
+  IngredientIds.flour,
+  IngredientIds.butter,
+  IngredientIds.salt,
+  IngredientIds.water,
+  IngredientIds.eggs,
+};
+
 class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
   MixingPhase _phase = MixingPhase.placeIngredients;
+
   late List<IngredientSlot> _slots;
+
+  // Whether we’ve checked the 5 ingredients yet
+  bool _recipeEvaluated = false;
+  bool _recipeCorrect = false;
+  bool _ingredientsLocked = false; // true once the correct 5 are set
+  int _ingredientsInBowl = 0; // how many have been dropped into bowl
 
   @override
   void initState() {
     super.initState();
 
-    final saved = widget.game.doughMixerSlots; // length 5
+    final saved =
+        widget.game.doughMixerSlots; // length 5, lives in ChaosKitchenGame
 
     _slots = [
       // Left column: top / middle / bottom
@@ -50,16 +67,18 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
       IngredientSlot(alignment: const Alignment(0.7, -0.3), itemId: saved[3]),
       IngredientSlot(alignment: const Alignment(0.7, 0.3), itemId: saved[4]),
     ];
+
+    _recalculateRecipeState(); // in case slots were already filled
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // dark background over the game
+        // Dim the game behind
         Positioned.fill(child: Container(color: Colors.black54)),
 
-        // centered minigame panel
+        // Centered minigame panel
         Center(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24),
@@ -78,7 +97,7 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
   Widget _buildPanelContents() {
     return Stack(
       children: [
-        // close button
+        // Close button
         Positioned(
           top: 8,
           right: 8,
@@ -88,15 +107,15 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
           ),
         ),
 
-        // bowl in the middle
+        // Bowl (graphics + label) in the middle
         Align(alignment: Alignment.center, child: _buildBowlArea()),
 
-        // ingredient slots around the bowl
+        // Ingredient slots around the bowl
         ..._slots.asMap().entries.map(
           (entry) => _buildSlot(entry.key, entry.value),
         ),
 
-        // inventory box inside overlay (bottom center)
+        // Overlay inventory box (bottom center)
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
@@ -108,33 +127,34 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
     );
   }
 
-  // ------------------------------------------------------------
-  // INVENTORY BOX (overlay view of cook's held item)
-  // ------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // Inventory box inside overlay (mirror of cook's held item)
+  // ---------------------------------------------------------------------------
   Widget _buildInventoryBox() {
     final player = widget.game.cookPlayer;
     final heldId = player?.heldItemId;
     final heldAsset = heldId != null ? ingredientAssetPaths[heldId] : null;
 
     return DragTarget<_DragPayload>(
-      // Only accept drop from slots when inventory is empty
+      // Only accept drops from slots when inventory is empty and NOT locked
       onWillAccept: (payload) {
         if (player == null || payload == null) return false;
-        // must have room in inventory
+        if (_ingredientsLocked) return false;
         return !player.hasHeldItem;
       },
       onAccept: (payload) {
         final p = widget.game.cookPlayer;
         if (p == null) return;
 
-        final success = p.tryPickItem(payload.itemId);
-        if (success && payload.sourceSlotIndex != null) {
-          setState(() {
+        setState(() {
+          final success = p.tryPickItem(payload.itemId);
+          if (success && payload.sourceSlotIndex != null) {
             final idx = payload.sourceSlotIndex!;
             _slots[idx].itemId = null;
             widget.game.doughMixerSlots[idx] = null;
-          });
-        }
+          }
+          _recalculateRecipeState();
+        });
       },
       builder: (context, candidate, rejected) {
         final borderColor = candidate.isNotEmpty
@@ -143,7 +163,6 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
 
         Widget inner;
         if (heldAsset != null) {
-          // We have something in inventory: make it draggable out to slots
           inner = Draggable<_DragPayload>(
             data: _DragPayload(itemId: heldId!, sourceSlotIndex: null),
             feedback: Image.asset(
@@ -166,7 +185,6 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
             ),
           );
         } else {
-          // empty inventory
           inner = const SizedBox.shrink();
         }
 
@@ -185,9 +203,9 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
     );
   }
 
-  // ------------------------------------------------------------
-  // SLOT WIDGETS — DragTarget + (optional) Draggable child
-  // ------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // Slots: DragTargets that can hold an item and be dragged out again
+  // ---------------------------------------------------------------------------
   Widget _buildSlot(int index, IngredientSlot slot) {
     final itemId = slot.itemId;
     final assetPath = itemId != null ? ingredientAssetPaths[itemId] : null;
@@ -196,7 +214,8 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
       alignment: slot.alignment,
       child: DragTarget<_DragPayload>(
         onWillAccept: (payload) {
-          // Only accept if slot empty and there is some payload
+          // Only accept if slot is empty AND we’re not locked in
+          if (_ingredientsLocked) return false;
           return payload != null && slot.itemId == null;
         },
         onAccept: (payload) {
@@ -205,33 +224,46 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
 
           setState(() {
             if (payload.sourceSlotIndex == null) {
-              // from inventory
+              // From inventory
               if (player.heldItemId == payload.itemId) {
                 player.dropHeldItem();
               }
             } else {
-              // from another slot
+              // From another slot
               final from = payload.sourceSlotIndex!;
               _slots[from].itemId = null;
               widget.game.doughMixerSlots[from] = null;
             }
 
-            // place item into this slot
             slot.itemId = payload.itemId;
             widget.game.doughMixerSlots[index] = payload.itemId;
+
+            _recalculateRecipeState();
           });
         },
         builder: (context, candidate, rejected) {
-          final borderColor = candidate.isNotEmpty
+          final bool isHovering = candidate.isNotEmpty;
+
+          Color bgColor = const Color(0xFFEEDFCC);
+
+          if (slot.itemId != null && _recipeEvaluated && _recipeCorrect) {
+            // Correct recipe and this slot still has an ingredient → green
+            bgColor = const Color(0xFFD6F5D6);
+          } else if (slot.itemId != null &&
+              _recipeEvaluated &&
+              !_recipeCorrect) {
+            // Wrong combination → red
+            bgColor = const Color(0xFFF8D6D6);
+          }
+
+          final borderColor = isHovering
               ? Colors.greenAccent
               : Colors.brown[700]!;
 
           Widget child;
           if (assetPath == null) {
-            // empty slot
             child = const SizedBox.shrink();
           } else {
-            // slot has an item; make it draggable OUT (to other slots or inventory)
             child = Draggable<_DragPayload>(
               data: _DragPayload(itemId: itemId!, sourceSlotIndex: index),
               feedback: Image.asset(
@@ -259,7 +291,7 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFFEEDFCC),
+              color: bgColor,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: borderColor, width: 4),
             ),
@@ -271,43 +303,144 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
     );
   }
 
-  // ------------------------------------------------------------
-  // BOWL AREA — we'll hook this up for the mixing phase later
-  // ------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // Bowl area: use your bowl + spoon assets, with text overlay
+  // ---------------------------------------------------------------------------
   Widget _buildBowlArea() {
-    return Container(
-      width: 180,
-      height: 180,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: const Color(0xFFE7D3B5),
-        border: Border.all(color: Colors.brown, width: 5),
-      ),
-      alignment: Alignment.center,
-      child: _buildBowlInner(),
+    return DragTarget<_DragPayload>(
+      // Only accept ingredients from slots when we’re locked in (correct recipe)
+      onWillAccept: (payload) {
+        if (!_ingredientsLocked) return false;
+        if (payload == null) return false;
+        // Only allow dragging from slots, not from inventory
+        return payload.sourceSlotIndex != null;
+      },
+      onAccept: (payload) {
+        final idx = payload.sourceSlotIndex;
+        if (idx == null) return;
+
+        setState(() {
+          // “Consume” ingredient from that slot
+          _slots[idx].itemId = null;
+          widget.game.doughMixerSlots[idx] = null;
+          _ingredientsInBowl++;
+
+          // If all 5 ingredients have been added to the bowl, reset everything
+          if (_ingredientsInBowl >= 5) {
+            _resetSlotsState();
+          }
+        });
+      },
+      builder: (context, candidate, rejected) {
+        final bool isHovering = candidate.isNotEmpty;
+
+        return SizedBox(
+          width: 200,
+          height: 200,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Optional glow when hovering with an ingredient
+              if (isHovering)
+                Container(
+                  width: 190,
+                  height: 190,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0x33FFFFFF),
+                  ),
+                ),
+
+              // Bowl sprite
+              Image.asset(
+                'assets/images/mix_bowl_empty.png',
+                width: 180,
+                height: 180,
+                fit: BoxFit.contain,
+              ),
+
+              // Spoon ABOVE the bowl (slightly overlapping at most)
+              Positioned(
+                top: 10, // adjust to taste
+                child: Image.asset(
+                  'assets/images/mix_spoon.png',
+                  width: 140,
+                  fit: BoxFit.contain,
+                ),
+              ),
+
+              // Label text ("Bowl" or "Mix")
+              _buildBowlLabel(),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildBowlInner() {
-    if (_phase == MixingPhase.mix) {
-      return const Text(
-        'Mix!',
-        style: TextStyle(
-          fontSize: 26,
-          fontWeight: FontWeight.bold,
-          color: Colors.red,
-        ),
-      );
-    }
+  Widget _buildBowlLabel() {
+    final label = (_phase == MixingPhase.mix && _recipeCorrect)
+        ? 'Mix'
+        : 'Bowl';
 
-    return const Text(
-      'Bowl',
-      style: TextStyle(
+    return Text(
+      label,
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.brown,
         decoration: TextDecoration.underline,
       ),
     );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Recipe evaluation: called whenever slots change
+  // ---------------------------------------------------------------------------
+  void _recalculateRecipeState() {
+    final allFilled = _slots.every((s) => s.itemId != null);
+
+    if (!allFilled) {
+      // Not all slots filled → everything is “free” again
+      _recipeEvaluated = false;
+      _recipeCorrect = false;
+      _ingredientsLocked = false;
+      _ingredientsInBowl = 0;
+      _phase = MixingPhase.placeIngredients;
+      return;
+    }
+
+    // Compare as sets so order doesn’t matter
+    final items = _slots.map((s) => s.itemId!).toSet();
+    final correct =
+        items.length == _correctDoughSet.length &&
+        items.containsAll(_correctDoughSet);
+
+    _recipeEvaluated = true;
+    _recipeCorrect = correct;
+
+    if (correct) {
+      _ingredientsLocked = true; // lock slots in
+      _ingredientsInBowl = 0; // not started mixing yet
+      _phase = MixingPhase.mix;
+    } else {
+      _ingredientsLocked = false; // still adjustable
+      _ingredientsInBowl = 0;
+      _phase = MixingPhase.placeIngredients;
+    }
+  }
+
+  void _resetSlotsState() {
+    // Clear all slots & game state
+    for (var i = 0; i < _slots.length; i++) {
+      _slots[i].itemId = null;
+      widget.game.doughMixerSlots[i] = null;
+    }
+
+    _recipeEvaluated = false;
+    _recipeCorrect = false;
+    _ingredientsLocked = false;
+    _ingredientsInBowl = 0;
+    _phase = MixingPhase.placeIngredients;
   }
 }
