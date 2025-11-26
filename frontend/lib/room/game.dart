@@ -3,6 +3,7 @@ import 'package:chaos_kitchen/components/pause_overlay.dart';
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/components/fridge_overlay.dart';
 import 'package:chaos_kitchen/components/pantry_overlay.dart';
+import 'package:chaos_kitchen/components/dough_mixer_overlay.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
@@ -49,6 +50,10 @@ class GameScreen extends StatelessWidget {
 
             'pause_overlay': (context, game) {
               return PauseOverlay(game: game);
+            },
+
+            'dough_mixer': (context, game) {
+              return DoughMixerOverlay(game: game);
             },
           },
         ),

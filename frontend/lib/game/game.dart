@@ -9,6 +9,7 @@ import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:chaos_kitchen/game/actors/player.dart';
+import 'package:chaos_kitchen/components/dough_mixer_overlay.dart';
 
 class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
   final String roomId;
@@ -19,6 +20,9 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
   late final WebSocketController websocket;
 
   Player? cookPlayer;
+
+  // 5 slots around the bowl, each can hold an ingredient itemId or be null
+  final List<String?> doughMixerSlots = List<String?>.filled(5, null);
 
   @override
   Future<void> onLoad() async {
@@ -110,6 +114,16 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
 
   void closePantry() {
     overlays.remove('pantry_overlay');
+    resumeEngine();
+  }
+
+  void openDoughMixer() {
+    pauseEngine();
+    overlays.add('dough_mixer');
+  }
+
+  void closeDoughMixer() {
+    overlays.remove('dough_mixer');
     resumeEngine();
   }
 }
