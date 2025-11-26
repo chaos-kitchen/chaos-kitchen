@@ -41,6 +41,7 @@ abstract class InteractableObject extends PositionComponent
       final rectHitbox = RectangleHitbox()
         ..collisionType = CollisionType.passive
         ..renderShape = true
+        ..isSolid = true
         ..paint = outlinePaint; // 👈 outline-only
 
       add(rectHitbox);
@@ -51,6 +52,7 @@ abstract class InteractableObject extends PositionComponent
       final circleHitbox = CircleHitbox()
         ..collisionType = CollisionType.passive
         ..renderShape = true
+        ..isSolid = true
         ..paint = outlinePaint; // 👈 outline-only
 
       add(circleHitbox);

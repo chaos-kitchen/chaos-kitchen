@@ -15,6 +15,13 @@ import 'package:flame/events.dart';
 
 class CookWorld extends World
     with HasGameReference<ChaosKitchenGame>, TapCallbacks {
+  final Vector2 initialPlayerPosition;
+  final String? initialHeldItemId;
+  CookWorld({
+    required this.initialPlayerPosition,
+    required this.initialHeldItemId,
+  });
+
   @override
   Future<void> onLoad() async {
     final gameBounds = Vector2(32 * 30, 32 * 20);
@@ -30,7 +37,8 @@ class CookWorld extends World
     await game.images.load('food/beef_steak.png');
 
     final player = Player(
-      position: Vector2(400.0, 400.0),
+      position: initialPlayerPosition,
+      heldItemId: initialHeldItemId,
       sprite: playerSprite,
     );
     add(player);
@@ -48,22 +56,13 @@ class CookWorld extends World
     game.camera.viewfinder.position = gameBounds / 2;
     game.camera.viewfinder.anchor = Anchor.center;
 
-    // add(
-    //   OvenObject(
-    //     position: Vector2(600, 300), // TODO: adjust to real oven location
-    //     radius: 60,
-    //   ),
-    // );
-
     addAll([
+      // outer walls
       SolidObjectHitbox([
-        // outer walls
-        Vector2(47.4, 55.1),
-        Vector2(953.4, 56.9),
-        Vector2(951.7, 637.6),
-        Vector2(0.6, 637.6),
-        Vector2(0.6, 350.2),
-        Vector2(40.9, 349.0),
+        Vector2(0, 50),
+        Vector2(0, 32 * 20),
+        Vector2(32 * 30, 32 * 20),
+        Vector2(32 * 30, 50),
       ]),
       SolidObjectHitbox([
         // fridge shelves and boxes

@@ -15,8 +15,14 @@ import 'package:flame/events.dart';
 
 class InstructorWorld extends World
     with HasGameReference<ChaosKitchenGame>, TapCallbacks {
+  final Vector2 initialPlayerPosition;
+  final String? initialHeldItemId;
   final DateTime gameEndTime;
-  InstructorWorld({required this.gameEndTime});
+  InstructorWorld({
+    required this.initialPlayerPosition,
+    required this.initialHeldItemId,
+    required this.gameEndTime,
+  });
 
   @override
   Future<void> onLoad() async {
@@ -30,7 +36,8 @@ class InstructorWorld extends World
 
     final playerSprite = Sprite(await game.images.load('instructor.png'));
     final player = Player(
-      position: Vector2(400.0, 400.0),
+      position: initialPlayerPosition,
+      heldItemId: initialHeldItemId,
       sprite: playerSprite,
     );
     add(player);

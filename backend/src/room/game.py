@@ -15,6 +15,7 @@ from protobuf.websocket_pb2 import (
     LobbyUpdatedMessage,
     PlayerRole,
     ServerToClientMessage,
+    PbVector2,
 )
 from utils import Timer
 
@@ -25,7 +26,9 @@ logger = logging.getLogger(__name__)
 class PlayerInfo:
     player_name: str
     role: PlayerRole
+    position: PbVector2
     websocket: WebSocket | None
+    held_item_id: str | None
     connection_lock: Lock
 
 
@@ -71,7 +74,9 @@ class GameRoom:
             self.players[client_id] = PlayerInfo(
                 player_name="",
                 role=PlayerRole.PLAYER_ROLE_UNSPECIFIED,
+                position=PbVector2(x=400, y=400),
                 websocket=None,
+                held_item_id=None,
                 connection_lock=Lock(),
             )
 
@@ -79,13 +84,15 @@ class GameRoom:
 
         # Ensure websocket connections are closed/opened one at a time
         async with player.connection_lock:
-            if player.websocket:
-                await player.websocket.close()
+            old_websocket = player.websocket
 
             # Update player info + accept new connection
             player.player_name = player_name
             player.websocket = websocket
             await websocket.accept()
+
+            if old_websocket:
+                await old_websocket.close()
 
         if self.has_started:
             # Game already started - send game started message
@@ -94,6 +101,8 @@ class GameRoom:
                 ServerToClientMessage(
                     game_started=GameStartedMessage(
                         role=player.role,
+                        initial_position=player.position,
+                        held_item_id=player.held_item_id,
                         end_time=self._game_end_timer.ends_at,
                     )
                 ),
@@ -114,6 +123,7 @@ class GameRoom:
         else:
             # Remove player from game
             self.players.pop(client_id)
+            await self._broadcast_lobby_update()
 
     async def receive_message(self, client_id: UUID, websocket: WebSocket):
         client_data = await websocket.receive_bytes()
@@ -123,6 +133,12 @@ class GameRoom:
         match client_message.WhichOneof("payload"):
             case "start_game":
                 await self._handle_game_start(client_id)
+            case "position_update":
+                position = client_message.position_update.position
+                self.players[client_id].position = position
+            case "inventory_update":
+                item_id = client_message.inventory_update.item_id
+                self.players[client_id].held_item_id = item_id
 
     def _handle_game_timer_end(self):
         logger.info("Game ended due to timer expiration.")
@@ -147,16 +163,19 @@ class GameRoom:
         # FIXME: Randomize roles later
         assert len(self.players) >= 1
         for client_id, player in self.players.items():
-            player.role = (
-                PlayerRole.PLAYER_ROLE_COOK
-                if player.player_name.lower() == "cook"
-                else PlayerRole.PLAYER_ROLE_INSTRUCTOR
-            )
+            if player.player_name.lower() == "cook":
+                player.role = PlayerRole.PLAYER_ROLE_COOK
+            else:
+                player.role = PlayerRole.PLAYER_ROLE_INSTRUCTOR
+
+        for client_id, player in self.players.items():
             await self._send_message(
                 client_id,
                 ServerToClientMessage(
                     game_started=GameStartedMessage(
                         role=player.role,
+                        initial_position=player.position,
+                        held_item_id=player.held_item_id,
                         end_time=self._game_end_timer.ends_at,
                     )
                 ),
