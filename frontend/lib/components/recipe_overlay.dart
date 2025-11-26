@@ -45,13 +45,18 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
     }
   }
 
-  Widget _ingredientsPage({required List<String> ingredientIds}) {
+  Widget _ingredientsPage({
+    required List<String> ingredientIds,
+    String title = 'Ingredients',
+    TextAlign titleAlign = TextAlign.center,
+  }) {
     return Column(
       children: [
         Text(
-          'Ingredients',
+          title,
+          textAlign: titleAlign,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
@@ -133,6 +138,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
                   ? SingleChildScrollView(
                       child: _ingredientsPage(
                         ingredientIds: _requiredIngredients,
+                        title: 'Step 1: Ingredients',
                       ),
                     )
                   : null,
