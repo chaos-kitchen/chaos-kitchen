@@ -72,10 +72,10 @@ Stream<T> resubscribeStream<T>(Stream<T> source) {
 }
 
 class WebSocketController {
-  static const Duration reconnectDelay = Duration(seconds: 3);
-  static const int maxReconnectAttempts = 5;
-  static const Duration pingInterval = Duration(seconds: 30);
-  static const Duration connectTimeout = Duration(seconds: 10);
+  static const Duration reconnectDelay = Duration(seconds: 2);
+  static const int maxReconnectAttempts = 15;
+  static const Duration pingInterval = Duration(seconds: 1);
+  static const Duration connectTimeout = Duration(seconds: 5);
 
   final Uri uri;
 
@@ -123,10 +123,10 @@ class WebSocketController {
           print('Unexpected websocket error: $error');
           return;
         }
-        var exception = error.inner;
-        _messageController.addError(exception!);
+        var innerError = error.inner;
+        _messageController.addError(innerError!);
 
-        if (exception is WebSocketException) {
+        if (innerError is WebSocketException) {
           _hasFatalError = true;
         }
       },

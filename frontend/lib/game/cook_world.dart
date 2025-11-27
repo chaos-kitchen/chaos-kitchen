@@ -198,6 +198,14 @@ class CookWorld extends BaseWorld {
 
   @override
   void handleMessage(ServerToClientMessage message) {
-    print('Received WebSocket message: $message');
+    switch (message.whichPayload()) {
+      case ServerToClientMessage_Payload.gameStarted:
+        final gameStartedMessage = message.gameStarted;
+        game.resetGame(gameStartedMessage);
+        break;
+
+      default:
+        break;
+    }
   }
 }

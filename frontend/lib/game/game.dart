@@ -47,24 +47,25 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
     await websocket.dispose();
   }
 
-  void startGame({
-    required Vector2 initialPlayerPosition,
-    required PlayerRole role,
-    required String? heldItemId,
-    required DateTime gameEndTime,
-  }) {
+  void resetGame(GameStartedMessage gameStartedMessage) {
+    final initialPlayerPosition = Vector2(
+      gameStartedMessage.initialPosition.x,
+      gameStartedMessage.initialPosition.y,
+    );
+    final role = gameStartedMessage.role;
+
     switch (role) {
       case PlayerRole.PLAYER_ROLE_COOK:
         world = CookWorld(
           initialPlayerPosition: initialPlayerPosition,
-          initialHeldItemId: heldItemId,
+          initialHeldItemId: gameStartedMessage.heldItemId,
         );
         break;
       case PlayerRole.PLAYER_ROLE_INSTRUCTOR:
         world = InstructorWorld(
           initialPlayerPosition: initialPlayerPosition,
-          initialHeldItemId: heldItemId,
-          gameEndTime: gameEndTime,
+          initialHeldItemId: gameStartedMessage.heldItemId,
+          gameEndTime: gameStartedMessage.endTime.toDateTime(),
         );
         break;
       default:

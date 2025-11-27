@@ -40,15 +40,7 @@ class _LobbyOverlayState extends State<LobbyOverlay> {
 
       case ServerToClientMessage_Payload.gameStarted:
         final gameStartedMessage = message.gameStarted;
-        widget.game.startGame(
-          initialPlayerPosition: Vector2(
-            gameStartedMessage.initialPosition.x,
-            gameStartedMessage.initialPosition.y,
-          ),
-          heldItemId: gameStartedMessage.heldItemId,
-          role: gameStartedMessage.role,
-          gameEndTime: gameStartedMessage.endTime.toDateTime(),
-        );
+        widget.game.resetGame(gameStartedMessage);
         widget.game.closeLobby();
         break;
 
