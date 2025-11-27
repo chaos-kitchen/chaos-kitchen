@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'package:chaos_kitchen/game/actors/player.dart';
-import 'package:chaos_kitchen/game/game.dart';
+import 'package:chaos_kitchen/game/base_world.dart';
 import 'package:chaos_kitchen/game/objects/oven.dart';
 import 'package:chaos_kitchen/game/objects/cutting_board.dart';
 import 'package:chaos_kitchen/game/objects/sink.dart';
@@ -10,13 +12,13 @@ import 'package:chaos_kitchen/game/objects/fridge.dart';
 import 'package:chaos_kitchen/game/objects/garbage.dart';
 import 'package:chaos_kitchen/game/objects/solid_object.dart';
 import 'package:chaos_kitchen/game/viewport.dart';
+import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
 import 'package:flame/components.dart';
-import 'package:flame/events.dart';
 
-class CookWorld extends World
-    with HasGameReference<ChaosKitchenGame>, TapCallbacks {
+class CookWorld extends BaseWorld {
   final Vector2 initialPlayerPosition;
   final String? initialHeldItemId;
+
   CookWorld({
     required this.initialPlayerPosition,
     required this.initialHeldItemId,
@@ -194,13 +196,8 @@ class CookWorld extends World
     add(GarbageObject(position: Vector2(923.8, 477.6), radius: 32 * 1.3));
   }
 
-  // TEMP: temporarily print tap positions for creating hitboxes
   @override
-  void onTapUp(TapUpEvent event) {
-    super.onTapUp(event);
-    final position = event.localPosition;
-    print(
-      'Vector2(${position.x.toStringAsFixed(1)}, ${position.y.toStringAsFixed(1)}),',
-    );
+  void handleMessage(ServerToClientMessage message) {
+    print('Received WebSocket message: $message');
   }
 }

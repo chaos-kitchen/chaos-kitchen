@@ -41,9 +41,21 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
   Future<void> joinRoom(BuildContext context) async {
     final code = codeController.text.trim().replaceAll(' ', '').toUpperCase();
     final apiBaseUri = await AppConfig.getApiBaseUri();
-    final response = await http.get(Uri.parse('$apiBaseUri/room/code/$code'));
-    if (!context.mounted) return;
+    final http.Response response;
 
+    try {
+      response = await http.get(Uri.parse('$apiBaseUri/room/code/$code'));
+    } on http.ClientException catch (e) {
+      if (!context.mounted) return;
+      showErrorSnackbar(context, 'Failed to join room: ${e.message}');
+      return;
+    } catch (e) {
+      if (!context.mounted) return;
+      showErrorSnackbar(context, 'Failed to join room: $e');
+      return;
+    }
+
+    if (!context.mounted) return;
     if (response.statusCode != 200) {
       showErrorSnackbar(
         context,
