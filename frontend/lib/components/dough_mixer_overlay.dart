@@ -215,71 +215,87 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
     final heldId = player?.heldItemId;
     final heldAsset = heldId != null ? ingredientAssetPaths[heldId] : null;
 
-    return DragTarget<_DragPayload>(
-      // Only accept drops from slots when inventory is empty and NOT locked
-      onWillAccept: (payload) {
-        if (player == null || payload == null) return false;
-        if (_ingredientsLocked) return false;
-        return !player.hasHeldItem;
-      },
-      onAccept: (payload) {
-        final p = widget.game.cookPlayer;
-        if (p == null) return;
-
-        setState(() {
-          final success = p.tryPickItem(payload.itemId);
-          if (success && payload.sourceSlotIndex != null) {
-            final idx = payload.sourceSlotIndex!;
-            _slots[idx].itemId = null;
-            widget.game.doughMixerSlots[idx] = null;
-          }
-          _recalculateRecipeState();
-        });
-      },
-      builder: (context, candidate, rejected) {
-        final borderColor = candidate.isNotEmpty
-            ? Colors.greenAccent
-            : Colors.brown[700]!;
-
-        Widget inner;
-        if (heldAsset != null) {
-          inner = Draggable<_DragPayload>(
-            data: _DragPayload(itemId: heldId!, sourceSlotIndex: null),
-            feedback: Image.asset(
-              'assets/images/$heldAsset',
-              width: 60,
-              height: 60,
-            ),
-            childWhenDragging: Opacity(
-              opacity: 0.3,
-              child: Image.asset(
-                'assets/images/$heldAsset',
-                width: 60,
-                height: 60,
-              ),
-            ),
-            child: Image.asset(
-              'assets/images/$heldAsset',
-              width: 60,
-              height: 60,
-            ),
-          );
-        } else {
-          inner = const SizedBox.shrink();
-        }
-
-        return Container(
-          width: 90,
-          height: 90,
-          decoration: BoxDecoration(
-            color: const Color(0xFFEEDFCC),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: borderColor, width: 4),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Text(
+          'Inventory',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.brown,
           ),
-          alignment: Alignment.center,
-          child: inner,
-        );
-      },
+        ),
+        const SizedBox(height: 4),
+
+        // The existing DragTarget box
+        DragTarget<_DragPayload>(
+          // Only accept drops from slots when inventory is empty and NOT locked
+          onWillAccept: (payload) {
+            if (player == null || payload == null) return false;
+            if (_ingredientsLocked) return false;
+            return !player.hasHeldItem;
+          },
+          onAccept: (payload) {
+            final p = widget.game.cookPlayer;
+            if (p == null) return;
+
+            setState(() {
+              final success = p.tryPickItem(payload.itemId);
+              if (success && payload.sourceSlotIndex != null) {
+                final idx = payload.sourceSlotIndex!;
+                _slots[idx].itemId = null;
+                widget.game.doughMixerSlots[idx] = null;
+              }
+              _recalculateRecipeState();
+            });
+          },
+          builder: (context, candidate, rejected) {
+            final borderColor = candidate.isNotEmpty
+                ? Colors.greenAccent
+                : Colors.brown[700]!;
+
+            Widget inner;
+            if (heldAsset != null) {
+              inner = Draggable<_DragPayload>(
+                data: _DragPayload(itemId: heldId!, sourceSlotIndex: null),
+                feedback: Image.asset(
+                  'assets/images/$heldAsset',
+                  width: 60,
+                  height: 60,
+                ),
+                childWhenDragging: Opacity(
+                  opacity: 0.3,
+                  child: Image.asset(
+                    'assets/images/$heldAsset',
+                    width: 60,
+                    height: 60,
+                  ),
+                ),
+                child: Image.asset(
+                  'assets/images/$heldAsset',
+                  width: 60,
+                  height: 60,
+                ),
+              );
+            } else {
+              inner = const SizedBox.shrink();
+            }
+
+            return Container(
+              width: 90,
+              height: 90,
+              decoration: BoxDecoration(
+                color: const Color(0xFFEEDFCC),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: borderColor, width: 4),
+              ),
+              alignment: Alignment.center,
+              child: inner,
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -415,12 +431,12 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
           children: [
             // Label above bowl
             Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
+              padding: const EdgeInsets.only(bottom: 3.0),
               child: _buildBowlLabel(),
             ),
             SizedBox(
               width: 200,
-              height: 200,
+              height: 180,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -450,17 +466,49 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
   }
 
   Widget _buildBowlLabel() {
-    final bool shouldShowMix =
-        _ingredientsLocked && (_sequenceStep == 3 || _sequenceStep == 6);
+    String text = "Bowl";
+    Color color = Colors.brown;
 
-    final label = shouldShowMix ? 'Mix' : 'Bowl';
+    // 1) After 5 slots are filled → recipe evaluated
+    if (_recipeEvaluated) {
+      if (_recipeCorrect) {
+        // Correct 5 ingredients placed in boxes
+        if (_sequenceStep < 7) {
+          // Still performing the mixing sequence
+          if (_sequenceStep == 3 || _sequenceStep == 6) {
+            text = "Mix";
+          } else {
+            text = "Add Ingredients";
+          }
+        } else {
+          // Finished mixing sequence
+          if (_sequenceFailed) {
+            text = "Failed";
+            color = Colors.red[700]!;
+          } else {
+            text = "Complete";
+            color = Colors.green[700]!;
+          }
+        }
+      } else {
+        // Wrong 5 ingredients in slots
+        if (_sequenceStep >= 7) {
+          // Even if they finished mixing with wrong steps
+          text = "Failed";
+          color = Colors.red[700]!;
+        } else {
+          text = "Try Again";
+          color = Colors.red[700]!;
+        }
+      }
+    }
 
     return Text(
-      label,
-      style: const TextStyle(
+      text,
+      style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.brown,
+        color: color,
         decoration: TextDecoration.underline,
       ),
     );
@@ -510,35 +558,53 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
     _slots[slotIndex].itemId = null;
     widget.game.doughMixerSlots[slotIndex] = null;
 
-    // Advance sequence based on expected order
+    // 1) Choose bowl sprite based on the actual ingredient that was dropped.
+    String? sprite;
+    if (itemId == IngredientIds.water) {
+      sprite = 'assets/images/mix_bowl_water.png';
+    } else if (itemId == IngredientIds.eggs) {
+      sprite = 'assets/images/mix_bowl_eggs.png';
+    } else if (itemId == IngredientIds.butter) {
+      sprite = 'assets/images/mix_bowl_butter.png';
+    } else if (itemId == IngredientIds.flour || itemId == IngredientIds.salt) {
+      // both flour and salt look like powder in the bowl
+      sprite = 'assets/images/mix_bowl_powder.png';
+    }
+
+    // 2) Update correctness / sequence state based on *expected* ingredient.
     switch (_sequenceStep) {
       case 0: // expect water
-        if (itemId != IngredientIds.water) _sequenceFailed = true;
-        _bowlSprite = 'assets/images/mix_bowl_water.png';
+        if (itemId != IngredientIds.water) {
+          _sequenceFailed = true;
+        }
         _sequenceStep = 1;
         break;
 
       case 1: // expect flour
-        if (itemId != IngredientIds.flour) _sequenceFailed = true;
-        _bowlSprite = 'assets/images/mix_bowl_powder.png';
+        if (itemId != IngredientIds.flour) {
+          _sequenceFailed = true;
+        }
         _sequenceStep = 2;
         break;
 
       case 2: // expect eggs
-        if (itemId != IngredientIds.eggs) _sequenceFailed = true;
-        _bowlSprite = 'assets/images/mix_bowl_eggs.png';
+        if (itemId != IngredientIds.eggs) {
+          _sequenceFailed = true;
+        }
         _sequenceStep = 3; // now wait for first mixing
         break;
 
       case 4: // expect salt
-        if (itemId != IngredientIds.salt) _sequenceFailed = true;
-        _bowlSprite = 'assets/images/mix_bowl_powder.png';
+        if (itemId != IngredientIds.salt) {
+          _sequenceFailed = true;
+        }
         _sequenceStep = 5;
         break;
 
       case 5: // expect butter
-        if (itemId != IngredientIds.butter) _sequenceFailed = true;
-        _bowlSprite = 'assets/images/mix_bowl_butter.png';
+        if (itemId != IngredientIds.butter) {
+          _sequenceFailed = true;
+        }
         _sequenceStep = 6; // now wait for second mixing
         break;
 
@@ -546,6 +612,11 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
         // Ingredient dropped at an unexpected time
         _sequenceFailed = true;
         break;
+    }
+
+    // 3) Finally, apply the chosen sprite (if we recognized the ingredient).
+    if (sprite != null) {
+      _bowlSprite = sprite;
     }
   }
 
@@ -589,13 +660,35 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
         // Second mixing done → final dough (good or bad)
         _sequenceStep = 7;
 
-        if (_sequenceFailed) {
-          _bowlSprite = 'assets/images/mix_bowl_dough_bad.png';
-        } else {
-          _bowlSprite = 'assets/images/mix_bowl_dough_done.png';
-        }
+        final player = widget.game.cookPlayer;
 
-        // _isHoldingSpoon = false;
+        // Decide if this run was successful:
+        // - recipe had the correct 5 ingredients
+        // - and sequence didn’t get marked as failed by wrong order
+        final bool success = _recipeCorrect && !_sequenceFailed;
+
+        if (success) {          
+          _bowlSprite = 'assets/images/mix_bowl_dough_done.png';
+
+          if (player != null) {
+            // If they’re holding something, drop it first (one-slot inventory)
+            if (player.hasHeldItem) {
+              player.dropHeldItem();
+            }
+            // Add good dough to inventory
+            player.tryPickItem('dough'); // ID for food/dough.png
+          }
+        } else {          
+          _bowlSprite = 'assets/images/mix_bowl_dough_bad.png';
+
+          if (player != null) {
+            if (player.hasHeldItem) {
+              player.dropHeldItem();
+            }
+            // Add bad dough to inventory
+            player.tryPickItem('dough_bad'); // ID for food/dough_bad.png
+          }
+        }
       }
     });
   }
