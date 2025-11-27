@@ -3,11 +3,13 @@ import 'package:chaos_kitchen/home.dart';
 import 'package:chaos_kitchen/join_room.dart';
 import 'package:chaos_kitchen/options.dart';
 import 'package:chaos_kitchen/room.dart';
+import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  Flame.device.fullScreen();
   runApp(MainApp());
 }
 

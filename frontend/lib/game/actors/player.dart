@@ -228,7 +228,7 @@ class NotifyServerOfPlayer extends Component
           if (lastPosition != player.position) {
             lastPosition = player.position.clone();
 
-            game.websocket.sendMessage(
+            game.websocket.send(
               ClientToServerMessage(
                 positionUpdate: PositionUpdateMessage(
                   position: PbVector2(
@@ -243,7 +243,7 @@ class NotifyServerOfPlayer extends Component
           if (lastHeldItemId != player.heldItemId) {
             lastHeldItemId = player.heldItemId;
 
-            game.websocket.sendMessage(
+            game.websocket.send(
               ClientToServerMessage(
                 inventoryUpdate: InventoryUpdateMessage(
                   itemId: player.heldItemId,

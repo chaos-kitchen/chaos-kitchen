@@ -22,6 +22,8 @@ class _LobbyOverlayState extends State<LobbyOverlay> {
   String roomCode = "";
   List<String> players = [];
 
+  Completer<void> websocketLockCompleter = Completer<void>();
+
   StreamSubscription<ServerToClientMessage>? _subscription;
 
   void handleMessage(ServerToClientMessage message) {
@@ -60,13 +62,26 @@ class _LobbyOverlayState extends State<LobbyOverlay> {
   void initState() {
     super.initState();
 
-    _subscription = widget.game.websocket.stream.listen(handleMessage);
+    widget.game.websocket.lock = widget.game.websocket.lock.then((_) {
+      if (!mounted) return null;
+
+      _subscription = widget.game.websocket.stream.listen(
+        handleMessage,
+        onError: (error) {
+          if (!mounted) return;
+          showErrorSnackbar(context, 'WebSocket error: $error');
+        },
+      );
+
+      return websocketLockCompleter.future;
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
     _subscription?.cancel();
+    websocketLockCompleter.complete();
   }
 
   @override
@@ -90,7 +105,7 @@ class _LobbyOverlayState extends State<LobbyOverlay> {
                   onPressed: () {
                     final message = ClientToServerMessage()
                       ..startGame = StartGameMessage();
-                    widget.game.websocket.sendMessage(message);
+                    widget.game.websocket.send(message);
                   },
                   child: Text('Start Game'),
                 ),
