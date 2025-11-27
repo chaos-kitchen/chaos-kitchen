@@ -24,56 +24,63 @@ class FurnaceOverlay extends StatefulWidget {
 }
 
 class _FurnaceOverlayState extends State<FurnaceOverlay> {
-  String? furnaceSlotItemId;
-  String? playerHeldItemId;
-
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      furnaceSlotItemId = widget.args.furnace.heldItemId;
-      playerHeldItemId = widget.args.player.heldItemId;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final furnaceItemNotifier = widget.args.furnace.heldItemNotifier;
+    final playerHeldItemNotifier = widget.args.player.heldItemNotifier;
+
     return MinigameBackdrop(
       child: MinigameBox(
         children: [
-          // Close button
+          Align(
+            alignment: const Alignment(-0.2, -0.6),
+            child: SizedBox(
+              // Set the box size to 50 so it can be aligned properly
+              width: 50,
+              height: 50,
+              child: OverflowBox(
+                maxHeight: 450,
+                maxWidth: 450,
+                child: Image.asset('assets/images/furnace.png'),
+              ),
+            ),
+          ),
+
           MinigameCloseButton(onPressed: () => widget.game.closeFurnace()),
 
           Align(
-            alignment: const Alignment(0, -0.8),
-            child: MinigameItemSlot(
-              itemId: furnaceSlotItemId,
+            alignment: const Alignment(-0.13, -0.01),
+            child: MinigameListenableItemSlot(
+              itemIdNotifier: furnaceItemNotifier,
               onWillAccept: (payload) {
                 // Only accept item if furnace slot is empty
                 // and item is coal
-                return furnaceSlotItemId == null &&
+                return furnaceItemNotifier.value == null &&
                     payload != null &&
                     payload.sourceSlot.itemId == IngredientIds.coal;
-              },
-              onItemChanged: (newItemId) {
-                widget.args.furnace.heldItemId = newItemId;
-                setState(() {
-                  furnaceSlotItemId = newItemId;
-                });
               },
             ),
           ),
 
           Align(
-            alignment: const Alignment(0, 0.5),
-            child: MinigameItemSlot(
-              itemId: playerHeldItemId,
-              onItemChanged: (newItemId) {
-                widget.args.player.heldItemId = newItemId;
-                setState(() {
-                  playerHeldItemId = newItemId;
-                });
-              },
+            alignment: const Alignment(0.9, 0.1),
+            child: Column(
+              spacing: 8,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MinigameListenableItemSlot(
+                  itemIdNotifier: playerHeldItemNotifier,
+                ),
+
+                const Text(
+                  'Inventory',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.brown,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

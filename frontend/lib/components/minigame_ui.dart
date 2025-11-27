@@ -127,3 +127,30 @@ class MinigameItemSlot extends StatelessWidget {
     );
   }
 }
+
+class MinigameListenableItemSlot extends StatelessWidget {
+  final ValueNotifier<String?> itemIdNotifier;
+  final bool Function(MinigameItemDragPayload? payload)? onWillAccept;
+
+  const MinigameListenableItemSlot({
+    super.key,
+    required this.itemIdNotifier,
+    this.onWillAccept,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<String?>(
+      valueListenable: itemIdNotifier,
+      builder: (context, itemId, _) {
+        return MinigameItemSlot(
+          itemId: itemId,
+          onItemChanged: (newItemId) {
+            itemIdNotifier.value = newItemId;
+          },
+          onWillAccept: onWillAccept,
+        );
+      },
+    );
+  }
+}

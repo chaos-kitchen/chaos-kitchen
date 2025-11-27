@@ -15,8 +15,9 @@ import 'dart:math' as math;
 
 class Player extends PositionComponent
     with HasGameReference<ChaosKitchenGame>, CollisionCallbacks {
-  Player({super.position, required this.sprite, this.heldItemId})
-    : super(size: Vector2.all(40), anchor: Anchor.center, priority: 2);
+  Player({super.position, required this.sprite, String? heldItemId})
+    : heldItemNotifier = ValueNotifier(heldItemId),
+      super(size: Vector2.all(40), anchor: Anchor.center, priority: 2);
 
   final Sprite sprite;
   late PositionComponent playerSprite;
@@ -49,10 +50,14 @@ class Player extends PositionComponent
   // ============================================================
   //                SINGLE-SLOT INVENTORY SYSTEM
   // ============================================================
+  final ValueNotifier<String?> heldItemNotifier;
 
   /// The ID/name of the ingredient the player is currently holding.
   /// Null means inventory slot is empty.
-  String? heldItemId;
+  get heldItemId => heldItemNotifier.value;
+  set heldItemId(String? value) {
+    heldItemNotifier.value = value;
+  }
 
   /// Whether the player is currently holding something.
   bool get hasHeldItem => heldItemId != null;
