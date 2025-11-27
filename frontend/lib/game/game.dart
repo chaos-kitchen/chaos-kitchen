@@ -9,7 +9,6 @@ import 'package:chaos_kitchen/utils/websocket_controller.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:chaos_kitchen/game/actors/player.dart';
-import 'package:chaos_kitchen/components/dough_mixer_overlay.dart';
 
 class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
   final String roomId;
@@ -66,20 +65,21 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
     );
     final role = gameStartedMessage.role;
 
+    final heldItemId = gameStartedMessage.heldItemId == ''
+        ? null
+        : gameStartedMessage.heldItemId;
+
     switch (role) {
       case PlayerRole.PLAYER_ROLE_COOK:
         world = CookWorld(
           initialPlayerPosition: initialPlayerPosition,
-          initialHeldItemId: gameStartedMessage.heldItemId,
+          initialHeldItemId: heldItemId,
         );
         break;
       case PlayerRole.PLAYER_ROLE_INSTRUCTOR:
         world = InstructorWorld(
           initialPlayerPosition: initialPlayerPosition,
-          initialHeldItemId: gameStartedMessage.heldItemId == ''
-              ? null
-              : gameStartedMessage.heldItemId,
-
+          initialHeldItemId: heldItemId,
           gameEndTime: gameStartedMessage.endTime.toDateTime(),
         );
         break;
@@ -133,6 +133,16 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
 
   void closeDoughMixer() {
     overlays.remove('dough_mixer');
+    resumeEngine();
+  }
+
+  void openFurnace() {
+    pauseEngine();
+    overlays.add('furnace');
+  }
+
+  void closeFurnace() {
+    overlays.remove('furnace');
     resumeEngine();
   }
 }
