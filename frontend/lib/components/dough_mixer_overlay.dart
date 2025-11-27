@@ -21,8 +21,6 @@ class _DragPayload {
   _DragPayload({required this.itemId, this.sourceSlotIndex});
 }
 
-enum MixingPhase { placeIngredients, mix }
-
 class IngredientSlot {
   final Alignment alignment; // where slot appears around bowl
   String? itemId;
@@ -30,7 +28,7 @@ class IngredientSlot {
   IngredientSlot({required this.alignment, this.itemId});
 }
 
-// The correct dough recipe (order doesn’t matter)
+// The required 5 ingredients (order in slots doesn’t matter)
 const Set<String> _correctDoughSet = {
   IngredientIds.flour,
   IngredientIds.butter,
@@ -40,22 +38,39 @@ const Set<String> _correctDoughSet = {
 };
 
 class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
-  MixingPhase _phase = MixingPhase.placeIngredients;
-
   late List<IngredientSlot> _slots;
 
-  // Whether we’ve checked the 5 ingredients yet
+  // Slot / recipe state
   bool _recipeEvaluated = false;
   bool _recipeCorrect = false;
-  bool _ingredientsLocked = false; // true once the correct 5 are set
-  int _ingredientsInBowl = 0; // how many have been dropped into bowl
+  bool _ingredientsLocked = false; // once correct 5 slots are set
+
+  // Bowl sequence state
+  // 0: waiting water
+  // 1: waiting flour
+  // 2: waiting eggs
+  // 3: waiting mix #1 (2 sec)
+  // 4: waiting salt
+  // 5: waiting butter
+  // 6: waiting mix #2 (2 sec)
+  // 7: finished
+  int _sequenceStep = 0;
+  bool _sequenceFailed = false;
+
+  // Bowl sprite path
+  String _bowlSprite = 'assets/images/mix_bowl_empty.png';
+
+  // Mixing gesture timing
+  DateTime? _mixStartTime;
+  bool _mixCompletedForCurrentStep = false;
+
+  bool _isHoldingSpoon = false;
 
   @override
   void initState() {
     super.initState();
 
-    final saved =
-        widget.game.doughMixerSlots; // length 5, lives in ChaosKitchenGame
+    final saved = widget.game.doughMixerSlots; // length 5
 
     _slots = [
       // Left column: top / middle / bottom
@@ -68,7 +83,12 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
       IngredientSlot(alignment: const Alignment(0.7, 0.3), itemId: saved[4]),
     ];
 
-    _recalculateRecipeState(); // in case slots were already filled
+    _recalculateRecipeState();
+
+    // Ensure bowl starts in a clean state when opening overlay
+    _sequenceStep = 0;
+    _sequenceFailed = false;
+    _bowlSprite = 'assets/images/mix_bowl_empty.png';
   }
 
   @override
@@ -94,6 +114,63 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
     );
   }
 
+  Widget _buildSideSpoon() {
+    // Show spoon only during mixing phases
+    final bool showSpoon =
+        _ingredientsLocked && (_sequenceStep == 3 || _sequenceStep == 6);
+
+    if (!showSpoon) {
+      return const SizedBox.shrink();
+    }
+
+    return Align(
+      // Shift spoon further right (tweak 0.65–0.7 to taste)
+      alignment: const Alignment(0.4, 0.0),
+      child: Draggable<String>(
+        data: 'spoon', // dummy payload
+
+        onDragStarted: () {
+          // Start timing the mix
+          _mixStartTime = DateTime.now();
+          _mixCompletedForCurrentStep = false;
+        },
+
+        onDragEnd: (_) {
+          if (_mixStartTime == null || _mixCompletedForCurrentStep) return;
+
+          final elapsed =
+              DateTime.now().difference(_mixStartTime!).inMilliseconds / 1000.0;
+
+          _mixStartTime = null;
+
+          if (elapsed >= 2.0) {
+            _mixCompletedForCurrentStep = true;
+            _completeMixStep();
+          }
+        },
+
+        feedback: Image.asset(
+          'assets/images/mix_spoon.png',
+          width: 120,
+          fit: BoxFit.contain,
+        ),
+        childWhenDragging: Opacity(
+          opacity: 0.3,
+          child: Image.asset(
+            'assets/images/mix_spoon.png',
+            width: 120,
+            fit: BoxFit.contain,
+          ),
+        ),
+        child: Image.asset(
+          'assets/images/mix_spoon.png',
+          width: 120,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+
   Widget _buildPanelContents() {
     return Stack(
       children: [
@@ -108,12 +185,15 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
         ),
 
         // Bowl (graphics + label) in the middle
-        Align(alignment: Alignment.center, child: _buildBowlArea()),
+        Align(alignment: const Alignment(0, -0.55), child: _buildBowlArea()),
 
         // Ingredient slots around the bowl
         ..._slots.asMap().entries.map(
           (entry) => _buildSlot(entry.key, entry.value),
         ),
+
+        // Side spoon (only visible during mixing phases)
+        _buildSideSpoon(),
 
         // Overlay inventory box (bottom center)
         Align(
@@ -244,6 +324,7 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
         builder: (context, candidate, rejected) {
           final bool isHovering = candidate.isNotEmpty;
 
+          // Base background color
           Color bgColor = const Color(0xFFEEDFCC);
 
           if (slot.itemId != null && _recipeEvaluated && _recipeCorrect) {
@@ -304,84 +385,75 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
   }
 
   // ---------------------------------------------------------------------------
-  // Bowl area: use your bowl + spoon assets, with text overlay
+  // Bowl area: DragTarget + GestureDetector for mixing
   // ---------------------------------------------------------------------------
   Widget _buildBowlArea() {
     return DragTarget<_DragPayload>(
-      // Only accept ingredients from slots when we’re locked in (correct recipe)
       onWillAccept: (payload) {
         if (!_ingredientsLocked) return false;
         if (payload == null) return false;
-        // Only allow dragging from slots, not from inventory
-        return payload.sourceSlotIndex != null;
+        if (payload.sourceSlotIndex == null)
+          return false; // must come from slot
+        if (_sequenceStep == 3 || _sequenceStep == 6)
+          return false; // mixing step
+        if (_sequenceStep >= 7) return false;
+        return true;
       },
       onAccept: (payload) {
         final idx = payload.sourceSlotIndex;
         if (idx == null) return;
 
         setState(() {
-          // “Consume” ingredient from that slot
-          _slots[idx].itemId = null;
-          widget.game.doughMixerSlots[idx] = null;
-          _ingredientsInBowl++;
-
-          // If all 5 ingredients have been added to the bowl, reset everything
-          if (_ingredientsInBowl >= 5) {
-            _resetSlotsState();
-          }
+          _handleIngredientIntoBowl(payload.itemId, idx);
         });
       },
       builder: (context, candidate, rejected) {
         final bool isHovering = candidate.isNotEmpty;
 
-        return SizedBox(
-          width: 200,
-          height: 200,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Optional glow when hovering with an ingredient
-              if (isHovering)
-                Container(
-                  width: 190,
-                  height: 190,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0x33FFFFFF),
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Label above bowl
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: _buildBowlLabel(),
+            ),
+            SizedBox(
+              width: 200,
+              height: 200,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (isHovering)
+                    Container(
+                      width: 190,
+                      height: 190,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0x33FFFFFF),
+                      ),
+                    ),
+
+                  Image.asset(
+                    _bowlSprite,
+                    width: 180,
+                    height: 180,
+                    fit: BoxFit.contain,
                   ),
-                ),
-
-              // Bowl sprite
-              Image.asset(
-                'assets/images/mix_bowl_empty.png',
-                width: 180,
-                height: 180,
-                fit: BoxFit.contain,
+                ],
               ),
-
-              // Spoon ABOVE the bowl (slightly overlapping at most)
-              Positioned(
-                top: 10, // adjust to taste
-                child: Image.asset(
-                  'assets/images/mix_spoon.png',
-                  width: 140,
-                  fit: BoxFit.contain,
-                ),
-              ),
-
-              // Label text ("Bowl" or "Mix")
-              _buildBowlLabel(),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
   }
 
   Widget _buildBowlLabel() {
-    final label = (_phase == MixingPhase.mix && _recipeCorrect)
-        ? 'Mix'
-        : 'Bowl';
+    final bool shouldShowMix =
+        _ingredientsLocked && (_sequenceStep == 3 || _sequenceStep == 6);
+
+    final label = shouldShowMix ? 'Mix' : 'Bowl';
 
     return Text(
       label,
@@ -395,7 +467,7 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
   }
 
   // ---------------------------------------------------------------------------
-  // Recipe evaluation: called whenever slots change
+  // Recipe evaluation for the slots (before any mixing)
   // ---------------------------------------------------------------------------
   void _recalculateRecipeState() {
     final allFilled = _slots.every((s) => s.itemId != null);
@@ -405,8 +477,6 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
       _recipeEvaluated = false;
       _recipeCorrect = false;
       _ingredientsLocked = false;
-      _ingredientsInBowl = 0;
-      _phase = MixingPhase.placeIngredients;
       return;
     }
 
@@ -420,27 +490,113 @@ class _DoughMixerOverlayState extends State<DoughMixerOverlay> {
     _recipeCorrect = correct;
 
     if (correct) {
-      _ingredientsLocked = true; // lock slots in
-      _ingredientsInBowl = 0; // not started mixing yet
-      _phase = MixingPhase.mix;
+      _ingredientsLocked = true; // lock slots in; now we mix into bowl
+      _sequenceStep = 0;
+      _sequenceFailed = false;
+      _bowlSprite = 'assets/images/mix_bowl_empty.png';
     } else {
-      _ingredientsLocked = false; // still adjustable
-      _ingredientsInBowl = 0;
-      _phase = MixingPhase.placeIngredients;
+      _ingredientsLocked = false;
+      _sequenceStep = 0;
+      _sequenceFailed = true; // already “bad” if they continue
+      _bowlSprite = 'assets/images/mix_bowl_empty.png';
     }
   }
 
-  void _resetSlotsState() {
-    // Clear all slots & game state
-    for (var i = 0; i < _slots.length; i++) {
-      _slots[i].itemId = null;
-      widget.game.doughMixerSlots[i] = null;
-    }
+  // ---------------------------------------------------------------------------
+  // Handle ingredient dropping from slot into bowl (sequence logic)
+  // ---------------------------------------------------------------------------
+  void _handleIngredientIntoBowl(String itemId, int slotIndex) {
+    // Clear that slot visually & in game state
+    _slots[slotIndex].itemId = null;
+    widget.game.doughMixerSlots[slotIndex] = null;
 
-    _recipeEvaluated = false;
-    _recipeCorrect = false;
-    _ingredientsLocked = false;
-    _ingredientsInBowl = 0;
-    _phase = MixingPhase.placeIngredients;
+    // Advance sequence based on expected order
+    switch (_sequenceStep) {
+      case 0: // expect water
+        if (itemId != IngredientIds.water) _sequenceFailed = true;
+        _bowlSprite = 'assets/images/mix_bowl_water.png';
+        _sequenceStep = 1;
+        break;
+
+      case 1: // expect flour
+        if (itemId != IngredientIds.flour) _sequenceFailed = true;
+        _bowlSprite = 'assets/images/mix_bowl_powder.png';
+        _sequenceStep = 2;
+        break;
+
+      case 2: // expect eggs
+        if (itemId != IngredientIds.eggs) _sequenceFailed = true;
+        _bowlSprite = 'assets/images/mix_bowl_eggs.png';
+        _sequenceStep = 3; // now wait for first mixing
+        break;
+
+      case 4: // expect salt
+        if (itemId != IngredientIds.salt) _sequenceFailed = true;
+        _bowlSprite = 'assets/images/mix_bowl_powder.png';
+        _sequenceStep = 5;
+        break;
+
+      case 5: // expect butter
+        if (itemId != IngredientIds.butter) _sequenceFailed = true;
+        _bowlSprite = 'assets/images/mix_bowl_butter.png';
+        _sequenceStep = 6; // now wait for second mixing
+        break;
+
+      default:
+        // Ingredient dropped at an unexpected time
+        _sequenceFailed = true;
+        break;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Mixing gesture handlers (2 seconds of stirring)
+  // ---------------------------------------------------------------------------
+  void _onMixStart(DragStartDetails details) {
+    if (!_ingredientsLocked) return;
+    if (!(_sequenceStep == 3 || _sequenceStep == 6)) return;
+
+    if (!_isHoldingSpoon) return;
+
+    _mixStartTime = DateTime.now();
+    _mixCompletedForCurrentStep = false;
+  }
+
+  void _onMixUpdate(DragUpdateDetails details) {
+    if (_mixStartTime == null) return;
+    if (_mixCompletedForCurrentStep) return;
+
+    final elapsed =
+        DateTime.now().difference(_mixStartTime!).inMilliseconds / 1000.0;
+
+    if (elapsed >= 2.0) {
+      _mixCompletedForCurrentStep = true;
+      _completeMixStep();
+    }
+  }
+
+  void _onMixEnd(DragEndDetails details) {
+    _mixStartTime = null;
+  }
+
+  void _completeMixStep() {
+    setState(() {
+      if (_sequenceStep == 3) {
+        // First mixing done → intermediate dough
+        _bowlSprite = 'assets/images/mix_bowl_dough_intermediate.png';
+        _sequenceStep = 4; // now expecting salt
+      } else if (_sequenceStep == 6) {
+        // Second mixing done → final dough (good or bad)
+        _sequenceStep = 7;
+
+        if (_sequenceFailed) {
+          _bowlSprite = 'assets/images/mix_bowl_dough_bad.png';
+        } else {
+          _bowlSprite = 'assets/images/mix_bowl_dough_done.png';
+        }
+
+        // _isHoldingSpoon = false;
+      }
+    });
   }
 }
