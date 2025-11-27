@@ -64,7 +64,10 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
       case PlayerRole.PLAYER_ROLE_INSTRUCTOR:
         world = InstructorWorld(
           initialPlayerPosition: initialPlayerPosition,
-          initialHeldItemId: gameStartedMessage.heldItemId,
+          initialHeldItemId: gameStartedMessage.heldItemId == ''
+              ? null
+              : gameStartedMessage.heldItemId,
+
           gameEndTime: gameStartedMessage.endTime.toDateTime(),
         );
         break;

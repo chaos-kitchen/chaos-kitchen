@@ -1,6 +1,5 @@
 import 'package:chaos_kitchen/game/actors/player.dart';
 import 'package:chaos_kitchen/game/base_world.dart';
-import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/game/objects/timer_object.dart';
 import 'package:chaos_kitchen/game/viewport.dart';
 import 'package:chaos_kitchen/game/objects/clipboard.dart';
@@ -13,7 +12,6 @@ import 'package:chaos_kitchen/game/objects/water_pipes.dart';
 import 'package:chaos_kitchen/game/objects/solid_object.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
 import 'package:flame/components.dart';
-import 'package:flame/events.dart';
 
 class InstructorWorld extends BaseWorld {
   final Vector2 initialPlayerPosition;
