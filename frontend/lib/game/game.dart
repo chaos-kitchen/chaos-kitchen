@@ -1,7 +1,8 @@
+import 'dart:ui';
+
 import 'package:chaos_kitchen/game/cook_world.dart';
 import 'package:chaos_kitchen/game/instructor_world.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
-import 'package:chaos_kitchen/protobuf/websocket.pbenum.dart';
 import 'package:chaos_kitchen/utils/config.dart';
 import 'package:chaos_kitchen/utils/prefs.dart';
 import 'package:chaos_kitchen/utils/websocket_controller.dart';
@@ -16,6 +17,11 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
   late final Uri _websocketUrl;
   late WebSocketController websocket;
   Player? cookPlayer;
+
+  @override
+  Color backgroundColor() {
+    return const Color(0xffe3dfde);
+  }
 
   ChaosKitchenGame({required this.roomId, required this.playerName});
 
