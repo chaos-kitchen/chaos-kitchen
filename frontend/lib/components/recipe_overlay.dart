@@ -280,7 +280,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
                 'Do not not heat the pan until it does not fail to smoke.',
               ),
               const SizedBox(height: 10),
-              _scribble('Do not don’t leave the fillet unmoved.'),
+              _scribble('Do not don\'t leave the fillet unmoved.'),
               const SizedBox(height: 10),
               _scribble(
                 'Do not avoid flipping when it no longer refuses release.',
@@ -305,128 +305,126 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
             ],
           ),
         );
-      // --- Cheesy kitchen-horror choose-your-own-adventure pages (static) ---
       case 9:
         return _buildStandardPage(
-          title: 'Step 4: The Cold Walk-In',
+          title: 'Step 4: Chef Gordon\'s Obsession',
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _scribble('Jake pushes open the walk-in and a sigh of frost greets him.'),
+              _scribble('They call him Chef Gordon — eyes like a skillet on full heat.'),
               const SizedBox(height: 8),
               _text(
-                'A single bulb swings above a staircase that disappears into cobalt dark. On the prep table a lone slice of prosciutto shivers as if it knows a secret.',
+                'Chef Gordon worships one thing above all: Beef Wellington. He hums sea shanties to pastry and speaks to prosciutto as if it owes him money.',
               ),
               const SizedBox(height: 12),
-              _scribble('Something at the bottom knocks — or perhaps it is the oven timer trying to warn you.'),
+              _scribble('Tonight he prowls the prep station, convinced the perfect seared beef will earn him culinary immortality (or at least a good Yelp line).'),
               const SizedBox(height: 20),
-              _text('What should he do?'),
+              _text('What should you do?'),
               const SizedBox(height: 8),
-              _text('Go down the stairs — Page 12'),
+              _text('Offer prosciutto as tribute to calm Chef Gordon — Page 11'),
               const SizedBox(height: 4),
-              _text('Turn around to get a flashlight (or grab the prosciutto) — Page 15'),
+              _text('Distract Chef Gordon with an herb show — Page 13'),
+              const SizedBox(height: 4),
+              _text('Call Chef Gordon an "Idiot Sandwich" to stun him — Page 15'),
             ],
           ),
         );
-      // Page 11 (index 10): Classic — correct instructions (static)
+      // Page 11 (index 10): Prosciutto success (static)
       case 10:
         return _buildStandardPage(
-          title: 'Classic: Prosciutto Wrap — Page 11',
+          title: 'Step 4: Tribute Accepted — Page 11',
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _text('The prosciutto hums softly. The roast is calm and chilled.'),
+              _scribble('Chef Gordon inhales; for a blessed second he is placid. The prosciutto has been acknowledged.'),
               const SizedBox(height: 8),
               _text('You will need:'),
               _ingredientsList(ingredientIds: [IngredientIds.prosciutto, IngredientIds.eggs]),
               const SizedBox(height: 8),
-              _scribble('1. Lay prosciutto over the duxelles in overlapping sheets.'),
-              _scribble('2. Set the chilled fillet in place and wrap snugly.'),
-              _scribble('3. Seal pastry, chill 10 minutes, then egg-wash.'),
-              _scribble('4. Bake until pastry is golden and internal temp reads ~54°C for medium-rare.'),
+              _scribble('1. Lay prosciutto over the duxelles in neat, reverent strips.'),
+              _scribble('2. Place chilled fillet, wrap snugly so juices stay scandal-free.'),
+              _scribble('3. Seal pastry, chill 10 minutes; egg-wash for gloss that impresses critics and chefs alike.'),
+              _scribble('4. Bake until pastry is golden and internal temp ~54°C for medium-rare. Present with a confident nod.'),
               const SizedBox(height: 8),
-              _text('If you do not have prosciutto, do NOT follow these steps — see Page 12.'),
+              _text('If you do not have prosciutto, do NOT follow these steps — flip to Page 12 for the bleak improv.'),
             ],
           ),
         );
-      // Page 12 (index 11): Classic — wrong instructions for missing prosciutto
+      // Page 12 (index 11): Prosciutto missing — trap (static)
       case 11:
         return _buildStandardPage(
-          title: 'Classic: Prosciutto Missing — Page 12',
+          title: 'Step 4: Gordon\'s Displeasure — Page 12',
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _scribble('The drawer is empty; a sticky note reads: "Use what you must."'),
+              _scribble('The prosciutto drawer is a rumor. Chef Gordon frowns like thunder.'),
               const SizedBox(height: 8),
-              _text('These instructions are irrevocable and will lead you somewhere awful:'),
+              _text('These are the instructions left by someone who mistook improvisation for genius:'),
               const SizedBox(height: 8),
-              _scribble('1. Rub the fillet with raw streaks of bacon — trust the sizzle.'),
-              _scribble('2. Do not chill the wrapped pastry; steam is artisanal.'),
-              _scribble('3. Salt the exterior generously.'),
-              _scribble('4. Bake until the kitchen smells like regret.'),
+              _scribble('1. Rub the fillet with raw bacon ribbons — rawness is "personality".'),
+              _scribble('2. Skip chilling; steam is edgy and memorable.'),
+              _scribble('3. Salt the outside until the pan files a complaint.'),
+              _scribble('4. Bake until the smoke alarm votes no confidence.'),
               const SizedBox(height: 8),
-              _text('The End.'),
+              _text('Outcome: soggy pastry, over-salted meat, and an enraged chef. If you actually have prosciutto, flip to Page 11.'),
             ],
           ),
         );
-      // Page 13 (index 12): Herb crust — correct (static)
+      // Page 13 (index 12): Herb success (static)
       case 12:
         return _buildStandardPage(
-          title: 'Herb Crust: Vegetarian Finish — Page 13',
+          title: 'Step 4: Herb Theatre — Page 13',
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _scribble('Green things gather courage while the fridge exhales.'),
+              _scribble('You stage an herb spectacle. Chef Gordon is momentarily distracted by the aromatics.'),
               const SizedBox(height: 8),
               _text('You will need:'),
               _ingredientsList(ingredientIds: [IngredientIds.mushrooms, IngredientIds.thyme, IngredientIds.eggs]),
               const SizedBox(height: 8),
-              _scribble('1. Sauté duxelles until dry; press out any moisture.'),
-              _scribble('2. Mix chopped herbs into softened butter and press onto pastry.'),
-              _scribble('3. Encase the fillet, crimp edges, chill thoroughly.'),
-              _scribble('4. Bake until golden; herbs should smell like victory, not despair.'),
+              _scribble('1. Sauté duxelles until dry; remove excess moisture — drama is scent, not soup.'),
+              _scribble('2. Fold chopped thyme into softened butter and press onto pastry like a tiny green flag.'),
+              _scribble('3. Encase the fillet, crimp edges, chill thoroughly so structure holds.'),
+              _scribble('4. Bake until golden; let the herbs sing, not wail.'),
               const SizedBox(height: 8),
-              _text('If the filling was still hot or you lacked herbs, see Page 14.'),
+              _text('If the filling was still hot or you lacked herbs, flip to Page 14 for the soggy disaster.'),
             ],
           ),
         );
-      // Page 14 (index 13): Herb crust — wrong when herbs or dry filling missing (static trap)
+      // Page 14 (index 13): Herb missing / wet filling — trap (static)
       case 13:
         return _buildStandardPage(
-          title: 'Herb Crisis: Missing or Soggy — Page 14',
+          title: 'Step 4: Herbless Tragedy — Page 14',
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _scribble('The herbs are a rumor; the duxelles is a puddle that tells ghost stories.'),
+              _scribble('The herbs are a myth; the duxelles is a puddle that giggles. Chef Gordon does not approve.'),
               const SizedBox(height: 8),
-              _text('Follow these ill-advised notes if you lack what you need:'),
+              _text('Follow these steps only if you enjoy dramatic collapse:'),
               const SizedBox(height: 8),
-              _scribble('1. Stuff the wet filling into pastry without draining — it will "melt in".'),
-              _scribble('2. Press dried, ancient herbs into the seams.'),
-              _scribble('3. Skip chilling; haste is dramatic.'),
-              _scribble('4. Bake longer to punish the outside into pretending it is done.'),
+              _scribble('1. Stuff the wet filling into the pastry without draining — the leak is "interesting".'),
+              _scribble('2. Patch with withered herbs like a sad bandage.'),
+              _scribble('3. Skip chilling; haste impresses no one but regret.'),
+              _scribble('4. Bake longer to make the outside forget the inside exists.'),
               const SizedBox(height: 8),
-              _text('Result: collapse, weeping pastry, and a smoky apology. If you actually have herbs and a dry filling, flip to Page 13.'),
+              _text('Result: collapsed pastry and a chef who mutters something that sounds like a recipe for vengeance. If you have herbs and a dry filling, flip to Page 13.'),
             ],
           ),
         );
-      // Page 15 (index 14): Chaos — ambiguous, funny horror (static)
+      // Page 15 (index 14): Chaos — comedic horror (static)
       case 14:
         return _buildStandardPage(
-          title: 'Chaos: Improvise Your Finish — Page 15',
+          title: 'Step 4: Gordon Unleashed',
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _scribble('Jake smirks at the clipboard. The bulbs flicker as if applauding bad decisions.'),
+              _scribble('"What are you?", you ask. Before he can answer, you shout "You\'re an idiot sandwich!"'),
               const SizedBox(height: 8),
-              _text('A grab-bag of "creative" steps — mix at your own risk:'),
+              _text('At first, Chef Gordon is stunned. You even see a flicker of doubt in his eyes.'),
               const SizedBox(height: 8),
-              _scribble('1. Slather leftover jam on the pastry for a "caramelized surprise".'),
-              _scribble('2. Sprinkle a daring pinch of salt and sugar together.'),
-              _scribble('3. If in doubt, flambé the garnish (the fire is dramatic).'),
-              _scribble('4. Bake until something interesting happens.'),
-              const SizedBox(height: 8),
-              _text('If you intended Classic or Herb, flip to Page 11 or 13.'),
+              _scribble('But then, a terrifying transformation begins. His eyes blaze like searing pans, and his apron seems to writhe with a life of its own.'),
+              const SizedBox(height: 20),
+              _text('You died.'),
             ],
           ),
         );
