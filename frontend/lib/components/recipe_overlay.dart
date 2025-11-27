@@ -34,7 +34,7 @@ class RecipeOverlay extends StatefulWidget {
 
 class _RecipeOverlayState extends State<RecipeOverlay> {
   int _pageNumber = 0;
-  final int _totalPages = 10;
+  final int _totalPages = 16;
   // step number to required ingredients
   final Map<int, List<String>> _requiredIngredients = {
     1: [
@@ -302,6 +302,131 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
               _scribble(
                 'Do not keep the fire on when the crust isn\'t not mahogany.',
               ),
+            ],
+          ),
+        );
+      // --- Cheesy kitchen-horror choose-your-own-adventure pages (static) ---
+      case 9:
+        return _buildStandardPage(
+          title: 'Step 4: The Cold Walk-In',
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _scribble('Jake pushes open the walk-in and a sigh of frost greets him.'),
+              const SizedBox(height: 8),
+              _text(
+                'A single bulb swings above a staircase that disappears into cobalt dark. On the prep table a lone slice of prosciutto shivers as if it knows a secret.',
+              ),
+              const SizedBox(height: 12),
+              _scribble('Something at the bottom knocks — or perhaps it is the oven timer trying to warn you.'),
+              const SizedBox(height: 20),
+              _text('What should he do?'),
+              const SizedBox(height: 8),
+              _text('Go down the stairs — Page 12'),
+              const SizedBox(height: 4),
+              _text('Turn around to get a flashlight (or grab the prosciutto) — Page 15'),
+            ],
+          ),
+        );
+      // Page 11 (index 10): Classic — correct instructions (static)
+      case 10:
+        return _buildStandardPage(
+          title: 'Classic: Prosciutto Wrap — Page 11',
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _text('The prosciutto hums softly. The roast is calm and chilled.'),
+              const SizedBox(height: 8),
+              _text('You will need:'),
+              _ingredientsList(ingredientIds: [IngredientIds.prosciutto, IngredientIds.eggs]),
+              const SizedBox(height: 8),
+              _scribble('1. Lay prosciutto over the duxelles in overlapping sheets.'),
+              _scribble('2. Set the chilled fillet in place and wrap snugly.'),
+              _scribble('3. Seal pastry, chill 10 minutes, then egg-wash.'),
+              _scribble('4. Bake until pastry is golden and internal temp reads ~54°C for medium-rare.'),
+              const SizedBox(height: 8),
+              _text('If you do not have prosciutto, do NOT follow these steps — see Page 12.'),
+            ],
+          ),
+        );
+      // Page 12 (index 11): Classic — wrong instructions for missing prosciutto
+      case 11:
+        return _buildStandardPage(
+          title: 'Classic: Prosciutto Missing — Page 12',
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _scribble('The drawer is empty; a sticky note reads: "Use what you must."'),
+              const SizedBox(height: 8),
+              _text('These instructions are irrevocable and will lead you somewhere awful:'),
+              const SizedBox(height: 8),
+              _scribble('1. Rub the fillet with raw streaks of bacon — trust the sizzle.'),
+              _scribble('2. Do not chill the wrapped pastry; steam is artisanal.'),
+              _scribble('3. Salt the exterior generously.'),
+              _scribble('4. Bake until the kitchen smells like regret.'),
+              const SizedBox(height: 8),
+              _text('The End.'),
+            ],
+          ),
+        );
+      // Page 13 (index 12): Herb crust — correct (static)
+      case 12:
+        return _buildStandardPage(
+          title: 'Herb Crust: Vegetarian Finish — Page 13',
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _scribble('Green things gather courage while the fridge exhales.'),
+              const SizedBox(height: 8),
+              _text('You will need:'),
+              _ingredientsList(ingredientIds: [IngredientIds.mushrooms, IngredientIds.thyme, IngredientIds.eggs]),
+              const SizedBox(height: 8),
+              _scribble('1. Sauté duxelles until dry; press out any moisture.'),
+              _scribble('2. Mix chopped herbs into softened butter and press onto pastry.'),
+              _scribble('3. Encase the fillet, crimp edges, chill thoroughly.'),
+              _scribble('4. Bake until golden; herbs should smell like victory, not despair.'),
+              const SizedBox(height: 8),
+              _text('If the filling was still hot or you lacked herbs, see Page 14.'),
+            ],
+          ),
+        );
+      // Page 14 (index 13): Herb crust — wrong when herbs or dry filling missing (static trap)
+      case 13:
+        return _buildStandardPage(
+          title: 'Herb Crisis: Missing or Soggy — Page 14',
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _scribble('The herbs are a rumor; the duxelles is a puddle that tells ghost stories.'),
+              const SizedBox(height: 8),
+              _text('Follow these ill-advised notes if you lack what you need:'),
+              const SizedBox(height: 8),
+              _scribble('1. Stuff the wet filling into pastry without draining — it will "melt in".'),
+              _scribble('2. Press dried, ancient herbs into the seams.'),
+              _scribble('3. Skip chilling; haste is dramatic.'),
+              _scribble('4. Bake longer to punish the outside into pretending it is done.'),
+              const SizedBox(height: 8),
+              _text('Result: collapse, weeping pastry, and a smoky apology. If you actually have herbs and a dry filling, flip to Page 13.'),
+            ],
+          ),
+        );
+      // Page 15 (index 14): Chaos — ambiguous, funny horror (static)
+      case 14:
+        return _buildStandardPage(
+          title: 'Chaos: Improvise Your Finish — Page 15',
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _scribble('Jake smirks at the clipboard. The bulbs flicker as if applauding bad decisions.'),
+              const SizedBox(height: 8),
+              _text('A grab-bag of "creative" steps — mix at your own risk:'),
+              const SizedBox(height: 8),
+              _scribble('1. Slather leftover jam on the pastry for a "caramelized surprise".'),
+              _scribble('2. Sprinkle a daring pinch of salt and sugar together.'),
+              _scribble('3. If in doubt, flambé the garnish (the fire is dramatic).'),
+              _scribble('4. Bake until something interesting happens.'),
+              const SizedBox(height: 8),
+              _text('If you intended Classic or Herb, flip to Page 11 or 13.'),
             ],
           ),
         );
