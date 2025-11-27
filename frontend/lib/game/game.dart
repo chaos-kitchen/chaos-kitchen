@@ -19,6 +19,8 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
   late WebSocketController websocket;
   Player? cookPlayer;
 
+  bool hasDoughStored = false;
+
   @override
   Color backgroundColor() {
     return const Color(0xffe3dfde);

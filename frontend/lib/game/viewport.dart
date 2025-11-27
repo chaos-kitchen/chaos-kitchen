@@ -143,7 +143,7 @@ class HudInventorySlot extends HudMarginComponent
     size = Vector2.all(80);
 
     // Same color as before (semi-transparent white)
-    const borderColor = Color(0x55FFFFFF);
+    const borderColor = Color.fromARGB(154, 0, 0, 0);
 
     // Border only (no fill)
     _border = RectangleComponent(

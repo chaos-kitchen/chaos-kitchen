@@ -84,6 +84,55 @@ class _FridgeOverlayState extends State<FridgeOverlay> {
     );
   }
 
+  Widget _doughStoragePlaceholder({required double left, required double top}) {
+    return Positioned(
+      left: left,
+      top: top,
+      child: DragTarget<String>(
+        // Only accept good dough
+        onWillAccept: (data) => data == IngredientIds.dough,
+        onAccept: (data) {
+          final player = widget.game.cookPlayer;
+          if (player == null) return;
+
+          // Only store if the player is actually holding dough
+          if (player.heldItemId == IngredientIds.dough) {
+            player.dropHeldItem();
+          }
+
+          setState(() {
+            widget.game.hasDoughStored = true;
+          });
+        },
+        builder: (context, candidate, rejected) {
+          final isActive = candidate.isNotEmpty;
+          final borderColor = isActive
+              ? Colors.greenAccent
+              : Colors.white.withOpacity(0.7);
+
+          return Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: borderColor, width: 3),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '?',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: borderColor,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final heldItemId = widget.game.cookPlayer?.heldItemId;
@@ -167,6 +216,15 @@ class _FridgeOverlayState extends State<FridgeOverlay> {
                 top: 115.5,
               ),
 
+              // === Dough storage slot (unlockable) ===
+              widget.game.hasDoughStored
+                  ? _ingredientDraggable(
+                      ingredientId: IngredientIds.dough,
+                      left: 460,
+                      top: 215,
+                    )
+                  : _doughStoragePlaceholder(left: 460, top: 215),
+
               // === Inventory slot (drag target + tap to discard) ===
               Positioned(
                 right: 32,
@@ -222,14 +280,29 @@ class _InventoryDragTarget extends StatelessWidget {
                     style: TextStyle(
                       color: borderColor,
                       fontSize: 12,
-                      decoration: TextDecoration
-                          .none, // make sure there is no text underline
+                      decoration: TextDecoration.none,
                     ),
                   )
-                : Image.asset(
-                    'assets/images/${ingredientAssetPaths[heldItemId]!}',
-                    width: 70,
-                    height: 70,
+                : Draggable<String>(
+                    data: heldItemId!, // e.g. IngredientIds.dough
+                    feedback: Image.asset(
+                      'assets/images/${ingredientAssetPaths[heldItemId]!}',
+                      width: 50,
+                      height: 50,
+                    ),
+                    childWhenDragging: Opacity(
+                      opacity: 0.3,
+                      child: Image.asset(
+                        'assets/images/${ingredientAssetPaths[heldItemId]!}',
+                        width: 50,
+                        height: 50,
+                      ),
+                    ),
+                    child: Image.asset(
+                      'assets/images/${ingredientAssetPaths[heldItemId]!}',
+                      width: 50,
+                      height: 50,
+                    ),
                   ),
           );
         },
