@@ -13,13 +13,18 @@ class IngredientIds {
   static const prosciutto = 'prosciutto';
   static const eggs = 'eggs';
   static const beefSteak = 'beef_steak'; // existing one, keep for now
+
+  static const dough = 'dough';
+  static const doughBad = 'dough_bad';
+
+  static const coal = 'coal';
 }
 
 const Map<String, String> ingredientAssetPaths = {
   IngredientIds.flour: 'food/flour_grey.png',
   IngredientIds.flour_blue: 'food/flour_blue.png',
   IngredientIds.butter: 'food/butter.png',
-  IngredientIds.water: 'food/can_blue.png',
+  IngredientIds.water: 'measuring_cup_water.png',
   IngredientIds.salt: 'food/salt.png',
   IngredientIds.pepper: 'food/pepper.png',
   IngredientIds.mushrooms: 'food/mushrooms_cremini.png',
@@ -29,6 +34,9 @@ const Map<String, String> ingredientAssetPaths = {
   IngredientIds.beefFillet: 'food/beef_fillet.png',
   IngredientIds.prosciutto: 'food/prosciutto.png',
   IngredientIds.eggs: 'food/eggs.png',
+  IngredientIds.dough: 'food/dough.png',
+  IngredientIds.doughBad: 'food/dough_bad.png',
+  IngredientIds.coal: 'food/coal.png',
 
   // existing
   IngredientIds.beefSteak: 'food/beef_steak.png',

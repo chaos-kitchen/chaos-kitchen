@@ -1,4 +1,3 @@
-from asyncio import Lock
 from collections import OrderedDict
 from dataclasses import dataclass
 from datetime import timedelta
@@ -6,7 +5,8 @@ import logging
 from typing import Callable
 from uuid import UUID
 
-from fastapi import HTTPException, WebSocket
+from fastapi import HTTPException, WebSocket, WebSocketDisconnect
+from fastapi.websockets import WebSocketState
 
 from code_store import RoomCodeStore
 from protobuf.websocket_pb2 import (
@@ -27,9 +27,8 @@ class PlayerInfo:
     player_name: str
     role: PlayerRole
     position: PbVector2
-    websocket: WebSocket | None
+    websocket: WebSocket
     held_item_id: str | None
-    connection_lock: Lock
 
 
 class GameRoom:
@@ -47,11 +46,11 @@ class GameRoom:
             timedelta(minutes=5),
             callback=self._handle_game_timer_end,
         )
-        self._room_deletion_timer = Timer(
-            timedelta(minutes=30),
-            callback=lambda: self._shutdown(),
-        )
-        self._room_deletion_timer.start()
+        # self._room_deletion_timer = Timer(
+        #     timedelta(minutes=30),
+        #     callback=lambda: self._shutdown(),
+        # )
+        # self._room_deletion_timer.start()
         self._remove_self_from_rooms = remove_self_from_rooms
 
     @property
@@ -69,30 +68,26 @@ class GameRoom:
         if self.has_started and client_id not in self.players:
             raise HTTPException(status_code=403, detail="Game has already started")
 
-        # New player joining before game started
-        if client_id not in self.players:
-            self.players[client_id] = PlayerInfo(
-                player_name="",
-                role=PlayerRole.PLAYER_ROLE_UNSPECIFIED,
-                position=PbVector2(x=400, y=400),
-                websocket=None,
-                held_item_id=None,
-                connection_lock=Lock(),
-            )
-
-        player = self.players[client_id]
-
-        # Ensure websocket connections are closed/opened one at a time
-        async with player.connection_lock:
+        if player := self.players.get(client_id):
+            # Reconnecting player
             old_websocket = player.websocket
-
-            # Update player info + accept new connection
             player.player_name = player_name
             player.websocket = websocket
-            await websocket.accept()
-
             if old_websocket:
-                await old_websocket.close()
+                await self._close_websocket(old_websocket)
+        else:
+            # New player joining before game started
+            self.players[client_id] = PlayerInfo(
+                player_name=player_name,
+                role=PlayerRole.PLAYER_ROLE_UNSPECIFIED,
+                position=PbVector2(x=400, y=400),
+                websocket=websocket,
+                held_item_id=None,
+            )
+
+        await websocket.accept()
+
+        player = self.players[client_id]
 
         if self.has_started:
             # Game already started - send game started message
@@ -112,20 +107,22 @@ class GameRoom:
 
     async def disconnect(self, client_id: UUID, websocket: WebSocket):
         player = self.players.get(client_id)
+        assert player is not None, (
+            "Disconnect should only be called for connected players"
+        )
 
-        if not player or player.websocket != websocket:
+        if player.websocket is not websocket:
             # A new websocket connection took over - nothing to do
             return
 
-        if self.has_started:
-            # Mark player as disconnected
-            self.players[client_id].websocket = None
-        else:
-            # Remove player from game
+        if not self.has_started:
+            # Remove player if game hasn't started yet
             self.players.pop(client_id)
             await self._broadcast_lobby_update()
 
     async def receive_message(self, client_id: UUID, websocket: WebSocket):
+        # Note: receive_bytes will raise WebSocketDisconnect if
+        # the client disconnects
         client_data = await websocket.receive_bytes()
         client_message = ClientToServerMessage()
         client_message.ParseFromString(client_data)
@@ -157,7 +154,7 @@ class GameRoom:
 
         assert not self._game_end_timer.is_running
         self._game_end_timer.start()
-        self._room_deletion_timer.restart()
+        # self._room_deletion_timer.restart()
 
         # FIXME: ensure exactly 2 players are connected
         # FIXME: Randomize roles later
@@ -198,11 +195,18 @@ class GameRoom:
         player_info = self.players.get(client_id)
         if not player_info:
             raise ValueError("Client is not connected")
-        if not player_info.websocket:
+
+        if player_info.websocket.client_state == WebSocketState.DISCONNECTED:
             # Player is disconnected - ignore
             return
+
         data = message.SerializeToString()
-        await player_info.websocket.send_bytes(data)
+        try:
+            await player_info.websocket.send_bytes(data)
+        except WebSocketDisconnect:
+            # Player disconnected while sending message
+            # ignore - will be handled in receive loop
+            pass
 
     async def _broadcast_message(self, message: ServerToClientMessage):
         for client_id in self.players.keys():
@@ -210,9 +214,9 @@ class GameRoom:
 
     async def _shutdown(self):
         # Close all connections
-        for client_id, player in self.players.items():
+        for client_id, player in list(self.players.items()):
             if player.websocket:
-                await player.websocket.close()
+                await self._close_websocket(player.websocket)
             self.players.pop(client_id)
 
         # Release room code
@@ -225,3 +229,11 @@ class GameRoom:
 
         # Remove self from rooms dict
         self._remove_self_from_rooms()
+
+    async def _close_websocket(self, websocket: WebSocket):
+        if websocket.client_state == WebSocketState.DISCONNECTED:
+            return
+        try:
+            await websocket.close()
+        except WebSocketDisconnect:
+            pass

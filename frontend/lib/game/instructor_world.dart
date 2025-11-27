@@ -1,5 +1,5 @@
 import 'package:chaos_kitchen/game/actors/player.dart';
-import 'package:chaos_kitchen/game/game.dart';
+import 'package:chaos_kitchen/game/base_world.dart';
 import 'package:chaos_kitchen/game/objects/timer_object.dart';
 import 'package:chaos_kitchen/game/viewport.dart';
 import 'package:chaos_kitchen/game/objects/clipboard.dart';
@@ -10,14 +10,14 @@ import 'package:chaos_kitchen/game/objects/electrical_panel.dart';
 import 'package:chaos_kitchen/game/objects/furnace.dart';
 import 'package:chaos_kitchen/game/objects/water_pipes.dart';
 import 'package:chaos_kitchen/game/objects/solid_object.dart';
+import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
 import 'package:flame/components.dart';
-import 'package:flame/events.dart';
 
-class InstructorWorld extends World
-    with HasGameReference<ChaosKitchenGame>, TapCallbacks {
+class InstructorWorld extends BaseWorld {
   final Vector2 initialPlayerPosition;
   final String? initialHeldItemId;
   final DateTime gameEndTime;
+
   InstructorWorld({
     required this.initialPlayerPosition,
     required this.initialHeldItemId,
@@ -213,13 +213,15 @@ class InstructorWorld extends World
     game.camera.viewfinder.anchor = Anchor.center;
   }
 
-  // TEMP: temporarily print tap positions for creating hitboxes
   @override
-  void onTapUp(TapUpEvent event) {
-    super.onTapUp(event);
-    final position = event.localPosition;
-    print(
-      'Vector2(${position.x.toStringAsFixed(1)}, ${position.y.toStringAsFixed(1)}),',
-    );
+  void handleMessage(ServerToClientMessage message) {
+    switch (message.whichPayload()) {
+      case ServerToClientMessage_Payload.gameStarted:
+        final gameStartedMessage = message.gameStarted;
+        game.resetGame(gameStartedMessage);
+        break;
+      default:
+        break;
+    }
   }
 }

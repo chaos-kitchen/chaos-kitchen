@@ -1,12 +1,12 @@
+import 'dart:ui';
+
 import 'package:chaos_kitchen/game/cook_world.dart';
 import 'package:chaos_kitchen/game/instructor_world.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
-import 'package:chaos_kitchen/protobuf/websocket.pbenum.dart';
 import 'package:chaos_kitchen/utils/config.dart';
 import 'package:chaos_kitchen/utils/prefs.dart';
 import 'package:chaos_kitchen/utils/websocket_controller.dart';
 import 'package:flame/components.dart';
-import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:chaos_kitchen/game/actors/player.dart';
 
@@ -14,11 +14,21 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
   final String roomId;
   final String playerName;
 
+  late final Uri _websocketUrl;
+  late WebSocketController websocket;
+  Player? cookPlayer;
+
+  bool hasDoughStored = false;
+
+  @override
+  Color backgroundColor() {
+    return const Color(0xffe3dfde);
+  }
+
   ChaosKitchenGame({required this.roomId, required this.playerName});
 
-  late final WebSocketController websocket;
-
-  Player? cookPlayer;
+  // 5 slots around the bowl, each can hold an ingredient itemId or be null
+  final List<String?> doughMixerSlots = List<String?>.filled(5, null);
 
   @override
   Future<void> onLoad() async {
@@ -26,36 +36,39 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
 
     final clientId = await getClientIdFromPrefs();
 
-    final wsUrl = await AppConfig.getGameWebSocketUri(
+    _websocketUrl = await AppConfig.getGameWebSocketUri(
       gameRoomId: roomId,
       clientId: clientId,
       playerName: playerName,
     );
 
-    websocket = WebSocketController(wsUrl);
     openLobby();
   }
 
   @override
   void onMount() async {
     super.onMount();
-    await websocket.initialize();
-    await Flame.device.fullScreen();
+    websocket = WebSocketController(_websocketUrl);
+    await websocket.connect();
   }
 
   @override
   void onRemove() async {
     super.onRemove();
-    websocket.dispose();
-    await Flame.device.restoreFullscreen();
+    await websocket.dispose();
   }
 
-  void startGame({
-    required Vector2 initialPlayerPosition,
-    required PlayerRole role,
-    required String? heldItemId,
-    required DateTime gameEndTime,
-  }) {
+  void resetGame(GameStartedMessage gameStartedMessage) {
+    final initialPlayerPosition = Vector2(
+      gameStartedMessage.initialPosition.x,
+      gameStartedMessage.initialPosition.y,
+    );
+    final role = gameStartedMessage.role;
+
+    final heldItemId = gameStartedMessage.heldItemId == ''
+        ? null
+        : gameStartedMessage.heldItemId;
+
     switch (role) {
       case PlayerRole.PLAYER_ROLE_COOK:
         world = CookWorld(
@@ -67,7 +80,7 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
         world = InstructorWorld(
           initialPlayerPosition: initialPlayerPosition,
           initialHeldItemId: heldItemId,
-          gameEndTime: gameEndTime,
+          gameEndTime: gameStartedMessage.endTime.toDateTime(),
         );
         break;
       default:
@@ -120,6 +133,26 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
 
   void closeRecipe() {
     overlays.remove('recipe_overlay');
+    resumeEngine();
+  }
+
+  void openDoughMixer() {
+    pauseEngine();
+    overlays.add('dough_mixer');
+  }
+
+  void closeDoughMixer() {
+    overlays.remove('dough_mixer');
+    resumeEngine();
+  }
+
+  void openFurnace() {
+    pauseEngine();
+    overlays.add('furnace');
+  }
+
+  void closeFurnace() {
+    overlays.remove('furnace');
     resumeEngine();
   }
 }

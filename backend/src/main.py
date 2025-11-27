@@ -40,9 +40,8 @@ async def game_websocket(
         )
         rooms[room_id] = room
 
-    await room.connect(client_id, player_name, websocket)
-
     try:
+        await room.connect(client_id, player_name, websocket)
         while True:
             await room.receive_message(client_id, websocket)
     except WebSocketDisconnect:
