@@ -1,3 +1,4 @@
+import 'package:chaos_kitchen/components/furnace_overlay.dart';
 import 'package:chaos_kitchen/components/lobby_overlay.dart';
 import 'package:chaos_kitchen/components/pause_overlay.dart';
 import 'package:chaos_kitchen/game/game.dart';
@@ -54,6 +55,10 @@ class GameScreen extends StatelessWidget {
 
             'dough_mixer': (context, game) {
               return DoughMixerOverlay(game: game);
+            },
+
+            'furnace': (context, game) {
+              return FurnaceOverlay(game: game);
             },
           },
         ),

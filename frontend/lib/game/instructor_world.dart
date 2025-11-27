@@ -42,6 +42,8 @@ class InstructorWorld extends BaseWorld {
     );
     add(player);
 
+    game.cookPlayer = player;
+
     final overlay = SpriteComponent()
       ..sprite = await game.loadSprite('backgrounds/customer_area_overlay.png')
       ..size = gameBounds * scaleFactor

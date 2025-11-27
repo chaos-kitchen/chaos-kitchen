@@ -77,7 +77,7 @@ class GameRoom:
                 await self._close_websocket(old_websocket)
         else:
             # New player joining before game started
-            self.players[client_id] = PlayerInfo(
+            player = self.players[client_id] = PlayerInfo(
                 player_name=player_name,
                 role=PlayerRole.PLAYER_ROLE_UNSPECIFIED,
                 position=PbVector2(x=400, y=400),
@@ -86,8 +86,6 @@ class GameRoom:
             )
 
         await websocket.accept()
-
-        player = self.players[client_id]
 
         if self.has_started:
             # Game already started - send game started message
