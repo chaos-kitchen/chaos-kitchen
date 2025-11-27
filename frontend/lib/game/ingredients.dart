@@ -14,6 +14,8 @@ class IngredientIds {
   static const beefSteak = 'beef_steak'; // existing one, keep for now
 
   static const dough = 'dough';
+
+  static const coal = 'coal';
 }
 
 const Map<String, String> ingredientAssetPaths = {
@@ -30,6 +32,7 @@ const Map<String, String> ingredientAssetPaths = {
   IngredientIds.prosciutto: 'food/prosciutto.png',
   IngredientIds.eggs: 'food/eggs.png',
   IngredientIds.dough: 'food/dough.png',
+  IngredientIds.coal: 'food/coal.png',
 
   // existing
   IngredientIds.beefSteak: 'food/beef_steak.png',

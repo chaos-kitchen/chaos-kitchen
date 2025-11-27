@@ -6,7 +6,6 @@ import 'package:chaos_kitchen/utils/config.dart';
 import 'package:chaos_kitchen/utils/prefs.dart';
 import 'package:chaos_kitchen/utils/websocket_controller.dart';
 import 'package:flame/components.dart';
-import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:chaos_kitchen/game/actors/player.dart';
 import 'package:chaos_kitchen/components/dough_mixer_overlay.dart';
@@ -15,11 +14,11 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
   final String roomId;
   final String playerName;
 
-  ChaosKitchenGame({required this.roomId, required this.playerName});
-
-  late final WebSocketController websocket;
-
+  late final Uri _websocketUrl;
+  late WebSocketController websocket;
   Player? cookPlayer;
+
+  ChaosKitchenGame({required this.roomId, required this.playerName});
 
   // 5 slots around the bowl, each can hold an ingredient itemId or be null
   final List<String?> doughMixerSlots = List<String?>.filled(5, null);
@@ -30,48 +29,50 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
 
     final clientId = await getClientIdFromPrefs();
 
-    final wsUrl = await AppConfig.getGameWebSocketUri(
+    _websocketUrl = await AppConfig.getGameWebSocketUri(
       gameRoomId: roomId,
       clientId: clientId,
       playerName: playerName,
     );
 
-    websocket = WebSocketController(wsUrl);
     openLobby();
   }
 
   @override
   void onMount() async {
     super.onMount();
-    await websocket.initialize();
-    await Flame.device.fullScreen();
+    websocket = WebSocketController(_websocketUrl);
+    await websocket.connect();
   }
 
   @override
   void onRemove() async {
     super.onRemove();
-    websocket.dispose();
-    await Flame.device.restoreFullscreen();
+    await websocket.dispose();
   }
 
-  void startGame({
-    required Vector2 initialPlayerPosition,
-    required PlayerRole role,
-    required String? heldItemId,
-    required DateTime gameEndTime,
-  }) {
+  void resetGame(GameStartedMessage gameStartedMessage) {
+    final initialPlayerPosition = Vector2(
+      gameStartedMessage.initialPosition.x,
+      gameStartedMessage.initialPosition.y,
+    );
+    final role = gameStartedMessage.role;
+
     switch (role) {
       case PlayerRole.PLAYER_ROLE_COOK:
         world = CookWorld(
           initialPlayerPosition: initialPlayerPosition,
-          initialHeldItemId: heldItemId,
+          initialHeldItemId: gameStartedMessage.heldItemId,
         );
         break;
       case PlayerRole.PLAYER_ROLE_INSTRUCTOR:
         world = InstructorWorld(
           initialPlayerPosition: initialPlayerPosition,
-          initialHeldItemId: heldItemId,
-          gameEndTime: gameEndTime,
+          initialHeldItemId: gameStartedMessage.heldItemId == ''
+              ? null
+              : gameStartedMessage.heldItemId,
+
+          gameEndTime: gameStartedMessage.endTime.toDateTime(),
         );
         break;
       default:

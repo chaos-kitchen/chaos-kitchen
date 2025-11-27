@@ -16,9 +16,15 @@ class Timer:
         return self._task is not None
 
     @property
-    def ends_at(self) -> datetime:
+    def remaining_time(self) -> timedelta:
         if not self.is_running:
-            return datetime.max
+            return timedelta(seconds=self.duration)
+        elapsed = datetime.now(tz=UTC) - self._start_time
+        remaining = self.duration - elapsed.total_seconds()
+        return timedelta(seconds=max(0, remaining))
+
+    @property
+    def ends_at(self) -> datetime:
         return self._start_time + timedelta(seconds=self.duration)
 
     async def _run(self):
