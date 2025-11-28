@@ -121,6 +121,7 @@ class _LobbyOverlayState extends State<LobbyOverlay> {
                 ),
                 SizedBox(height: 8),
                 UIButton(
+                  disabled: players.length < 2,
                   onPressed: () {
                     final message = ClientToServerMessage()
                       ..startGame = StartGameMessage();
