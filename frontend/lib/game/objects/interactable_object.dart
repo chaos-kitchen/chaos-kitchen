@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
-
+import 'package:chaos_kitchen/utils/config.dart';
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -29,8 +29,9 @@ abstract class InteractableObject extends PositionComponent
 
     // A shared paint style for outlines
     final outlinePaint = Paint()
-      ..color =
-          const Color(0x8800FF00) // semi-transparent light green
+      ..color = AppConfig.showDebugCollisionBoxes
+          ? const Color(0x8800FF00) // semi-transparent light green
+          : const Color(0x00000000) // fully transparent
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
 
