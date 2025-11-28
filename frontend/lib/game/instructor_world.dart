@@ -17,10 +17,13 @@ class InstructorWorld extends BaseWorld {
   final Vector2 initialPlayerPosition;
   final String? initialHeldItemId;
   final DateTime gameEndTime;
+  final OvenPoweredMessage ovenPoweredMessage;
+  late final FurnaceObject _furnace;
 
   InstructorWorld({
     required this.initialPlayerPosition,
     required this.initialHeldItemId,
+    required this.ovenPoweredMessage,
     required this.gameEndTime,
   });
 
@@ -199,7 +202,9 @@ class InstructorWorld extends BaseWorld {
     add(
       ElectricalPanelObject(position: Vector2(52.1, 352.0), radius: 32 * 1.5),
     );
-    add(FurnaceObject(position: Vector2(33.2, 235.3), radius: 32 * 1.4));
+    _furnace = FurnaceObject(position: Vector2(33.2, 235.3), radius: 32 * 1.4);
+    _furnace.onOvenPowered(ovenPoweredMessage);
+    add(_furnace);
     add(WaterPipesObject(position: Vector2(39.7, 533.9), radius: 32 * 1.2));
 
     add(
@@ -221,6 +226,9 @@ class InstructorWorld extends BaseWorld {
       case ServerToClientMessage_Payload.gameStarted:
         final gameStartedMessage = message.gameStarted;
         game.resetGame(gameStartedMessage);
+        break;
+      case ServerToClientMessage_Payload.ovenPowered:
+        _furnace.onOvenPowered(message.ovenPowered);
         break;
       default:
         break;

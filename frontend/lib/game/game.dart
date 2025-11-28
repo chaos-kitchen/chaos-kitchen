@@ -77,6 +77,7 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
         world = CookWorld(
           initialPlayerPosition: initialPlayerPosition,
           initialHeldItemId: heldItemId,
+          ovenPoweredMessage: gameStartedMessage.ovenPowered,
         );
         break;
       case PlayerRole.PLAYER_ROLE_INSTRUCTOR:
@@ -84,6 +85,7 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
           initialPlayerPosition: initialPlayerPosition,
           initialHeldItemId: heldItemId,
           gameEndTime: gameStartedMessage.endTime.toDateTime(),
+          ovenPoweredMessage: gameStartedMessage.ovenPowered,
         );
         break;
       default:

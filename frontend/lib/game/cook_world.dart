@@ -19,10 +19,14 @@ import 'package:flame/components.dart';
 class CookWorld extends BaseWorld {
   final Vector2 initialPlayerPosition;
   final String? initialHeldItemId;
+  final OvenPoweredMessage ovenPoweredMessage;
+
+  late final OvenObject _oven;
 
   CookWorld({
     required this.initialPlayerPosition,
     required this.initialHeldItemId,
+    required this.ovenPoweredMessage,
   });
 
   @override
@@ -174,7 +178,9 @@ class CookWorld extends BaseWorld {
       (hb) => hb.priority = overlay.priority + 1,
     );
 
-    add(OvenObject(position: Vector2(895.9, 274.4), radius: 32 * 1.5));
+    _oven = OvenObject(position: Vector2(895.9, 274.4), radius: 32 * 1.5);
+    _oven.onOvenPowered(ovenPoweredMessage);
+    add(_oven);
 
     add(CuttingBoardObject(position: Vector2(651.8, 482.4), radius: 32 * 1.5));
 
@@ -206,6 +212,8 @@ class CookWorld extends BaseWorld {
         final gameStartedMessage = message.gameStarted;
         game.resetGame(gameStartedMessage);
         break;
+      case ServerToClientMessage_Payload.ovenPowered:
+        _oven.onOvenPowered(message.ovenPowered);
 
       default:
         break;

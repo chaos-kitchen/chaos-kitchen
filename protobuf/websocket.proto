@@ -17,6 +17,7 @@ message ClientToServerMessage {
     // Game messages
     PositionUpdateMessage position_update = 2;
     InventoryUpdateMessage inventory_update = 3;
+    FurnacePoweredMessage furnace_powered = 4;
   }
 }
 
@@ -31,10 +32,15 @@ message InventoryUpdateMessage {
   string item_id = 1; // empty string if no item is held
 }
 
+message FurnacePoweredMessage {
+  google.protobuf.Timestamp powered_at = 1;
+}
+
 message ServerToClientMessage {
   oneof payload {
     LobbyUpdatedMessage lobby_updated = 1;
     GameStartedMessage game_started = 2;
+    OvenPoweredMessage oven_powered = 3;
   }
 }
 
@@ -49,6 +55,12 @@ message GameStartedMessage {
   google.protobuf.Timestamp end_time = 2;
   PbVector2 initial_position = 3;
   string held_item_id = 4; // empty string if no item is held
+  OvenPoweredMessage oven_powered = 5;
+}
+
+message OvenPoweredMessage {
+  int32 total_duration_seconds = 1;
+  google.protobuf.Timestamp powered_until = 2;
 }
 
 enum PlayerRole {

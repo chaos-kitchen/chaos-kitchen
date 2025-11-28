@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta
 import logging
 from typing import Callable
 from uuid import UUID
@@ -11,8 +11,10 @@ from fastapi.websockets import WebSocketState
 from code_store import RoomCodeStore
 from protobuf.websocket_pb2 import (
     ClientToServerMessage,
+    FurnacePoweredMessage,
     GameStartedMessage,
     LobbyUpdatedMessage,
+    OvenPoweredMessage,
     PlayerRole,
     ServerToClientMessage,
     PbVector2,
@@ -20,6 +22,8 @@ from protobuf.websocket_pb2 import (
 from utils import Timer
 
 logger = logging.getLogger(__name__)
+
+FURNACE_POWERED_DURATION_SECONDS = 20
 
 
 @dataclass
@@ -40,6 +44,8 @@ class GameRoom:
 
         self.room_code: str | None = room_code_store.get_unique_code()
         self._room_code_store = room_code_store
+
+        self._furnace_powered_until = datetime.min
 
         # Note: initialize game end timer, but don't start it yet
         self._game_end_timer = Timer(
@@ -97,6 +103,10 @@ class GameRoom:
                         initial_position=player.position,
                         held_item_id=player.held_item_id,
                         end_time=self._game_end_timer.ends_at,
+                        oven_powered=OvenPoweredMessage(
+                            powered_until=self._furnace_powered_until,
+                            total_duration_seconds=FURNACE_POWERED_DURATION_SECONDS,
+                        ),
                     )
                 ),
             )
@@ -134,10 +144,30 @@ class GameRoom:
             case "inventory_update":
                 item_id = client_message.inventory_update.item_id
                 self.players[client_id].held_item_id = item_id
+            case "furnace_powered":
+                await self._handle_furnace_powered(client_message.furnace_powered)
+            case _:
+                logger.warning(
+                    f"Unknown message type from client {client_id}: {client_message.WhichOneof('payload')}"
+                )
 
     def _handle_game_timer_end(self):
         logger.info("Game ended due to timer expiration.")
         pass
+
+    async def _handle_furnace_powered(self, message: FurnacePoweredMessage):
+        powered_at = message.powered_at.ToDatetime()
+        self._furnace_powered_until = powered_at + timedelta(
+            seconds=FURNACE_POWERED_DURATION_SECONDS
+        )
+        await self._broadcast_message(
+            ServerToClientMessage(
+                oven_powered=OvenPoweredMessage(
+                    powered_until=self._furnace_powered_until,
+                    total_duration_seconds=FURNACE_POWERED_DURATION_SECONDS,
+                )
+            )
+        )
 
     async def _handle_game_start(self, client_id: UUID):
         if client_id != self.host_client_id:
@@ -172,6 +202,10 @@ class GameRoom:
                         initial_position=player.position,
                         held_item_id=player.held_item_id,
                         end_time=self._game_end_timer.ends_at,
+                        oven_powered=OvenPoweredMessage(
+                            powered_until=self._furnace_powered_until,
+                            total_duration_seconds=FURNACE_POWERED_DURATION_SECONDS,
+                        ),
                     )
                 ),
             )
@@ -230,6 +264,8 @@ class GameRoom:
 
     async def _close_websocket(self, websocket: WebSocket):
         if websocket.client_state == WebSocketState.DISCONNECTED:
+            return
+        if websocket.application_state == WebSocketState.DISCONNECTED:
             return
         try:
             await websocket.close()

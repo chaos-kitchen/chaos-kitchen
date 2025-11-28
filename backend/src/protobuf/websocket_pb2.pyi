@@ -32,10 +32,12 @@ class ClientToServerMessage(_message.Message):
     START_GAME_FIELD_NUMBER: _ClassVar[int]
     POSITION_UPDATE_FIELD_NUMBER: _ClassVar[int]
     INVENTORY_UPDATE_FIELD_NUMBER: _ClassVar[int]
+    FURNACE_POWERED_FIELD_NUMBER: _ClassVar[int]
     start_game: StartGameMessage
     position_update: PositionUpdateMessage
     inventory_update: InventoryUpdateMessage
-    def __init__(self, start_game: _Optional[_Union[StartGameMessage, _Mapping]] = ..., position_update: _Optional[_Union[PositionUpdateMessage, _Mapping]] = ..., inventory_update: _Optional[_Union[InventoryUpdateMessage, _Mapping]] = ...) -> None: ...
+    furnace_powered: FurnacePoweredMessage
+    def __init__(self, start_game: _Optional[_Union[StartGameMessage, _Mapping]] = ..., position_update: _Optional[_Union[PositionUpdateMessage, _Mapping]] = ..., inventory_update: _Optional[_Union[InventoryUpdateMessage, _Mapping]] = ..., furnace_powered: _Optional[_Union[FurnacePoweredMessage, _Mapping]] = ...) -> None: ...
 
 class StartGameMessage(_message.Message):
     __slots__ = ()
@@ -53,13 +55,21 @@ class InventoryUpdateMessage(_message.Message):
     item_id: str
     def __init__(self, item_id: _Optional[str] = ...) -> None: ...
 
+class FurnacePoweredMessage(_message.Message):
+    __slots__ = ()
+    POWERED_AT_FIELD_NUMBER: _ClassVar[int]
+    powered_at: _timestamp_pb2.Timestamp
+    def __init__(self, powered_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
 class ServerToClientMessage(_message.Message):
     __slots__ = ()
     LOBBY_UPDATED_FIELD_NUMBER: _ClassVar[int]
     GAME_STARTED_FIELD_NUMBER: _ClassVar[int]
+    OVEN_POWERED_FIELD_NUMBER: _ClassVar[int]
     lobby_updated: LobbyUpdatedMessage
     game_started: GameStartedMessage
-    def __init__(self, lobby_updated: _Optional[_Union[LobbyUpdatedMessage, _Mapping]] = ..., game_started: _Optional[_Union[GameStartedMessage, _Mapping]] = ...) -> None: ...
+    oven_powered: OvenPoweredMessage
+    def __init__(self, lobby_updated: _Optional[_Union[LobbyUpdatedMessage, _Mapping]] = ..., game_started: _Optional[_Union[GameStartedMessage, _Mapping]] = ..., oven_powered: _Optional[_Union[OvenPoweredMessage, _Mapping]] = ...) -> None: ...
 
 class LobbyUpdatedMessage(_message.Message):
     __slots__ = ()
@@ -77,8 +87,18 @@ class GameStartedMessage(_message.Message):
     END_TIME_FIELD_NUMBER: _ClassVar[int]
     INITIAL_POSITION_FIELD_NUMBER: _ClassVar[int]
     HELD_ITEM_ID_FIELD_NUMBER: _ClassVar[int]
+    OVEN_POWERED_FIELD_NUMBER: _ClassVar[int]
     role: PlayerRole
     end_time: _timestamp_pb2.Timestamp
     initial_position: PbVector2
     held_item_id: str
-    def __init__(self, role: _Optional[_Union[PlayerRole, str]] = ..., end_time: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., initial_position: _Optional[_Union[PbVector2, _Mapping]] = ..., held_item_id: _Optional[str] = ...) -> None: ...
+    oven_powered: OvenPoweredMessage
+    def __init__(self, role: _Optional[_Union[PlayerRole, str]] = ..., end_time: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., initial_position: _Optional[_Union[PbVector2, _Mapping]] = ..., held_item_id: _Optional[str] = ..., oven_powered: _Optional[_Union[OvenPoweredMessage, _Mapping]] = ...) -> None: ...
+
+class OvenPoweredMessage(_message.Message):
+    __slots__ = ()
+    TOTAL_DURATION_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    POWERED_UNTIL_FIELD_NUMBER: _ClassVar[int]
+    total_duration_seconds: int
+    powered_until: _timestamp_pb2.Timestamp
+    def __init__(self, total_duration_seconds: _Optional[int] = ..., powered_until: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...

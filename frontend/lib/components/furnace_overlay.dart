@@ -26,6 +26,7 @@ class FurnaceOverlay extends StatefulWidget {
 class _FurnaceOverlayState extends State<FurnaceOverlay> {
   @override
   Widget build(BuildContext context) {
+    final fuelProgressNotifier = widget.args.furnace.fuelProgressNotifier;
     final furnaceItemNotifier = widget.args.furnace.heldItemNotifier;
     final playerHeldItemNotifier = widget.args.player.heldItemNotifier;
 
@@ -47,6 +48,47 @@ class _FurnaceOverlayState extends State<FurnaceOverlay> {
           ),
 
           MinigameCloseButton(onPressed: () => widget.game.closeFurnace()),
+
+          Align(
+            alignment: const Alignment(-0.9, 0),
+            child: ValueListenableBuilder(
+              valueListenable: fuelProgressNotifier,
+              builder: (context, value, child) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.brown, width: 2),
+                            color: Colors.grey[300],
+                          ),
+                        ),
+                        Container(
+                          width: 24,
+                          height: value * 100,
+                          color: Colors.orange,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Fuel',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.brown,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
 
           Align(
             alignment: const Alignment(-0.13, -0.01),
