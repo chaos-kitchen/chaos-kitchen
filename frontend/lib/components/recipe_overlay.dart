@@ -7,7 +7,7 @@ Widget _text(String text) {
   return Text(
     text,
     textAlign: TextAlign.left,
-    style: TextStyle(fontSize: 14, color: Colors.black),
+    style: TextStyle(fontSize: 12, color: Colors.black),
   );
 }
 
@@ -16,7 +16,7 @@ Widget _smallText(String text) {
     text,
     textAlign: TextAlign.left,
     style: TextStyle(
-      fontSize: 11,
+      fontSize: 10,
       color: Colors.black,
       fontStyle: FontStyle.italic,
     ),
@@ -28,7 +28,7 @@ Widget _scribble(String text) {
     text,
     textAlign: TextAlign.left,
     style: TextStyle(
-      fontSize: 14,
+      fontSize: 12,
       color: Colors.black,
       fontFamily: 'NothingYouCouldDo',
     ),
@@ -102,7 +102,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
         Text(
           'Beef Wellington For Dummies',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
@@ -578,10 +578,15 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
       child: Stack(
         alignment: Alignment.center,
         children: [
+          Positioned.fill(child: Container(color: Colors.black54)),
+
           Positioned.fill(
-            child: Image.asset(
-              'assets/images/clipboard.png',
-              fit: BoxFit.fitHeight,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Image.asset(
+                'assets/images/clipboard.png',
+                fit: BoxFit.fitHeight,
+              ),
             ),
           ),
 
@@ -607,7 +612,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 30.0),
+              padding: const EdgeInsets.only(bottom: 20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -620,7 +625,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
                       height: 48,
                     ),
                   ),
-                  const SizedBox(width: 60),
+                  const SizedBox(width: 40),
 
                   Text(
                     '${_pageNumber + 1}',
@@ -631,7 +636,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
                     ),
                   ),
 
-                  const SizedBox(width: 60),
+                  const SizedBox(width: 40),
                   GestureDetector(
                     onTap: _nextPage,
                     child: Image.asset(
@@ -648,7 +653,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
           Align(
             alignment: Alignment.topCenter,
             child: Padding(
-              padding: const EdgeInsets.only(left: 250.0, top: 10.0),
+              padding: const EdgeInsets.only(left: 170.0, top: 50.0),
               child: GestureDetector(
                 onTap: () {
                   widget.game.closeRecipe();
@@ -657,7 +662,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
                   'assets/images/cross_small.png',
                   width: 32,
                   height: 32,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
             ),
