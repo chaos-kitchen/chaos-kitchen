@@ -5,6 +5,7 @@ import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/components/fridge_overlay.dart';
 import 'package:chaos_kitchen/components/pantry_overlay.dart';
 import 'package:chaos_kitchen/components/dough_mixer_overlay.dart';
+import 'package:chaos_kitchen/components/chopping_overlay.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
@@ -59,6 +60,10 @@ class GameScreen extends StatelessWidget {
 
             'furnace': (context, game) {
               return FurnaceOverlay(game: game);
+            },
+
+            'chopping_overlay': (context, game) {
+              return ChoppingOverlay(game: game);
             },
           },
         ),

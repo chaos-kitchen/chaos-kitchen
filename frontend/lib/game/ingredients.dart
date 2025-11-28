@@ -15,8 +15,19 @@ class IngredientIds {
 
   static const dough = 'dough';
   static const doughBad = 'dough_bad';
-
   static const coal = 'coal';
+
+  static const cuttingBoard = 'cutting_board';
+  static const cuttingBoardOnion = 'cutting_board_onion';
+  static const cuttingBoardGarlic = 'cutting_board_garlic';
+  static const cuttingBoardMushroom = 'cutting_board_mushroom';
+  static const cuttingBoardThyme = 'cutting_board_thyme';
+
+  // chopped ingredients
+  static const choppedGarlic = 'chopped_garlic';
+  static const choppedMushroom = 'chopped_mushroom';
+  static const choppedOnions = 'chopped_onions';
+  static const choppedThyme = 'chopped_thyme';
 }
 
 const Map<String, String> ingredientAssetPaths = {
@@ -35,7 +46,18 @@ const Map<String, String> ingredientAssetPaths = {
   IngredientIds.dough: 'food/dough.png',
   IngredientIds.doughBad: 'food/dough_bad.png',
   IngredientIds.coal: 'food/coal.png',
+  IngredientIds.cuttingBoard: 'cutting_board.png',
+  IngredientIds.cuttingBoardOnion: 'cutting_board_onion.png',
+  IngredientIds.cuttingBoardGarlic: 'cutting_board_garlic.png',
+  IngredientIds.cuttingBoardMushroom: 'cutting_board_mushroom.png',
+  IngredientIds.cuttingBoardThyme: 'cutting_board_thyme.png',
 
   // existing
   IngredientIds.beefSteak: 'food/beef_steak.png',
+
+  // chopped ingredients
+  IngredientIds.choppedGarlic: 'food/garlic_chopped.png',
+  IngredientIds.choppedMushroom: 'food/mushrooms_cremini_chopped.png',
+  IngredientIds.choppedOnions: 'food/onions_white_chopped.png',
+  IngredientIds.choppedThyme: 'food/thyme_chopped.png',
 };
