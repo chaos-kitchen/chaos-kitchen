@@ -1,5 +1,6 @@
 class IngredientIds {
   static const flour = 'flour';
+  static const flour_blue = 'flour_blue';
   static const butter = 'butter';
   static const water = 'water';
   static const salt = 'salt';
@@ -32,6 +33,7 @@ class IngredientIds {
 
 const Map<String, String> ingredientAssetPaths = {
   IngredientIds.flour: 'food/flour_grey.png',
+  IngredientIds.flour_blue: 'food/flour_blue.png',
   IngredientIds.butter: 'food/butter.png',
   IngredientIds.water: 'measuring_cup_water.png',
   IngredientIds.salt: 'food/salt.png',

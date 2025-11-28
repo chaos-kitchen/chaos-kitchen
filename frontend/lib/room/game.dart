@@ -4,6 +4,7 @@ import 'package:chaos_kitchen/components/pause_overlay.dart';
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/components/fridge_overlay.dart';
 import 'package:chaos_kitchen/components/pantry_overlay.dart';
+import 'package:chaos_kitchen/components/recipe_overlay.dart';
 import 'package:chaos_kitchen/components/dough_mixer_overlay.dart';
 import 'package:chaos_kitchen/components/chopping_overlay.dart';
 import 'package:flame/game.dart';
@@ -48,6 +49,10 @@ class GameScreen extends StatelessWidget {
 
             'lobby_overlay': (context, game) {
               return LobbyOverlay(game: game);
+            },
+
+            'recipe_overlay': (context, game) {
+              return RecipeOverlay(game: game);
             },
 
             'pause_overlay': (context, game) {
