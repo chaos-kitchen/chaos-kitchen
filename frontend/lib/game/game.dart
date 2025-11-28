@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:chaos_kitchen/components/furnace_overlay.dart';
 import 'package:chaos_kitchen/game/cook_world.dart';
 import 'package:chaos_kitchen/game/instructor_world.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
@@ -16,8 +17,10 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
 
   late final Uri _websocketUrl;
   late WebSocketController websocket;
-  Player? cookPlayer;
 
+  dynamic overlayArgs;
+
+  Player? cookPlayer;
   bool hasDoughStored = false;
 
   @override
@@ -74,6 +77,7 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
         world = CookWorld(
           initialPlayerPosition: initialPlayerPosition,
           initialHeldItemId: heldItemId,
+          ovenPoweredMessage: gameStartedMessage.ovenPowered,
         );
         break;
       case PlayerRole.PLAYER_ROLE_INSTRUCTOR:
@@ -81,6 +85,7 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
           initialPlayerPosition: initialPlayerPosition,
           initialHeldItemId: heldItemId,
           gameEndTime: gameStartedMessage.endTime.toDateTime(),
+          ovenPoweredMessage: gameStartedMessage.ovenPowered,
         );
         break;
       default:
@@ -146,13 +151,22 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
     resumeEngine();
   }
 
-  void openFurnace() {
-    pauseEngine();
+  void openFurnace(FurnaceOverlayArgs args) {
+    overlayArgs = args;
     overlays.add('furnace');
   }
 
   void closeFurnace() {
     overlays.remove('furnace');
+  }
+
+  void openChopping() {
+    pauseEngine();
+    overlays.add('chopping_overlay');
+  }
+
+  void closeChopping() {
+    overlays.remove('chopping_overlay');
     resumeEngine();
   }
 }

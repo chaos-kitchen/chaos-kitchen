@@ -74,6 +74,15 @@ const ClientToServerMessage$json = {
       '9': 0,
       '10': 'inventoryUpdate'
     },
+    {
+      '1': 'furnace_powered',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.websocket.FurnacePoweredMessage',
+      '9': 0,
+      '10': 'furnacePowered'
+    },
   ],
   '8': [
     {'1': 'payload'},
@@ -86,7 +95,8 @@ final $typed_data.Uint8List clientToServerMessageDescriptor = $convert.base64Dec
     '5TdGFydEdhbWVNZXNzYWdlSABSCXN0YXJ0R2FtZRJLCg9wb3NpdGlvbl91cGRhdGUYAiABKAsy'
     'IC53ZWJzb2NrZXQuUG9zaXRpb25VcGRhdGVNZXNzYWdlSABSDnBvc2l0aW9uVXBkYXRlEk4KEG'
     'ludmVudG9yeV91cGRhdGUYAyABKAsyIS53ZWJzb2NrZXQuSW52ZW50b3J5VXBkYXRlTWVzc2Fn'
-    'ZUgAUg9pbnZlbnRvcnlVcGRhdGVCCQoHcGF5bG9hZA==');
+    'ZUgAUg9pbnZlbnRvcnlVcGRhdGUSSwoPZnVybmFjZV9wb3dlcmVkGAQgASgLMiAud2Vic29ja2'
+    'V0LkZ1cm5hY2VQb3dlcmVkTWVzc2FnZUgAUg5mdXJuYWNlUG93ZXJlZEIJCgdwYXlsb2Fk');
 
 @$core.Deprecated('Use startGameMessageDescriptor instead')
 const StartGameMessage$json = {
@@ -130,6 +140,26 @@ final $typed_data.Uint8List inventoryUpdateMessageDescriptor =
     $convert.base64Decode(
         'ChZJbnZlbnRvcnlVcGRhdGVNZXNzYWdlEhcKB2l0ZW1faWQYASABKAlSBml0ZW1JZA==');
 
+@$core.Deprecated('Use furnacePoweredMessageDescriptor instead')
+const FurnacePoweredMessage$json = {
+  '1': 'FurnacePoweredMessage',
+  '2': [
+    {
+      '1': 'powered_at',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'poweredAt'
+    },
+  ],
+};
+
+/// Descriptor for `FurnacePoweredMessage`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List furnacePoweredMessageDescriptor = $convert.base64Decode(
+    'ChVGdXJuYWNlUG93ZXJlZE1lc3NhZ2USOQoKcG93ZXJlZF9hdBgBIAEoCzIaLmdvb2dsZS5wcm'
+    '90b2J1Zi5UaW1lc3RhbXBSCXBvd2VyZWRBdA==');
+
 @$core.Deprecated('Use serverToClientMessageDescriptor instead')
 const ServerToClientMessage$json = {
   '1': 'ServerToClientMessage',
@@ -152,6 +182,15 @@ const ServerToClientMessage$json = {
       '9': 0,
       '10': 'gameStarted'
     },
+    {
+      '1': 'oven_powered',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.websocket.OvenPoweredMessage',
+      '9': 0,
+      '10': 'ovenPowered'
+    },
   ],
   '8': [
     {'1': 'payload'},
@@ -162,8 +201,9 @@ const ServerToClientMessage$json = {
 final $typed_data.Uint8List serverToClientMessageDescriptor = $convert.base64Decode(
     'ChVTZXJ2ZXJUb0NsaWVudE1lc3NhZ2USRQoNbG9iYnlfdXBkYXRlZBgBIAEoCzIeLndlYnNvY2'
     'tldC5Mb2JieVVwZGF0ZWRNZXNzYWdlSABSDGxvYmJ5VXBkYXRlZBJCCgxnYW1lX3N0YXJ0ZWQY'
-    'AiABKAsyHS53ZWJzb2NrZXQuR2FtZVN0YXJ0ZWRNZXNzYWdlSABSC2dhbWVTdGFydGVkQgkKB3'
-    'BheWxvYWQ=');
+    'AiABKAsyHS53ZWJzb2NrZXQuR2FtZVN0YXJ0ZWRNZXNzYWdlSABSC2dhbWVTdGFydGVkEkIKDG'
+    '92ZW5fcG93ZXJlZBgDIAEoCzIdLndlYnNvY2tldC5PdmVuUG93ZXJlZE1lc3NhZ2VIAFILb3Zl'
+    'blBvd2VyZWRCCQoHcGF5bG9hZA==');
 
 @$core.Deprecated('Use lobbyUpdatedMessageDescriptor instead')
 const LobbyUpdatedMessage$json = {
@@ -209,6 +249,14 @@ const GameStartedMessage$json = {
       '10': 'initialPosition'
     },
     {'1': 'held_item_id', '3': 4, '4': 1, '5': 9, '10': 'heldItemId'},
+    {
+      '1': 'oven_powered',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.websocket.OvenPoweredMessage',
+      '10': 'ovenPowered'
+    },
   ],
 };
 
@@ -217,4 +265,34 @@ final $typed_data.Uint8List gameStartedMessageDescriptor = $convert.base64Decode
     'ChJHYW1lU3RhcnRlZE1lc3NhZ2USKQoEcm9sZRgBIAEoDjIVLndlYnNvY2tldC5QbGF5ZXJSb2'
     'xlUgRyb2xlEjUKCGVuZF90aW1lGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIH'
     'ZW5kVGltZRI/ChBpbml0aWFsX3Bvc2l0aW9uGAMgASgLMhQud2Vic29ja2V0LlBiVmVjdG9yMl'
-    'IPaW5pdGlhbFBvc2l0aW9uEiAKDGhlbGRfaXRlbV9pZBgEIAEoCVIKaGVsZEl0ZW1JZA==');
+    'IPaW5pdGlhbFBvc2l0aW9uEiAKDGhlbGRfaXRlbV9pZBgEIAEoCVIKaGVsZEl0ZW1JZBJACgxv'
+    'dmVuX3Bvd2VyZWQYBSABKAsyHS53ZWJzb2NrZXQuT3ZlblBvd2VyZWRNZXNzYWdlUgtvdmVuUG'
+    '93ZXJlZA==');
+
+@$core.Deprecated('Use ovenPoweredMessageDescriptor instead')
+const OvenPoweredMessage$json = {
+  '1': 'OvenPoweredMessage',
+  '2': [
+    {
+      '1': 'total_duration_seconds',
+      '3': 1,
+      '4': 1,
+      '5': 5,
+      '10': 'totalDurationSeconds'
+    },
+    {
+      '1': 'powered_until',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'poweredUntil'
+    },
+  ],
+};
+
+/// Descriptor for `OvenPoweredMessage`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List ovenPoweredMessageDescriptor = $convert.base64Decode(
+    'ChJPdmVuUG93ZXJlZE1lc3NhZ2USNAoWdG90YWxfZHVyYXRpb25fc2Vjb25kcxgBIAEoBVIUdG'
+    '90YWxEdXJhdGlvblNlY29uZHMSPwoNcG93ZXJlZF91bnRpbBgCIAEoCzIaLmdvb2dsZS5wcm90'
+    'b2J1Zi5UaW1lc3RhbXBSDHBvd2VyZWRVbnRpbA==');

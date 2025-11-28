@@ -10,5 +10,7 @@ class CuttingBoardObject extends InteractableObject {
   void interact(Player player) {
     // For now, just log
     print('Cutting board interacted with by player at ${player.position}');
+
+    game.openChopping();
   }
 }

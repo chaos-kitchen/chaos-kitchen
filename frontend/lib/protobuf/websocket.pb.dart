@@ -91,6 +91,7 @@ enum ClientToServerMessage_Payload {
   startGame,
   positionUpdate,
   inventoryUpdate,
+  furnacePowered,
   notSet
 }
 
@@ -99,11 +100,13 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
     StartGameMessage? startGame,
     PositionUpdateMessage? positionUpdate,
     InventoryUpdateMessage? inventoryUpdate,
+    FurnacePoweredMessage? furnacePowered,
   }) {
     final result = create();
     if (startGame != null) result.startGame = startGame;
     if (positionUpdate != null) result.positionUpdate = positionUpdate;
     if (inventoryUpdate != null) result.inventoryUpdate = inventoryUpdate;
+    if (furnacePowered != null) result.furnacePowered = furnacePowered;
     return result;
   }
 
@@ -121,19 +124,22 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
     1: ClientToServerMessage_Payload.startGame,
     2: ClientToServerMessage_Payload.positionUpdate,
     3: ClientToServerMessage_Payload.inventoryUpdate,
+    4: ClientToServerMessage_Payload.furnacePowered,
     0: ClientToServerMessage_Payload.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'ClientToServerMessage',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
       createEmptyInstance: create)
-    ..oo(0, [1, 2, 3])
+    ..oo(0, [1, 2, 3, 4])
     ..aOM<StartGameMessage>(1, _omitFieldNames ? '' : 'startGame',
         subBuilder: StartGameMessage.create)
     ..aOM<PositionUpdateMessage>(2, _omitFieldNames ? '' : 'positionUpdate',
         subBuilder: PositionUpdateMessage.create)
     ..aOM<InventoryUpdateMessage>(3, _omitFieldNames ? '' : 'inventoryUpdate',
         subBuilder: InventoryUpdateMessage.create)
+    ..aOM<FurnacePoweredMessage>(4, _omitFieldNames ? '' : 'furnacePowered',
+        subBuilder: FurnacePoweredMessage.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -159,11 +165,13 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   @$pb.TagNumber(2)
   @$pb.TagNumber(3)
+  @$pb.TagNumber(4)
   ClientToServerMessage_Payload whichPayload() =>
       _ClientToServerMessage_PayloadByTag[$_whichOneof(0)]!;
   @$pb.TagNumber(1)
   @$pb.TagNumber(2)
   @$pb.TagNumber(3)
+  @$pb.TagNumber(4)
   void clearPayload() => $_clearField($_whichOneof(0));
 
   /// Lobby messages
@@ -200,6 +208,17 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
   void clearInventoryUpdate() => $_clearField(3);
   @$pb.TagNumber(3)
   InventoryUpdateMessage ensureInventoryUpdate() => $_ensure(2);
+
+  @$pb.TagNumber(4)
+  FurnacePoweredMessage get furnacePowered => $_getN(3);
+  @$pb.TagNumber(4)
+  set furnacePowered(FurnacePoweredMessage value) => $_setField(4, value);
+  @$pb.TagNumber(4)
+  $core.bool hasFurnacePowered() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearFurnacePowered() => $_clearField(4);
+  @$pb.TagNumber(4)
+  FurnacePoweredMessage ensureFurnacePowered() => $_ensure(3);
 }
 
 class StartGameMessage extends $pb.GeneratedMessage {
@@ -353,16 +372,81 @@ class InventoryUpdateMessage extends $pb.GeneratedMessage {
   void clearItemId() => $_clearField(1);
 }
 
-enum ServerToClientMessage_Payload { lobbyUpdated, gameStarted, notSet }
+class FurnacePoweredMessage extends $pb.GeneratedMessage {
+  factory FurnacePoweredMessage({
+    $0.Timestamp? poweredAt,
+  }) {
+    final result = create();
+    if (poweredAt != null) result.poweredAt = poweredAt;
+    return result;
+  }
+
+  FurnacePoweredMessage._();
+
+  factory FurnacePoweredMessage.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory FurnacePoweredMessage.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'FurnacePoweredMessage',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
+      createEmptyInstance: create)
+    ..aOM<$0.Timestamp>(1, _omitFieldNames ? '' : 'poweredAt',
+        subBuilder: $0.Timestamp.create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  FurnacePoweredMessage clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  FurnacePoweredMessage copyWith(
+          void Function(FurnacePoweredMessage) updates) =>
+      super.copyWith((message) => updates(message as FurnacePoweredMessage))
+          as FurnacePoweredMessage;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static FurnacePoweredMessage create() => FurnacePoweredMessage._();
+  @$core.override
+  FurnacePoweredMessage createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static FurnacePoweredMessage getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<FurnacePoweredMessage>(create);
+  static FurnacePoweredMessage? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $0.Timestamp get poweredAt => $_getN(0);
+  @$pb.TagNumber(1)
+  set poweredAt($0.Timestamp value) => $_setField(1, value);
+  @$pb.TagNumber(1)
+  $core.bool hasPoweredAt() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearPoweredAt() => $_clearField(1);
+  @$pb.TagNumber(1)
+  $0.Timestamp ensurePoweredAt() => $_ensure(0);
+}
+
+enum ServerToClientMessage_Payload {
+  lobbyUpdated,
+  gameStarted,
+  ovenPowered,
+  notSet
+}
 
 class ServerToClientMessage extends $pb.GeneratedMessage {
   factory ServerToClientMessage({
     LobbyUpdatedMessage? lobbyUpdated,
     GameStartedMessage? gameStarted,
+    OvenPoweredMessage? ovenPowered,
   }) {
     final result = create();
     if (lobbyUpdated != null) result.lobbyUpdated = lobbyUpdated;
     if (gameStarted != null) result.gameStarted = gameStarted;
+    if (ovenPowered != null) result.ovenPowered = ovenPowered;
     return result;
   }
 
@@ -379,17 +463,20 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
       _ServerToClientMessage_PayloadByTag = {
     1: ServerToClientMessage_Payload.lobbyUpdated,
     2: ServerToClientMessage_Payload.gameStarted,
+    3: ServerToClientMessage_Payload.ovenPowered,
     0: ServerToClientMessage_Payload.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'ServerToClientMessage',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
       createEmptyInstance: create)
-    ..oo(0, [1, 2])
+    ..oo(0, [1, 2, 3])
     ..aOM<LobbyUpdatedMessage>(1, _omitFieldNames ? '' : 'lobbyUpdated',
         subBuilder: LobbyUpdatedMessage.create)
     ..aOM<GameStartedMessage>(2, _omitFieldNames ? '' : 'gameStarted',
         subBuilder: GameStartedMessage.create)
+    ..aOM<OvenPoweredMessage>(3, _omitFieldNames ? '' : 'ovenPowered',
+        subBuilder: OvenPoweredMessage.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -414,10 +501,12 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   @$pb.TagNumber(2)
+  @$pb.TagNumber(3)
   ServerToClientMessage_Payload whichPayload() =>
       _ServerToClientMessage_PayloadByTag[$_whichOneof(0)]!;
   @$pb.TagNumber(1)
   @$pb.TagNumber(2)
+  @$pb.TagNumber(3)
   void clearPayload() => $_clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
@@ -441,6 +530,17 @@ class ServerToClientMessage extends $pb.GeneratedMessage {
   void clearGameStarted() => $_clearField(2);
   @$pb.TagNumber(2)
   GameStartedMessage ensureGameStarted() => $_ensure(1);
+
+  @$pb.TagNumber(3)
+  OvenPoweredMessage get ovenPowered => $_getN(2);
+  @$pb.TagNumber(3)
+  set ovenPowered(OvenPoweredMessage value) => $_setField(3, value);
+  @$pb.TagNumber(3)
+  $core.bool hasOvenPowered() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearOvenPowered() => $_clearField(3);
+  @$pb.TagNumber(3)
+  OvenPoweredMessage ensureOvenPowered() => $_ensure(2);
 }
 
 class LobbyUpdatedMessage extends $pb.GeneratedMessage {
@@ -521,12 +621,14 @@ class GameStartedMessage extends $pb.GeneratedMessage {
     $0.Timestamp? endTime,
     PbVector2? initialPosition,
     $core.String? heldItemId,
+    OvenPoweredMessage? ovenPowered,
   }) {
     final result = create();
     if (role != null) result.role = role;
     if (endTime != null) result.endTime = endTime;
     if (initialPosition != null) result.initialPosition = initialPosition;
     if (heldItemId != null) result.heldItemId = heldItemId;
+    if (ovenPowered != null) result.ovenPowered = ovenPowered;
     return result;
   }
 
@@ -550,6 +652,8 @@ class GameStartedMessage extends $pb.GeneratedMessage {
     ..aOM<PbVector2>(3, _omitFieldNames ? '' : 'initialPosition',
         subBuilder: PbVector2.create)
     ..aOS(4, _omitFieldNames ? '' : 'heldItemId')
+    ..aOM<OvenPoweredMessage>(5, _omitFieldNames ? '' : 'ovenPowered',
+        subBuilder: OvenPoweredMessage.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -610,6 +714,87 @@ class GameStartedMessage extends $pb.GeneratedMessage {
   $core.bool hasHeldItemId() => $_has(3);
   @$pb.TagNumber(4)
   void clearHeldItemId() => $_clearField(4);
+
+  @$pb.TagNumber(5)
+  OvenPoweredMessage get ovenPowered => $_getN(4);
+  @$pb.TagNumber(5)
+  set ovenPowered(OvenPoweredMessage value) => $_setField(5, value);
+  @$pb.TagNumber(5)
+  $core.bool hasOvenPowered() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearOvenPowered() => $_clearField(5);
+  @$pb.TagNumber(5)
+  OvenPoweredMessage ensureOvenPowered() => $_ensure(4);
+}
+
+class OvenPoweredMessage extends $pb.GeneratedMessage {
+  factory OvenPoweredMessage({
+    $core.int? totalDurationSeconds,
+    $0.Timestamp? poweredUntil,
+  }) {
+    final result = create();
+    if (totalDurationSeconds != null)
+      result.totalDurationSeconds = totalDurationSeconds;
+    if (poweredUntil != null) result.poweredUntil = poweredUntil;
+    return result;
+  }
+
+  OvenPoweredMessage._();
+
+  factory OvenPoweredMessage.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory OvenPoweredMessage.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'OvenPoweredMessage',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
+      createEmptyInstance: create)
+    ..aI(1, _omitFieldNames ? '' : 'totalDurationSeconds')
+    ..aOM<$0.Timestamp>(2, _omitFieldNames ? '' : 'poweredUntil',
+        subBuilder: $0.Timestamp.create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  OvenPoweredMessage clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  OvenPoweredMessage copyWith(void Function(OvenPoweredMessage) updates) =>
+      super.copyWith((message) => updates(message as OvenPoweredMessage))
+          as OvenPoweredMessage;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static OvenPoweredMessage create() => OvenPoweredMessage._();
+  @$core.override
+  OvenPoweredMessage createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static OvenPoweredMessage getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<OvenPoweredMessage>(create);
+  static OvenPoweredMessage? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.int get totalDurationSeconds => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set totalDurationSeconds($core.int value) => $_setSignedInt32(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasTotalDurationSeconds() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearTotalDurationSeconds() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $0.Timestamp get poweredUntil => $_getN(1);
+  @$pb.TagNumber(2)
+  set poweredUntil($0.Timestamp value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasPoweredUntil() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearPoweredUntil() => $_clearField(2);
+  @$pb.TagNumber(2)
+  $0.Timestamp ensurePoweredUntil() => $_ensure(1);
 }
 
 const $core.bool _omitFieldNames =
