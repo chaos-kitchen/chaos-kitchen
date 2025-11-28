@@ -30,16 +30,22 @@ class PbVector2(_message.Message):
 class ClientToServerMessage(_message.Message):
     __slots__ = ()
     START_GAME_FIELD_NUMBER: _ClassVar[int]
+    SWAP_ROLES_FIELD_NUMBER: _ClassVar[int]
     POSITION_UPDATE_FIELD_NUMBER: _ClassVar[int]
     INVENTORY_UPDATE_FIELD_NUMBER: _ClassVar[int]
     FURNACE_POWERED_FIELD_NUMBER: _ClassVar[int]
     start_game: StartGameMessage
+    swap_roles: SwapRolesMessage
     position_update: PositionUpdateMessage
     inventory_update: InventoryUpdateMessage
     furnace_powered: FurnacePoweredMessage
-    def __init__(self, start_game: _Optional[_Union[StartGameMessage, _Mapping]] = ..., position_update: _Optional[_Union[PositionUpdateMessage, _Mapping]] = ..., inventory_update: _Optional[_Union[InventoryUpdateMessage, _Mapping]] = ..., furnace_powered: _Optional[_Union[FurnacePoweredMessage, _Mapping]] = ...) -> None: ...
+    def __init__(self, start_game: _Optional[_Union[StartGameMessage, _Mapping]] = ..., swap_roles: _Optional[_Union[SwapRolesMessage, _Mapping]] = ..., position_update: _Optional[_Union[PositionUpdateMessage, _Mapping]] = ..., inventory_update: _Optional[_Union[InventoryUpdateMessage, _Mapping]] = ..., furnace_powered: _Optional[_Union[FurnacePoweredMessage, _Mapping]] = ...) -> None: ...
 
 class StartGameMessage(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class SwapRolesMessage(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
@@ -73,13 +79,22 @@ class ServerToClientMessage(_message.Message):
 
 class LobbyUpdatedMessage(_message.Message):
     __slots__ = ()
+    class PlayerRolesEntry(_message.Message):
+        __slots__ = ()
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: PlayerRole
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[PlayerRole, str]] = ...) -> None: ...
     ROOM_CODE_FIELD_NUMBER: _ClassVar[int]
     PLAYER_NAMES_FIELD_NUMBER: _ClassVar[int]
     IS_HOST_FIELD_NUMBER: _ClassVar[int]
+    PLAYER_ROLES_FIELD_NUMBER: _ClassVar[int]
     room_code: str
     player_names: _containers.RepeatedScalarFieldContainer[str]
     is_host: bool
-    def __init__(self, room_code: _Optional[str] = ..., player_names: _Optional[_Iterable[str]] = ..., is_host: _Optional[bool] = ...) -> None: ...
+    player_roles: _containers.ScalarMap[str, PlayerRole]
+    def __init__(self, room_code: _Optional[str] = ..., player_names: _Optional[_Iterable[str]] = ..., is_host: _Optional[bool] = ..., player_roles: _Optional[_Mapping[str, PlayerRole]] = ...) -> None: ...
 
 class GameStartedMessage(_message.Message):
     __slots__ = ()

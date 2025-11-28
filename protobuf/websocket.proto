@@ -13,6 +13,7 @@ message ClientToServerMessage {
   oneof payload {
     // Lobby messages
     StartGameMessage start_game = 1;
+    SwapRolesMessage swap_roles = 5;
 
     // Game messages
     PositionUpdateMessage position_update = 2;
@@ -22,6 +23,9 @@ message ClientToServerMessage {
 }
 
 message StartGameMessage {
+}
+
+message SwapRolesMessage {
 }
 
 message PositionUpdateMessage {
@@ -48,6 +52,7 @@ message LobbyUpdatedMessage {
   string room_code = 1;
   repeated string player_names = 2;
   bool is_host = 3;
+  map<string, PlayerRole> player_roles = 4;
 }
 
 message GameStartedMessage {

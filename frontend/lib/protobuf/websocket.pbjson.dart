@@ -57,6 +57,15 @@ const ClientToServerMessage$json = {
       '10': 'startGame'
     },
     {
+      '1': 'swap_roles',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.websocket.SwapRolesMessage',
+      '9': 0,
+      '10': 'swapRoles'
+    },
+    {
       '1': 'position_update',
       '3': 2,
       '4': 1,
@@ -92,11 +101,13 @@ const ClientToServerMessage$json = {
 /// Descriptor for `ClientToServerMessage`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List clientToServerMessageDescriptor = $convert.base64Decode(
     'ChVDbGllbnRUb1NlcnZlck1lc3NhZ2USPAoKc3RhcnRfZ2FtZRgBIAEoCzIbLndlYnNvY2tldC'
-    '5TdGFydEdhbWVNZXNzYWdlSABSCXN0YXJ0R2FtZRJLCg9wb3NpdGlvbl91cGRhdGUYAiABKAsy'
-    'IC53ZWJzb2NrZXQuUG9zaXRpb25VcGRhdGVNZXNzYWdlSABSDnBvc2l0aW9uVXBkYXRlEk4KEG'
-    'ludmVudG9yeV91cGRhdGUYAyABKAsyIS53ZWJzb2NrZXQuSW52ZW50b3J5VXBkYXRlTWVzc2Fn'
-    'ZUgAUg9pbnZlbnRvcnlVcGRhdGUSSwoPZnVybmFjZV9wb3dlcmVkGAQgASgLMiAud2Vic29ja2'
-    'V0LkZ1cm5hY2VQb3dlcmVkTWVzc2FnZUgAUg5mdXJuYWNlUG93ZXJlZEIJCgdwYXlsb2Fk');
+    '5TdGFydEdhbWVNZXNzYWdlSABSCXN0YXJ0R2FtZRI8Cgpzd2FwX3JvbGVzGAUgASgLMhsud2Vi'
+    'c29ja2V0LlN3YXBSb2xlc01lc3NhZ2VIAFIJc3dhcFJvbGVzEksKD3Bvc2l0aW9uX3VwZGF0ZR'
+    'gCIAEoCzIgLndlYnNvY2tldC5Qb3NpdGlvblVwZGF0ZU1lc3NhZ2VIAFIOcG9zaXRpb25VcGRh'
+    'dGUSTgoQaW52ZW50b3J5X3VwZGF0ZRgDIAEoCzIhLndlYnNvY2tldC5JbnZlbnRvcnlVcGRhdG'
+    'VNZXNzYWdlSABSD2ludmVudG9yeVVwZGF0ZRJLCg9mdXJuYWNlX3Bvd2VyZWQYBCABKAsyIC53'
+    'ZWJzb2NrZXQuRnVybmFjZVBvd2VyZWRNZXNzYWdlSABSDmZ1cm5hY2VQb3dlcmVkQgkKB3BheW'
+    'xvYWQ=');
 
 @$core.Deprecated('Use startGameMessageDescriptor instead')
 const StartGameMessage$json = {
@@ -106,6 +117,15 @@ const StartGameMessage$json = {
 /// Descriptor for `StartGameMessage`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List startGameMessageDescriptor =
     $convert.base64Decode('ChBTdGFydEdhbWVNZXNzYWdl');
+
+@$core.Deprecated('Use swapRolesMessageDescriptor instead')
+const SwapRolesMessage$json = {
+  '1': 'SwapRolesMessage',
+};
+
+/// Descriptor for `SwapRolesMessage`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List swapRolesMessageDescriptor =
+    $convert.base64Decode('ChBTd2FwUm9sZXNNZXNzYWdl');
 
 @$core.Deprecated('Use positionUpdateMessageDescriptor instead')
 const PositionUpdateMessage$json = {
@@ -212,13 +232,43 @@ const LobbyUpdatedMessage$json = {
     {'1': 'room_code', '3': 1, '4': 1, '5': 9, '10': 'roomCode'},
     {'1': 'player_names', '3': 2, '4': 3, '5': 9, '10': 'playerNames'},
     {'1': 'is_host', '3': 3, '4': 1, '5': 8, '10': 'isHost'},
+    {
+      '1': 'player_roles',
+      '3': 4,
+      '4': 3,
+      '5': 11,
+      '6': '.websocket.LobbyUpdatedMessage.PlayerRolesEntry',
+      '10': 'playerRoles'
+    },
   ],
+  '3': [LobbyUpdatedMessage_PlayerRolesEntry$json],
+};
+
+@$core.Deprecated('Use lobbyUpdatedMessageDescriptor instead')
+const LobbyUpdatedMessage_PlayerRolesEntry$json = {
+  '1': 'PlayerRolesEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    {
+      '1': 'value',
+      '3': 2,
+      '4': 1,
+      '5': 14,
+      '6': '.websocket.PlayerRole',
+      '10': 'value'
+    },
+  ],
+  '7': {'7': true},
 };
 
 /// Descriptor for `LobbyUpdatedMessage`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List lobbyUpdatedMessageDescriptor = $convert.base64Decode(
     'ChNMb2JieVVwZGF0ZWRNZXNzYWdlEhsKCXJvb21fY29kZRgBIAEoCVIIcm9vbUNvZGUSIQoMcG'
-    'xheWVyX25hbWVzGAIgAygJUgtwbGF5ZXJOYW1lcxIXCgdpc19ob3N0GAMgASgIUgZpc0hvc3Q=');
+    'xheWVyX25hbWVzGAIgAygJUgtwbGF5ZXJOYW1lcxIXCgdpc19ob3N0GAMgASgIUgZpc0hvc3QS'
+    'UgoMcGxheWVyX3JvbGVzGAQgAygLMi8ud2Vic29ja2V0LkxvYmJ5VXBkYXRlZE1lc3NhZ2UuUG'
+    'xheWVyUm9sZXNFbnRyeVILcGxheWVyUm9sZXMaVQoQUGxheWVyUm9sZXNFbnRyeRIQCgNrZXkY'
+    'ASABKAlSA2tleRIrCgV2YWx1ZRgCIAEoDjIVLndlYnNvY2tldC5QbGF5ZXJSb2xlUgV2YWx1ZT'
+    'oCOAE=');
 
 @$core.Deprecated('Use gameStartedMessageDescriptor instead')
 const GameStartedMessage$json = {

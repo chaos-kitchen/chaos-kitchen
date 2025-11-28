@@ -25,7 +25,7 @@ class ChaosKitchenGame extends FlameGame with HasCollisionDetection {
 
   @override
   Color backgroundColor() {
-    return const Color(0xffe3dfde);
+    return const Color.fromARGB(255, 202, 199, 198);
   }
 
   ChaosKitchenGame({required this.roomId, required this.playerName});
