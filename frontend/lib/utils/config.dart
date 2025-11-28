@@ -6,8 +6,8 @@ class AppConfig {
   static const String clientIdPrefKey = 'clientId';
   static const String playerNamePrefKey = 'playerName';
 
-  static const bool showDebugCollisionBoxes = true;
-  static const bool showDebugJoinGameButton = true;
+  static const bool showDebugCollisionBoxes = false;
+  static const bool showDebugJoinGameButton = false;
 
   static Uri? _apiBaseUriCached;
   static Future<Uri> getApiBaseUri() async {
