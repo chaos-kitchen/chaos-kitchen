@@ -11,6 +11,18 @@ Widget _text(String text) {
   );
 }
 
+Widget _smallText(String text) {
+  return Text(
+    text,
+    textAlign: TextAlign.left,
+    style: TextStyle(
+      fontSize: 11,
+      color: Colors.black,
+      fontStyle: FontStyle.italic,
+    ),
+  );
+}
+
 Widget _scribble(String text) {
   return Text(
     text,
@@ -34,7 +46,7 @@ class RecipeOverlay extends StatefulWidget {
 
 class _RecipeOverlayState extends State<RecipeOverlay> {
   int _pageNumber = 0;
-  final int _totalPages = 16;
+  final int _totalPages = 19;
   // step number to required ingredients
   final Map<int, List<String>> _requiredIngredients = {
     1: [
@@ -155,22 +167,22 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
     );
   }
 
-  Widget _buildStandardPage({required String title, required Widget content}) {
+  Widget _buildStandardPage({required String? title, required Widget content}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 10.0,
       children: [
-        SizedBox(
-          width: double.infinity,
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+        if (title != null)
+          SizedBox(
+            width: double.infinity,
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
           ),
-        ),
         Expanded(child: SingleChildScrollView(child: content)),
       ],
     );
@@ -227,7 +239,8 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _scribble('Shade-born caps: make them many.'), // chop mushrooms
+              const SizedBox(height: 10),
+              _scribble('Shade-born caps, make them many.'), // chop mushrooms
               const SizedBox(height: 10),
               _scribble('The pale sphere: peel, scatter.'), // chop onion
               const SizedBox(height: 10),
@@ -243,6 +256,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 10),
               _scribble('Dark planets stay whole.'), // pepper
               const SizedBox(height: 10),
               _scribble('In the silver cauldron, they will meet.'), // mix all
@@ -266,7 +280,10 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
             children: [
               _text('You will need the following:'),
               _ingredientsList(ingredientIds: _requiredIngredients[3]),
-              _scribble('Is it fillet or filet again?'),
+              _scribble(
+                'Pork tenderloin is NOT a substitute. Looking at you, Dave.',
+              ),
+              _scribble('         — Management'),
             ],
           ),
         );
@@ -276,6 +293,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 10),
               _scribble(
                 'Do not not heat the pan until it does not fail to smoke.',
               ),
@@ -295,6 +313,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 10),
               _scribble(
                 'Do not don\'t count not less than 8 seconds per face.',
               ),
@@ -311,25 +330,20 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 4),
               _scribble('They call him Chef Gordon.'),
               const SizedBox(height: 8),
-              _text(
-                'Chef Gordon worships one thing above all: Beef Wellington. He hums sea shanties to pastry and speaks to prosciutto as if it owes him money.',
-              ),
-              const SizedBox(height: 12),
               _scribble(
-                'Tonight he prowls the prep station, convinced the perfect seared beef will earn him culinary immortality (or at least a good Yelp line).',
+                'Tonight he prowls the prep station, convinced the perfect dish will earn him immortality.',
               ),
-              const SizedBox(height: 20),
-              _text('What should you do?'),
-              const SizedBox(height: 8),
-              _text(
-                'Offer prosciutto as tribute to calm Chef Gordon — Page 11',
-              ),
+              const SizedBox(height: 10),
+              _text('How do you survive?'),
               const SizedBox(height: 4),
-              _text('Distract Chef Gordon with an herb show — Page 13'),
+              _smallText('Offer prosciutto as tribute — Page 11'),
               const SizedBox(height: 4),
-              _text(
+              _smallText('Distract Chef Gordon with an herb show — Page 13'),
+              const SizedBox(height: 4),
+              _smallText(
                 'Call Chef Gordon an "Idiot Sandwich" to stun him — Page 15',
               ),
             ],
@@ -338,78 +352,62 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
       // Page 11 (index 10): Prosciutto success (static)
       case 10:
         return _buildStandardPage(
-          title: 'Step 4: Tribute Accepted — Page 11',
+          title: null,
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _scribble(
-                'Chef Gordon inhales; for a blessed second he is placid. The prosciutto has been acknowledged.',
+                'Chef Gordon inhales; the prosciutto has been acknowledged.',
               ),
               const SizedBox(height: 8),
-              _text('You will need:'),
+              _smallText('He reveals the ingredients:'),
               _ingredientsList(
                 ingredientIds: [IngredientIds.prosciutto, IngredientIds.eggs],
               ),
-              const SizedBox(height: 8),
-              _scribble(
-                '1. Lay prosciutto over the duxelles in neat, reverent strips.',
-              ),
-              _scribble(
-                '2. Place chilled fillet, wrap snugly so juices stay scandal-free.',
-              ),
-              _scribble(
-                '3. Seal pastry, chill 10 minutes; egg-wash for gloss that impresses critics and chefs alike.',
-              ),
-              _scribble(
-                '4. Bake until pastry is golden and internal temp ~54°C for medium-rare. Present with a confident nod.',
+              const SizedBox(height: 4),
+              _smallText(
+                'He scrunches his face, "A true chef would have known that..."',
               ),
               const SizedBox(height: 8),
-              _text(
-                'If you do not have prosciutto, do NOT follow these steps — flip to Page 12 for the bleak improv.',
-              ),
+              _smallText('You say:'),
+              const SizedBox(height: 2),
+              _smallText('"Yes Chef! I was just testing you." — Page 16'),
+              const SizedBox(height: 2),
+              _smallText('"I\'ve never claimed to be a great chef." — Page 15'),
             ],
           ),
         );
       // Page 12 (index 11): Prosciutto missing — trap (static)
       case 11:
         return _buildStandardPage(
-          title: 'Step 4: Gordon\'s Displeasure — Page 12',
+          title: null,
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _scribble(
-                'The prosciutto drawer is a rumor. Chef Gordon frowns like thunder.',
-              ),
+              _scribble('No prosciutto? Chef Gordon grabs bacon instead.'),
               const SizedBox(height: 8),
-              _text(
-                'These are the instructions left by someone who mistook improvisation for genius:',
-              ),
+              _text('The bacon shrinks. The pastry cracks. The filling leaks.'),
               const SizedBox(height: 8),
               _scribble(
-                '1. Rub the fillet with raw bacon ribbons — rawness is "personality".',
+                '"This isn\'t Beef Wellington—it\'s a soggy bacon burrito!"',
               ),
-              _scribble('2. Skip chilling; steam is edgy and memorable.'),
-              _scribble('3. Salt the outside until the pan files a complaint.'),
-              _scribble('4. Bake until the smoke alarm votes no confidence.'),
               const SizedBox(height: 8),
-              _text(
-                'Outcome: soggy pastry, over-salted meat, and an enraged chef. If you actually have prosciutto, flip to Page 11.',
-              ),
+              _text('The End. Everything was wrong from the start.'),
             ],
           ),
         );
       // Page 13 (index 12): Herb success (static)
       case 12:
         return _buildStandardPage(
-          title: 'Step 4: Herb Theatre — Page 13',
+          title: null,
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _scribble(
-                'You stage an herb spectacle. Chef Gordon is momentarily distracted by the aromatics.',
+                'You wave herbs around like a wizard. Chef Gordon is momentarily enchanted.',
               ),
               const SizedBox(height: 8),
-              _text('You will need:'),
+              _smallText('He reveals the ingredients:'),
               _ingredientsList(
                 ingredientIds: [
                   IngredientIds.mushrooms,
@@ -418,71 +416,154 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
                 ],
               ),
               const SizedBox(height: 8),
-              _scribble(
-                '1. Sauté duxelles until dry; remove excess moisture — drama is scent, not soup.',
+              _smallText(
+                'He squints at you. "You know what you\'re doing... right?"',
               ),
-              _scribble(
-                '2. Fold chopped thyme into softened butter and press onto pastry like a tiny green flag.',
-              ),
-              _scribble(
-                '3. Encase the fillet, crimp edges, chill thoroughly so structure holds.',
-              ),
-              _scribble('4. Bake until golden; let the herbs sing, not wail.'),
               const SizedBox(height: 8),
-              _text(
-                'If the filling was still hot or you lacked herbs, flip to Page 14 for the soggy disaster.',
+              _smallText('You respond:'),
+              const SizedBox(height: 2),
+              _smallText(
+                '"Of course, Chef! Herbs are my specialty." — Page 12',
               ),
+              const SizedBox(height: 2),
+              _smallText('"I\'m winging it, honestly." — Page 15'),
             ],
           ),
         );
       // Page 14 (index 13): Herb missing / wet filling — trap (static)
       case 13:
         return _buildStandardPage(
-          title: 'Step 4: Herbless Tragedy — Page 14',
+          title: null,
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _scribble(
-                'The herbs are a myth; the duxelles is a puddle that giggles. Chef Gordon does not approve.',
+              const SizedBox(height: 4),
+              _smallText('He whispers:'),
+              const SizedBox(height: 2),
+              _smallText(
+                '"I will tell you the secret step, if you can answer this question truly."',
               ),
               const SizedBox(height: 8),
-              _text('Follow these steps only if you enjoy dramatic collapse:'),
+              _scribble('What is the greatest sin in cooking?'),
               const SizedBox(height: 8),
-              _scribble(
-                '1. Stuff the wet filling into the pastry without draining — the leak is "interesting".',
-              ),
-              _scribble('2. Patch with withered herbs like a sad bandage.'),
-              _scribble('3. Skip chilling; haste impresses no one but regret.'),
-              _scribble(
-                '4. Bake longer to make the outside forget the inside exists.',
-              ),
-              const SizedBox(height: 8),
-              _text(
-                'Result: collapsed pastry and a chef who mutters something that sounds like a recipe for vengeance. If you have herbs and a dry filling, flip to Page 13.',
-              ),
+              _smallText('Your answer:'),
+              const SizedBox(height: 2),
+              _smallText('"Undercooking." — Page 18'),
+              const SizedBox(height: 2),
+              _smallText('"Being a pompous know-it-all like you." — Page 15'),
+              const SizedBox(height: 2),
+              _smallText('"Overcooking." — Page 17'),
             ],
           ),
         );
       // Page 15 (index 14): Chaos — comedic horror (static)
       case 14:
         return _buildStandardPage(
-          title: 'Step 4: Gordon Unleashed',
+          title: null,
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _scribble(
-                '"What are you?", you ask. Before he can answer, you shout "You\'re an idiot sandwich!"',
+                'You\'ve disrespected Chef Gordon. His eyes narrow into slits of pure rage.',
+              ),
+              const SizedBox(height: 4),
+              _text('At first, Chef Gordon is stunned.'),
+              const SizedBox(height: 4),
+              _scribble(
+                'But then, his eyes blaze like searing pans, and his apron seems to writhe with a life of its own. The last thing you see are two slices of bread clamped to your head.',
+              ),
+              const SizedBox(height: 4),
+              _text('The End.'),
+            ],
+          ),
+        );
+      case 15:
+        return _buildStandardPage(
+          title: null,
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              _smallText(
+                'Chef Gordon nods approvingly. He gives you the secret recipe:',
+              ),
+              const SizedBox(height: 4),
+              _scribble('1. Lay out the dough, and put filling over it.'),
+              const SizedBox(height: 4),
+              _scribble('2. Lay prosciutto over the filling in strips.'),
+              const SizedBox(height: 4),
+              _scribble('3. Place fillet, wrap snugly.'),
+              const SizedBox(height: 8),
+              _scribble(
+                'Chef Gordon leans in close. "There\'s a secret step I\'ve told nobody before. It\'s the key to perfection."',
+              ),
+              const SizedBox(height: 8),
+              _smallText('Go to Page 14'),
+            ],
+          ),
+        );
+      case 16:
+        return _buildStandardPage(
+          title: null,
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _scribble(
+                'Chef Gordon\'s face turns purple. "Overcooking? That\'s amateur hour!"',
+              ),
+              const SizedBox(height: 4),
+              _text(
+                'He banishes you to the walk-in freezer with nothing but a loaf of bread.',
+              ),
+              const SizedBox(height: 4),
+              _scribble(
+                'You emerge hours later, frostbitten and enlightened. But the Wellington? Forgotten.',
+              ),
+              const SizedBox(height: 4),
+              _text('The End.'),
+            ],
+          ),
+        );
+      case 17:
+        return _buildStandardPage(
+          title: null,
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _scribble(
+                'Chef Gordon nods solemnly. "Yes... undercooking is the true evil."',
+              ),
+              const SizedBox(height: 4),
+              _smallText('Very well. You\'ve proven your worth.'),
+              const SizedBox(height: 4),
+              _scribble(
+                'You must egg wash the pastry thoroughly, sealing in the juices and ensuring a golden crust.',
+              ),
+              const SizedBox(height: 4),
+              _smallText(
+                'With that, he vanishes into the shadows, leaving you to finish.',
               ),
               const SizedBox(height: 8),
               _text(
-                'At first, Chef Gordon is stunned. You even see a flicker of doubt in his eyes.',
+                'Congratulations! You\'ve unlocked the true path to Beef Wellington mastery.',
               ),
-              const SizedBox(height: 8),
-              _scribble(
-                'But then, a terrifying transformation begins. His eyes blaze like searing pans, and his apron seems to writhe with a life of its own.',
-              ),
-              const SizedBox(height: 20),
-              _text('You died.'),
+            ],
+          ),
+        );
+      case 18:
+        return _buildStandardPage(
+          title: 'Step 5: Baking',
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              _scribble('Preheat the fiery chamber to (420°F).'),
+              const SizedBox(height: 10),
+              _scribble('Place the assembled Wellington on a baking tray.'),
+              const SizedBox(height: 10),
+              _scribble('Bake for 30s, or until the pastry is golden brown.'),
+              const SizedBox(height: 10),
+              _scribble('Let it rest before slicing to serve.'),
             ],
           ),
         );
