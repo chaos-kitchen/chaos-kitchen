@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fwebsocket.proto\x12\twebsocket\x1a\x1fgoogle/protobuf/timestamp.proto\"\'\n\tPbVector2\x12\x0c\n\x01x\x18\x01 \x01(\x01R\x01x\x12\x0c\n\x01y\x18\x02 \x01(\x01R\x01y\"\xca\x02\n\x15\x43lientToServerMessage\x12<\n\nstart_game\x18\x01 \x01(\x0b\x32\x1b.websocket.StartGameMessageH\x00R\tstartGame\x12K\n\x0fposition_update\x18\x02 \x01(\x0b\x32 .websocket.PositionUpdateMessageH\x00R\x0epositionUpdate\x12N\n\x10inventory_update\x18\x03 \x01(\x0b\x32!.websocket.InventoryUpdateMessageH\x00R\x0finventoryUpdate\x12K\n\x0f\x66urnace_powered\x18\x04 \x01(\x0b\x32 .websocket.FurnacePoweredMessageH\x00R\x0e\x66urnacePoweredB\t\n\x07payload\"\x12\n\x10StartGameMessage\"I\n\x15PositionUpdateMessage\x12\x30\n\x08position\x18\x01 \x01(\x0b\x32\x14.websocket.PbVector2R\x08position\"1\n\x16InventoryUpdateMessage\x12\x17\n\x07item_id\x18\x01 \x01(\tR\x06itemId\"R\n\x15\x46urnacePoweredMessage\x12\x39\n\npowered_at\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tpoweredAt\"\xf1\x01\n\x15ServerToClientMessage\x12\x45\n\rlobby_updated\x18\x01 \x01(\x0b\x32\x1e.websocket.LobbyUpdatedMessageH\x00R\x0clobbyUpdated\x12\x42\n\x0cgame_started\x18\x02 \x01(\x0b\x32\x1d.websocket.GameStartedMessageH\x00R\x0bgameStarted\x12\x42\n\x0coven_powered\x18\x03 \x01(\x0b\x32\x1d.websocket.OvenPoweredMessageH\x00R\x0bovenPoweredB\t\n\x07payload\"n\n\x13LobbyUpdatedMessage\x12\x1b\n\troom_code\x18\x01 \x01(\tR\x08roomCode\x12!\n\x0cplayer_names\x18\x02 \x03(\tR\x0bplayerNames\x12\x17\n\x07is_host\x18\x03 \x01(\x08R\x06isHost\"\x9b\x02\n\x12GameStartedMessage\x12)\n\x04role\x18\x01 \x01(\x0e\x32\x15.websocket.PlayerRoleR\x04role\x12\x35\n\x08\x65nd_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x07\x65ndTime\x12?\n\x10initial_position\x18\x03 \x01(\x0b\x32\x14.websocket.PbVector2R\x0finitialPosition\x12 \n\x0cheld_item_id\x18\x04 \x01(\tR\nheldItemId\x12@\n\x0coven_powered\x18\x05 \x01(\x0b\x32\x1d.websocket.OvenPoweredMessageR\x0bovenPowered\"\x8b\x01\n\x12OvenPoweredMessage\x12\x34\n\x16total_duration_seconds\x18\x01 \x01(\x05R\x14totalDurationSeconds\x12?\n\rpowered_until\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0cpoweredUntil*[\n\nPlayerRole\x12\x1b\n\x17PLAYER_ROLE_UNSPECIFIED\x10\x00\x12\x14\n\x10PLAYER_ROLE_COOK\x10\x01\x12\x1a\n\x16PLAYER_ROLE_INSTRUCTOR\x10\x02\x42\x63\n\rcom.websocketB\x0eWebsocketProtoP\x01\xa2\x02\x03WXX\xaa\x02\tWebsocket\xca\x02\tWebsocket\xe2\x02\x15Websocket\\GPBMetadata\xea\x02\tWebsocketb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fwebsocket.proto\x12\twebsocket\x1a\x1fgoogle/protobuf/timestamp.proto\"\'\n\tPbVector2\x12\x0c\n\x01x\x18\x01 \x01(\x01R\x01x\x12\x0c\n\x01y\x18\x02 \x01(\x01R\x01y\"\x88\x03\n\x15\x43lientToServerMessage\x12<\n\nstart_game\x18\x01 \x01(\x0b\x32\x1b.websocket.StartGameMessageH\x00R\tstartGame\x12<\n\nswap_roles\x18\x05 \x01(\x0b\x32\x1b.websocket.SwapRolesMessageH\x00R\tswapRoles\x12K\n\x0fposition_update\x18\x02 \x01(\x0b\x32 .websocket.PositionUpdateMessageH\x00R\x0epositionUpdate\x12N\n\x10inventory_update\x18\x03 \x01(\x0b\x32!.websocket.InventoryUpdateMessageH\x00R\x0finventoryUpdate\x12K\n\x0f\x66urnace_powered\x18\x04 \x01(\x0b\x32 .websocket.FurnacePoweredMessageH\x00R\x0e\x66urnacePoweredB\t\n\x07payload\"\x12\n\x10StartGameMessage\"\x12\n\x10SwapRolesMessage\"I\n\x15PositionUpdateMessage\x12\x30\n\x08position\x18\x01 \x01(\x0b\x32\x14.websocket.PbVector2R\x08position\"1\n\x16InventoryUpdateMessage\x12\x17\n\x07item_id\x18\x01 \x01(\tR\x06itemId\"R\n\x15\x46urnacePoweredMessage\x12\x39\n\npowered_at\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tpoweredAt\"\xf1\x01\n\x15ServerToClientMessage\x12\x45\n\rlobby_updated\x18\x01 \x01(\x0b\x32\x1e.websocket.LobbyUpdatedMessageH\x00R\x0clobbyUpdated\x12\x42\n\x0cgame_started\x18\x02 \x01(\x0b\x32\x1d.websocket.GameStartedMessageH\x00R\x0bgameStarted\x12\x42\n\x0coven_powered\x18\x03 \x01(\x0b\x32\x1d.websocket.OvenPoweredMessageH\x00R\x0bovenPoweredB\t\n\x07payload\"\x99\x02\n\x13LobbyUpdatedMessage\x12\x1b\n\troom_code\x18\x01 \x01(\tR\x08roomCode\x12!\n\x0cplayer_names\x18\x02 \x03(\tR\x0bplayerNames\x12\x17\n\x07is_host\x18\x03 \x01(\x08R\x06isHost\x12R\n\x0cplayer_roles\x18\x04 \x03(\x0b\x32/.websocket.LobbyUpdatedMessage.PlayerRolesEntryR\x0bplayerRoles\x1aU\n\x10PlayerRolesEntry\x12\x10\n\x03key\x18\x01 \x01(\tR\x03key\x12+\n\x05value\x18\x02 \x01(\x0e\x32\x15.websocket.PlayerRoleR\x05value:\x02\x38\x01\"\x9b\x02\n\x12GameStartedMessage\x12)\n\x04role\x18\x01 \x01(\x0e\x32\x15.websocket.PlayerRoleR\x04role\x12\x35\n\x08\x65nd_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x07\x65ndTime\x12?\n\x10initial_position\x18\x03 \x01(\x0b\x32\x14.websocket.PbVector2R\x0finitialPosition\x12 \n\x0cheld_item_id\x18\x04 \x01(\tR\nheldItemId\x12@\n\x0coven_powered\x18\x05 \x01(\x0b\x32\x1d.websocket.OvenPoweredMessageR\x0bovenPowered\"\x8b\x01\n\x12OvenPoweredMessage\x12\x34\n\x16total_duration_seconds\x18\x01 \x01(\x05R\x14totalDurationSeconds\x12?\n\rpowered_until\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0cpoweredUntil*[\n\nPlayerRole\x12\x1b\n\x17PLAYER_ROLE_UNSPECIFIED\x10\x00\x12\x14\n\x10PLAYER_ROLE_COOK\x10\x01\x12\x1a\n\x16PLAYER_ROLE_INSTRUCTOR\x10\x02\x42\x63\n\rcom.websocketB\x0eWebsocketProtoP\x01\xa2\x02\x03WXX\xaa\x02\tWebsocket\xca\x02\tWebsocket\xe2\x02\x15Websocket\\GPBMetadata\xea\x02\tWebsocketb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -33,26 +33,32 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'websocket_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\rcom.websocketB\016WebsocketProtoP\001\242\002\003WXX\252\002\tWebsocket\312\002\tWebsocket\342\002\025Websocket\\GPBMetadata\352\002\tWebsocket'
-  _globals['_PLAYERROLE']._serialized_start=1451
-  _globals['_PLAYERROLE']._serialized_end=1542
+  _globals['_LOBBYUPDATEDMESSAGE_PLAYERROLESENTRY']._loaded_options = None
+  _globals['_LOBBYUPDATEDMESSAGE_PLAYERROLESENTRY']._serialized_options = b'8\001'
+  _globals['_PLAYERROLE']._serialized_start=1705
+  _globals['_PLAYERROLE']._serialized_end=1796
   _globals['_PBVECTOR2']._serialized_start=63
   _globals['_PBVECTOR2']._serialized_end=102
   _globals['_CLIENTTOSERVERMESSAGE']._serialized_start=105
-  _globals['_CLIENTTOSERVERMESSAGE']._serialized_end=435
-  _globals['_STARTGAMEMESSAGE']._serialized_start=437
-  _globals['_STARTGAMEMESSAGE']._serialized_end=455
-  _globals['_POSITIONUPDATEMESSAGE']._serialized_start=457
-  _globals['_POSITIONUPDATEMESSAGE']._serialized_end=530
-  _globals['_INVENTORYUPDATEMESSAGE']._serialized_start=532
-  _globals['_INVENTORYUPDATEMESSAGE']._serialized_end=581
-  _globals['_FURNACEPOWEREDMESSAGE']._serialized_start=583
-  _globals['_FURNACEPOWEREDMESSAGE']._serialized_end=665
-  _globals['_SERVERTOCLIENTMESSAGE']._serialized_start=668
-  _globals['_SERVERTOCLIENTMESSAGE']._serialized_end=909
-  _globals['_LOBBYUPDATEDMESSAGE']._serialized_start=911
-  _globals['_LOBBYUPDATEDMESSAGE']._serialized_end=1021
-  _globals['_GAMESTARTEDMESSAGE']._serialized_start=1024
-  _globals['_GAMESTARTEDMESSAGE']._serialized_end=1307
-  _globals['_OVENPOWEREDMESSAGE']._serialized_start=1310
-  _globals['_OVENPOWEREDMESSAGE']._serialized_end=1449
+  _globals['_CLIENTTOSERVERMESSAGE']._serialized_end=497
+  _globals['_STARTGAMEMESSAGE']._serialized_start=499
+  _globals['_STARTGAMEMESSAGE']._serialized_end=517
+  _globals['_SWAPROLESMESSAGE']._serialized_start=519
+  _globals['_SWAPROLESMESSAGE']._serialized_end=537
+  _globals['_POSITIONUPDATEMESSAGE']._serialized_start=539
+  _globals['_POSITIONUPDATEMESSAGE']._serialized_end=612
+  _globals['_INVENTORYUPDATEMESSAGE']._serialized_start=614
+  _globals['_INVENTORYUPDATEMESSAGE']._serialized_end=663
+  _globals['_FURNACEPOWEREDMESSAGE']._serialized_start=665
+  _globals['_FURNACEPOWEREDMESSAGE']._serialized_end=747
+  _globals['_SERVERTOCLIENTMESSAGE']._serialized_start=750
+  _globals['_SERVERTOCLIENTMESSAGE']._serialized_end=991
+  _globals['_LOBBYUPDATEDMESSAGE']._serialized_start=994
+  _globals['_LOBBYUPDATEDMESSAGE']._serialized_end=1275
+  _globals['_LOBBYUPDATEDMESSAGE_PLAYERROLESENTRY']._serialized_start=1190
+  _globals['_LOBBYUPDATEDMESSAGE_PLAYERROLESENTRY']._serialized_end=1275
+  _globals['_GAMESTARTEDMESSAGE']._serialized_start=1278
+  _globals['_GAMESTARTEDMESSAGE']._serialized_end=1561
+  _globals['_OVENPOWEREDMESSAGE']._serialized_start=1564
+  _globals['_OVENPOWEREDMESSAGE']._serialized_end=1703
 # @@protoc_insertion_point(module_scope)

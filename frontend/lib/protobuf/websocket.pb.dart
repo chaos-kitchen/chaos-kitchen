@@ -92,6 +92,7 @@ enum ClientToServerMessage_Payload {
   positionUpdate,
   inventoryUpdate,
   furnacePowered,
+  swapRoles,
   notSet
 }
 
@@ -101,12 +102,14 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
     PositionUpdateMessage? positionUpdate,
     InventoryUpdateMessage? inventoryUpdate,
     FurnacePoweredMessage? furnacePowered,
+    SwapRolesMessage? swapRoles,
   }) {
     final result = create();
     if (startGame != null) result.startGame = startGame;
     if (positionUpdate != null) result.positionUpdate = positionUpdate;
     if (inventoryUpdate != null) result.inventoryUpdate = inventoryUpdate;
     if (furnacePowered != null) result.furnacePowered = furnacePowered;
+    if (swapRoles != null) result.swapRoles = swapRoles;
     return result;
   }
 
@@ -125,13 +128,14 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
     2: ClientToServerMessage_Payload.positionUpdate,
     3: ClientToServerMessage_Payload.inventoryUpdate,
     4: ClientToServerMessage_Payload.furnacePowered,
+    5: ClientToServerMessage_Payload.swapRoles,
     0: ClientToServerMessage_Payload.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'ClientToServerMessage',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
       createEmptyInstance: create)
-    ..oo(0, [1, 2, 3, 4])
+    ..oo(0, [1, 2, 3, 4, 5])
     ..aOM<StartGameMessage>(1, _omitFieldNames ? '' : 'startGame',
         subBuilder: StartGameMessage.create)
     ..aOM<PositionUpdateMessage>(2, _omitFieldNames ? '' : 'positionUpdate',
@@ -140,6 +144,8 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
         subBuilder: InventoryUpdateMessage.create)
     ..aOM<FurnacePoweredMessage>(4, _omitFieldNames ? '' : 'furnacePowered',
         subBuilder: FurnacePoweredMessage.create)
+    ..aOM<SwapRolesMessage>(5, _omitFieldNames ? '' : 'swapRoles',
+        subBuilder: SwapRolesMessage.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -166,12 +172,14 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   @$pb.TagNumber(3)
   @$pb.TagNumber(4)
+  @$pb.TagNumber(5)
   ClientToServerMessage_Payload whichPayload() =>
       _ClientToServerMessage_PayloadByTag[$_whichOneof(0)]!;
   @$pb.TagNumber(1)
   @$pb.TagNumber(2)
   @$pb.TagNumber(3)
   @$pb.TagNumber(4)
+  @$pb.TagNumber(5)
   void clearPayload() => $_clearField($_whichOneof(0));
 
   /// Lobby messages
@@ -219,6 +227,17 @@ class ClientToServerMessage extends $pb.GeneratedMessage {
   void clearFurnacePowered() => $_clearField(4);
   @$pb.TagNumber(4)
   FurnacePoweredMessage ensureFurnacePowered() => $_ensure(3);
+
+  @$pb.TagNumber(5)
+  SwapRolesMessage get swapRoles => $_getN(4);
+  @$pb.TagNumber(5)
+  set swapRoles(SwapRolesMessage value) => $_setField(5, value);
+  @$pb.TagNumber(5)
+  $core.bool hasSwapRoles() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearSwapRoles() => $_clearField(5);
+  @$pb.TagNumber(5)
+  SwapRolesMessage ensureSwapRoles() => $_ensure(4);
 }
 
 class StartGameMessage extends $pb.GeneratedMessage {
@@ -257,6 +276,44 @@ class StartGameMessage extends $pb.GeneratedMessage {
   static StartGameMessage getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<StartGameMessage>(create);
   static StartGameMessage? _defaultInstance;
+}
+
+class SwapRolesMessage extends $pb.GeneratedMessage {
+  factory SwapRolesMessage() => create();
+
+  SwapRolesMessage._();
+
+  factory SwapRolesMessage.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory SwapRolesMessage.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'SwapRolesMessage',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'websocket'),
+      createEmptyInstance: create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SwapRolesMessage clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SwapRolesMessage copyWith(void Function(SwapRolesMessage) updates) =>
+      super.copyWith((message) => updates(message as SwapRolesMessage))
+          as SwapRolesMessage;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static SwapRolesMessage create() => SwapRolesMessage._();
+  @$core.override
+  SwapRolesMessage createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static SwapRolesMessage getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<SwapRolesMessage>(create);
+  static SwapRolesMessage? _defaultInstance;
 }
 
 class PositionUpdateMessage extends $pb.GeneratedMessage {
@@ -548,11 +605,13 @@ class LobbyUpdatedMessage extends $pb.GeneratedMessage {
     $core.String? roomCode,
     $core.Iterable<$core.String>? playerNames,
     $core.bool? isHost,
+    $core.Iterable<$core.MapEntry<$core.String, PlayerRole>>? playerRoles,
   }) {
     final result = create();
     if (roomCode != null) result.roomCode = roomCode;
     if (playerNames != null) result.playerNames.addAll(playerNames);
     if (isHost != null) result.isHost = isHost;
+    if (playerRoles != null) result.playerRoles.addEntries(playerRoles);
     return result;
   }
 
@@ -572,6 +631,15 @@ class LobbyUpdatedMessage extends $pb.GeneratedMessage {
     ..aOS(1, _omitFieldNames ? '' : 'roomCode')
     ..pPS(2, _omitFieldNames ? '' : 'playerNames')
     ..aOB(3, _omitFieldNames ? '' : 'isHost')
+    ..m<$core.String, PlayerRole>(4, _omitFieldNames ? '' : 'playerRoles',
+        entryClassName: 'LobbyUpdatedMessage.PlayerRolesEntry',
+        keyFieldType: $pb.PbFieldType.OS,
+        valueFieldType: $pb.PbFieldType.OE,
+        valueOf: PlayerRole.valueOf,
+        enumValues: PlayerRole.values,
+        valueDefaultOrMaker: PlayerRole.PLAYER_ROLE_UNSPECIFIED,
+        defaultEnumValue: PlayerRole.PLAYER_ROLE_UNSPECIFIED,
+        packageName: const $pb.PackageName('websocket'))
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -613,6 +681,9 @@ class LobbyUpdatedMessage extends $pb.GeneratedMessage {
   $core.bool hasIsHost() => $_has(2);
   @$pb.TagNumber(3)
   void clearIsHost() => $_clearField(3);
+
+  @$pb.TagNumber(4)
+  $pb.PbMap<$core.String, PlayerRole> get playerRoles => $_getMap(3);
 }
 
 class GameStartedMessage extends $pb.GeneratedMessage {

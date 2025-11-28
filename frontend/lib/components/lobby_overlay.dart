@@ -4,7 +4,6 @@ import 'package:chaos_kitchen/components/button.dart';
 import 'package:chaos_kitchen/components/snackbar.dart';
 import 'package:chaos_kitchen/game/game.dart';
 import 'package:chaos_kitchen/protobuf/websocket.pb.dart';
-import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
 class LobbyOverlay extends StatefulWidget {
@@ -21,6 +20,7 @@ class _LobbyOverlayState extends State<LobbyOverlay> {
   bool isHost = false;
   String roomCode = "";
   List<String> players = [];
+  Map<String, PlayerRole> playerRoles = {};
 
   Completer<void> websocketLockCompleter = Completer<void>();
 
@@ -35,6 +35,12 @@ class _LobbyOverlayState extends State<LobbyOverlay> {
           isHost = lobbyUpdatedMessage.isHost;
           roomCode = lobbyUpdatedMessage.roomCode.toUpperCase();
           players = lobbyUpdatedMessage.playerNames;
+          playerRoles = Map.fromEntries(
+            lobbyUpdatedMessage.playerRoles.entries.map(
+              (e) => MapEntry(e.key, e.value),
+            ),
+          );
+          ;
         });
         break;
 
@@ -47,6 +53,17 @@ class _LobbyOverlayState extends State<LobbyOverlay> {
       default:
         showErrorSnackbar(context, 'Received unknown message from server');
         break;
+    }
+  }
+
+  String getRoleDisplayName(PlayerRole? role) {
+    switch (role) {
+      case PlayerRole.PLAYER_ROLE_COOK:
+        return 'Cook';
+      case PlayerRole.PLAYER_ROLE_INSTRUCTOR:
+        return 'Instructor';
+      default:
+        return 'Unknown';
     }
   }
 
@@ -90,9 +107,19 @@ class _LobbyOverlayState extends State<LobbyOverlay> {
               Text('Room Code: $roomCode'),
               SizedBox(height: 16),
               Text('Players:'),
-              for (var player in players) Text(player),
+              for (var player in players)
+                Text('$player - ${getRoleDisplayName(playerRoles[player])}'),
               if (isHost) ...[
-                SizedBox(height: 32),
+                SizedBox(height: 16),
+                UIButton(
+                  onPressed: () {
+                    final message = ClientToServerMessage()
+                      ..swapRoles = SwapRolesMessage();
+                    widget.game.websocket.send(message);
+                  },
+                  child: Text('Swap Roles'),
+                ),
+                SizedBox(height: 8),
                 UIButton(
                   onPressed: () {
                     final message = ClientToServerMessage()

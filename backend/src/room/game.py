@@ -80,9 +80,19 @@ class GameRoom:
             player.websocket = websocket
         else:
             # New player joining before game started
+            role = PlayerRole.PLAYER_ROLE_UNSPECIFIED
+            if len(self.players) == 0:
+                role = PlayerRole.PLAYER_ROLE_INSTRUCTOR
+            else:
+                # role = opposite of first player's role
+                first_player = next(iter(self.players.values()))
+                role = (
+                    PlayerRole.PLAYER_ROLE_COOK if first_player.role == PlayerRole.PLAYER_ROLE_INSTRUCTOR else PlayerRole.PLAYER_ROLE_INSTRUCTOR
+                )
+            
             player = self.players[client_id] = PlayerInfo(
                 player_name=player_name,
-                role=PlayerRole.PLAYER_ROLE_UNSPECIFIED,
+                role=role,
                 position=PbVector2(x=400, y=400),
                 websocket=websocket,
                 held_item_id=None,
@@ -149,6 +159,8 @@ class GameRoom:
                 self.players[client_id].held_item_id = item_id
             case "furnace_powered":
                 await self._handle_furnace_powered(client_message.furnace_powered)
+            case "swap_roles":
+                await self._handle_swap_roles(client_id)
             case _:
                 logger.warning(
                     f"Unknown message type from client {client_id}: {client_message.WhichOneof('payload')}"
@@ -171,6 +183,29 @@ class GameRoom:
                 )
             )
         )
+    
+    async def _handle_swap_roles(self, client_id: UUID):
+        if client_id != self.host_client_id:
+            logger.warning(
+                f"Client {client_id} attempted to swap roles but is not host"
+            )
+            return
+
+        if self.has_started:
+            logger.warning(
+                f"Client {client_id} attempted to swap roles but game has already started"
+            )
+            return
+
+        assert len(self.players) >= 1
+        for player in self.players.values():
+            if player.role == PlayerRole.PLAYER_ROLE_COOK:
+                player.role = PlayerRole.PLAYER_ROLE_INSTRUCTOR
+            else:
+                player.role = PlayerRole.PLAYER_ROLE_COOK
+        
+        await self._broadcast_lobby_update()
+        
 
     async def _handle_game_start(self, client_id: UUID):
         if client_id != self.host_client_id:
@@ -188,13 +223,7 @@ class GameRoom:
         # self._room_deletion_timer.restart()
 
         # FIXME: ensure exactly 2 players are connected
-        # FIXME: Randomize roles later
         assert len(self.players) >= 1
-        for client_id, player in self.players.items():
-            if player.player_name.lower() == "cook":
-                player.role = PlayerRole.PLAYER_ROLE_COOK
-            else:
-                player.role = PlayerRole.PLAYER_ROLE_INSTRUCTOR
 
         for client_id, player in self.players.items():
             await self._send_message(
@@ -221,6 +250,7 @@ class GameRoom:
                     lobby_updated=LobbyUpdatedMessage(
                         room_code=self.room_code,
                         player_names=[p.player_name for p in self.players.values()],
+                        player_roles={p.player_name: p.role for p in self.players.values()},
                         is_host=(client_id == self.host_client_id),
                     )
                 ),
