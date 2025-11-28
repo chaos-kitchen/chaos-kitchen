@@ -76,11 +76,8 @@ class GameRoom:
 
         if player := self.players.get(client_id):
             # Reconnecting player
-            old_websocket = player.websocket
             player.player_name = player_name
             player.websocket = websocket
-            if old_websocket:
-                await self._close_websocket(old_websocket)
         else:
             # New player joining before game started
             player = self.players[client_id] = PlayerInfo(
@@ -132,6 +129,12 @@ class GameRoom:
         # Note: receive_bytes will raise WebSocketDisconnect if
         # the client disconnects
         client_data = await websocket.receive_bytes()
+
+        player = self.players.get(client_id)
+        if not player or player.websocket is not websocket:
+            # Message from unknown or old websocket - ignore
+            return
+
         client_message = ClientToServerMessage()
         client_message.ParseFromString(client_data)
 
@@ -246,10 +249,7 @@ class GameRoom:
 
     async def _shutdown(self):
         # Close all connections
-        for client_id, player in list(self.players.items()):
-            if player.websocket:
-                await self._close_websocket(player.websocket)
-            self.players.pop(client_id)
+        self.players.clear()
 
         # Release room code
         if self.room_code:
@@ -261,13 +261,3 @@ class GameRoom:
 
         # Remove self from rooms dict
         self._remove_self_from_rooms()
-
-    async def _close_websocket(self, websocket: WebSocket):
-        if websocket.client_state == WebSocketState.DISCONNECTED:
-            return
-        if websocket.application_state == WebSocketState.DISCONNECTED:
-            return
-        try:
-            await websocket.close()
-        except WebSocketDisconnect:
-            pass
