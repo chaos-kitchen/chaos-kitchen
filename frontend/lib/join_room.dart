@@ -78,7 +78,7 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Join a game')),
       body: Center(
-        child: Column(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 16,
           children: [

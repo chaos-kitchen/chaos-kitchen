@@ -6,10 +6,12 @@ import 'package:chaos_kitchen/room.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Flame.device.fullScreen();
+  WakelockPlus.enable();
   runApp(MainApp());
 }
 

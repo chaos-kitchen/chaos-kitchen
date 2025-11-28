@@ -60,7 +60,7 @@ class _ChangePlayerNameScreenState extends State<ChangePlayerNameScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Enter your name')),
       body: Center(
-        child: Column(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 16,
           children: [
