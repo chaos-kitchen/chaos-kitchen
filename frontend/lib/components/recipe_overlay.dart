@@ -102,7 +102,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
         Text(
           'Beef Wellington For Dummies',
           style: TextStyle(
-            fontSize: 26,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
@@ -111,7 +111,7 @@ class _RecipeOverlayState extends State<RecipeOverlay> {
         Text(
           'An Exclusively Free Guide With the Exact Quality You Paid For',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 15,
             fontStyle: FontStyle.italic,
             color: Colors.black87,
           ),
