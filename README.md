@@ -1,8 +1,8 @@
-# Chaos Kitchen (WIP)
+# Chaos Kitchen
 
-A work-in-progress chaotic co-op cooking mobile game blending Overcooked and
-Keep Talking and Nobody Explodes, where players must communicate to cook,
-solve puzzles, and survive the kitchen.
+A 2-player chaotic mobile cooking game blending Overcooked and
+Keep Talking and Nobody Explodes, where players must work together to
+solve cooking puzzles, face unexpected events, and survive the kitchen.
 
 ## Tech stack
 
@@ -34,15 +34,26 @@ To start the mobile app:
 
 ```bash
 cd frontend
-# '-d all' runs flutter on all connected devices - useful when testing multiplayer flows
+# '-d all' runs flutter on all connected devices - useful when
+# testing multiplayer flows
 flutter run -d all
 ```
 
 ### Protobuf
 
-To generate protobuf types for Dart and Python:
+To generate protobuf types for Dart and Python (only necessary
+when changing protobuf messages):
 
 ```bash
 cd protobuf
 buf generate
 ```
+
+## Screenshots
+
+![Main menu](./screenshots/main_menu.png)
+![Cook view](./screenshots/cook.png)
+![Instructor view](./screenshots/instructor.png)
+![Mixing](./screenshots/mixing.png)
+
+For more screenshots, see [Screenshots](./SCREENSHOTS.md).
