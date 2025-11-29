@@ -52,6 +52,7 @@ buf generate
 ## Screenshots
 
 ![Main menu](./screenshots/main_menu.png)
+![Game room](./screenshots/room_host.png)
 ![Cook view](./screenshots/cook.png)
 ![Instructor view](./screenshots/instructor.png)
 ![Mixing](./screenshots/mixing.png)
